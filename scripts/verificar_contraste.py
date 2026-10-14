@@ -26,8 +26,10 @@ PARES = [
     ("Texto do botão primário (hover)", "--color-on-primary", "--color-primary-hover", 4.5),
     ("Botão secundário: texto azul sobre branco", "--color-primary", "--color-surface", 4.5),
     ("Item de menu ativo / destaque azul claro", "--color-primary", "--color-primary-light", 4.5),
-    ("Cabeçalho institucional: texto", "--color-header-text", "--color-header-bg", 4.5),
-    ("Barra de acessibilidade e rodapé: texto", "--color-header-text", "--color-header-bg-strong", 4.5),
+    ("Cabeçalho institucional: nome do sistema e usuário", "--color-institutional-text", "--color-institutional-bg", 4.5),
+    ("Cabeçalho institucional: subtítulo e perfil", "--color-text-muted", "--color-institutional-bg", 4.5),
+    ("Menu lateral e rodapé: texto", "--color-header-text", "--color-header-bg", 4.5),
+    ("Barra de acessibilidade: texto", "--color-header-text", "--color-header-bg-strong", 4.5),
     ("Mensagem de sucesso", "--color-success", "--color-success-bg", 4.5),
     ("Mensagem de alerta", "--color-warning", "--color-warning-bg", 4.5),
     ("Mensagem de erro", "--color-danger", "--color-danger-bg", 4.5),
@@ -43,8 +45,9 @@ PARES = [
     ("Contorno de campos sobre a página", "--color-border-strong", "--color-bg", 3.0),
     ("Indicador de foco sobre fundo claro", "--color-focus", "--color-surface", 3.0),
     ("Indicador de foco sobre a página", "--color-focus", "--color-bg", 3.0),
-    ("Indicador de foco no cabeçalho", "--color-focus-on-dark", "--color-header-bg", 3.0),
-    ("Indicador de foco na barra de acessibilidade e rodapé", "--color-focus-on-dark", "--color-header-bg-strong", 3.0),
+    ("Indicador de foco no cabeçalho institucional", "--color-focus", "--color-institutional-bg", 3.0),
+    ("Indicador de foco no menu lateral e rodapé", "--color-focus-on-dark", "--color-header-bg", 3.0),
+    ("Indicador de foco na barra de acessibilidade", "--color-focus-on-dark", "--color-header-bg-strong", 3.0),
 ]
 # Observação: o foco é desenhado com afastamento (--focus-offset), de modo que o anel fica sobre o fundo
 # da página/cartão e não sobre o próprio botão; por isso os pares de foco usam as cores de fundo.

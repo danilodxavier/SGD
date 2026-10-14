@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Acessibilidade — Agente de Inteligência Documental</title>
+  <link rel="stylesheet" href="/static/css/tokens.css">
+  <link rel="stylesheet" href="/static/css/app.css">
+  <script src="/static/js/layout.js"></script>
+</head>
+<body>
+  <!-- BARRA DE ACESSIBILIDADE (mesma do sistema) -->
+  <div class="a11y-bar" role="region" aria-label="Barra de acessibilidade">
+    <div class="a11y-inner">
+      <ul class="a11y-shortcuts">
+        <li><a href="#conteudo" accesskey="1" data-atalho="conteudo">Ir para o conteúdo <span class="a11y-key">1</span></a></li>
+        <li><a href="#conteudo" accesskey="2" data-atalho="menu">Ir para o menu <span class="a11y-key">2</span></a></li>
+        <li><a href="#conteudo" accesskey="3" data-atalho="busca">Ir para a busca <span class="a11y-key">3</span></a></li>
+        <li><a href="#rodape" accesskey="4" data-atalho="rodape">Ir para o rodapé <span class="a11y-key">4</span></a></li>
+      </ul>
+      <ul class="a11y-tools">
+        <li><a href="/static/acessibilidade.html" aria-current="page">Acessibilidade</a></li>
+        <li><button type="button" id="a11y-contraste" aria-pressed="false">Alto contraste</button></li>
+        <li class="a11y-font" role="group" aria-label="Tamanho do texto">
+          <button type="button" id="a11y-fonte-mais" aria-label="Aumentar o tamanho do texto">A+</button>
+          <button type="button" id="a11y-fonte-menos" aria-label="Diminuir o tamanho do texto">A-</button>
+          <button type="button" id="a11y-fonte-padrao" aria-label="Voltar ao tamanho padrão do texto">A</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="site-header-inner">
+      <div class="site-brand">
+        <span class="logo-plate">
+          <img class="logo" src="/static/assets/marcas/_govmt_sema_horizontal.png" width="1698" height="543"
+               alt="Governo de Mato Grosso — SEMA, Secretaria de Estado de Meio Ambiente">
+        </span>
+        <span class="site-title">
+          <span class="site-name">Agente de Inteligência Documental</span>
+          <span class="site-subtitle">Contratos e Checklists</span>
+        </span>
+      </div>
+      <a class="btn" href="/">Voltar ao sistema</a>
+    </div>
+  </header>
+
+  <main id="conteudo" class="page-text" tabindex="-1">
+    <nav class="breadcrumb" aria-label="Você está aqui">
+      <ol>
+        <li><a href="/">Início</a></li>
+        <li><span aria-current="page">Acessibilidade</span></li>
+      </ol>
+    </nav>
+
+    <h1>Acessibilidade</h1>
+    <p>Este sistema segue o Modelo de Acessibilidade em Governo Eletrônico (eMAG) e as Diretrizes de
+      Acessibilidade para Conteúdo Web (WCAG 2.1, nível AA), para que todas as pessoas possam usá-lo,
+      inclusive com leitores de tela, somente pelo teclado ou com ampliação.</p>
+
+    <h2>Atalhos de teclado</h2>
+    <p>Os atalhos levam direto às principais áreas da página. No Microsoft Edge e no Google Chrome, use
+      <kbd>Alt</kbd> + o número; no Mozilla Firefox, <kbd>Alt</kbd> + <kbd>Shift</kbd> + o número.</p>
+    <div class="table-wrap">
+      <table class="table">
+        <caption class="sr-only">Atalhos de teclado do sistema</caption>
+        <thead><tr><th scope="col">Atalho</th><th scope="col">Leva para</th></tr></thead>
+        <tbody>
+          <tr><td><kbd>Alt</kbd> + <kbd>1</kbd></td><td>Conteúdo principal da página</td></tr>
+          <tr><td><kbd>Alt</kbd> + <kbd>2</kbd></td><td>Menu principal (item da tela atual)</td></tr>
+          <tr><td><kbd>Alt</kbd> + <kbd>3</kbd></td><td>Busca — abre a tela <b>Perguntas</b> com o cursor no campo de pergunta</td></tr>
+          <tr><td><kbd>Alt</kbd> + <kbd>4</kbd></td><td>Rodapé</td></tr>
+          <tr><td><kbd>Tab</kbd> / <kbd>Shift</kbd> + <kbd>Tab</kbd></td><td>Avança / volta entre links, botões e campos</td></tr>
+          <tr><td><kbd>Enter</kbd> ou <kbd>Espaço</kbd></td><td>Aciona o botão ou link selecionado</td></tr>
+          <tr><td><kbd>Esc</kbd></td><td>Fecha janelas de diálogo</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Na tela de acesso (login), os atalhos de conteúdo, menu e busca levam ao primeiro campo do formulário.</p>
+
+    <h2>Alto contraste</h2>
+    <p>O botão <b>Alto contraste</b>, na barra do topo, troca as cores da tela por fundo preto, texto branco e
+      destaques em amarelo. Clique de novo para voltar às cores normais. A escolha fica guardada neste navegador.</p>
+
+    <h2>Tamanho do texto</h2>
+    <p>Os botões <b>A+</b> e <b>A-</b> aumentam ou diminuem o texto de todo o sistema (de 87,5% até 150%);
+      o botão <b>A</b> volta ao tamanho padrão. Também é possível usar o zoom do navegador
+      (<kbd>Ctrl</kbd> + <kbd>+</kbd>, <kbd>Ctrl</kbd> + <kbd>-</kbd> e <kbd>Ctrl</kbd> + <kbd>0</kbd>).</p>
+
+    <h2>Libras (VLibras)</h2>
+    <p>O sistema inclui o VLibras, tradutor de português para a Língua Brasileira de Sinais do Governo Federal.
+      Clique no ícone de mãos, à direita da tela, e depois no texto que deseja traduzir.</p>
+    <p class="note"><b>Atenção:</b> o VLibras funciona pela Internet. O texto que você seleciona para traduzir é
+      enviado ao serviço do Governo Federal. Evite traduzir trechos com dados pessoais ou sigilosos. Sem acesso à
+      Internet, o ícone do VLibras não aparece, e o restante do sistema continua funcionando normalmente.</p>
+
+    <h2>Leitores de tela</h2>
+    <p>O sistema pode ser usado com leitores de tela como o NVDA (gratuito), o JAWS e o Narrador do Windows.
+      Os títulos das páginas, os campos de formulário e os avisos são identificados para esses programas.</p>
+
+    <h2>Encontrou alguma barreira?</h2>
+    <p>Informe o problema à equipe responsável pelo sistema, dizendo a tela, o que tentou fazer e qual
+      navegador ou leitor de tela usou.</p>
+    <!-- VERIFICAR: canal oficial de contato para relatos de acessibilidade (e-mail ou ramal da SEMA-MT) -->
+
+    <p class="muted small">Página atualizada em 14/10/2026.</p>
+  </main>
+
+  <footer class="site-footer" id="rodape" tabindex="-1">
+    <div class="site-footer-inner">
+      <div>
+        <p><strong>Governo do Estado de Mato Grosso</strong><br>
+          Secretaria de Estado de Meio Ambiente — SEMA-MT</p>
+        <p>Agente de Inteligência Documental · uso interno.</p>
+      </div>
+      <ul class="footer-links">
+        <li><a href="/">Voltar ao sistema</a></li>
+      </ul>
+    </div>
+  </footer>
+  <div class="sr-only" id="a11y-status" aria-live="polite"></div>
+
+  <!-- VLibras: código de incorporação oficial do Governo Federal (https://vlibras.gov.br), sem alterações. -->
+  <div vw class="enabled">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper>
+      <div class="vw-plugin-top-wrapper"></div>
+    </div>
+  </div>
+  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+  <script>
+    new window.VLibras.Widget('https://vlibras.gov.br/app');
+  </script>
+</body>
+</html>

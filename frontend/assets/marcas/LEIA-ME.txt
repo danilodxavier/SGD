@@ -1,0 +1,14 @@
+MARCAS OFICIAIS — NÃO EDITAR
+
+_govmt_sema_horizontal.png
+  Assinatura conjunta "SEMA — Secretaria de Estado de Meio Ambiente" + marca do Governo de Mato Grosso,
+  versão horizontal colorida, fundo transparente (1698 x 543 px).
+  Origem: SECOM-MT — https://www.secom.mt.gov.br/manuais
+          pacote "Logos das Secretarias" (_logos_secretarias_2025 / _govmt_sema / _png).
+  SHA-256: c368425711f7dd4ed5749b2c7b91544621995639b45e4dd62e2bd9e0dbd2d620
+
+Regras (Manual de Uso da Marca do Governo de MT, SECOM, abril/2026):
+  - O arquivo é usado exatamente como fornecido: não redesenhe, não recorte, não recolora e não distorça.
+  - O tamanho é ajustado somente pelo CSS, mantendo a proporção.
+  - Sobre fundos escuros (inclusive o modo alto contraste) a marca fica sobre uma placa branca.
+  - Para trocar a marca, substitua o arquivo por outro baixado do site da SECOM e atualize o SHA-256 acima.

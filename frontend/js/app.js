@@ -129,6 +129,7 @@ function showView(name) {
   document.querySelectorAll(".nav-item").forEach((b) => b.classList.toggle("active", b.dataset.view === name));
   document.querySelectorAll(".view").forEach((v) => v.classList.toggle("active", v.id === `view-${name}`));
   try { localStorage.setItem("view", name); } catch (e) { /* armazenamento indisponível */ }
+  if (typeof Layout !== "undefined") Layout.onView(name);   // breadcrumb e item de menu atual
   if (views[name]) views[name]();
 }
 

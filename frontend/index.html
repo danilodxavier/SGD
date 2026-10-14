@@ -6,18 +6,57 @@
   <title>Agente de Inteligência Documental</title>
   <link rel="stylesheet" href="/static/css/tokens.css">
   <link rel="stylesheet" href="/static/css/app.css">
+  <script src="/static/js/layout.js"></script>
 </head>
 <body class="auth-pending">
+  <!-- BARRA DE ACESSIBILIDADE (eMAG): atalhos Alt+1 a Alt+4, alto contraste e tamanho do texto -->
+  <div class="a11y-bar" role="region" aria-label="Barra de acessibilidade">
+    <div class="a11y-inner">
+      <ul class="a11y-shortcuts">
+        <li><a href="#conteudo" accesskey="1" data-atalho="conteudo">Ir para o conteúdo <span class="a11y-key">1</span></a></li>
+        <li><a href="#menu" accesskey="2" data-atalho="menu">Ir para o menu <span class="a11y-key">2</span></a></li>
+        <li><a href="#ask-input" accesskey="3" data-atalho="busca">Ir para a busca <span class="a11y-key">3</span></a></li>
+        <li><a href="#rodape" accesskey="4" data-atalho="rodape">Ir para o rodapé <span class="a11y-key">4</span></a></li>
+      </ul>
+      <ul class="a11y-tools">
+        <li><a href="/static/acessibilidade.html">Acessibilidade</a></li>
+        <li><button type="button" id="a11y-contraste" aria-pressed="false">Alto contraste</button></li>
+        <li class="a11y-font" role="group" aria-label="Tamanho do texto">
+          <button type="button" id="a11y-fonte-mais" aria-label="Aumentar o tamanho do texto">A+</button>
+          <button type="button" id="a11y-fonte-menos" aria-label="Diminuir o tamanho do texto">A-</button>
+          <button type="button" id="a11y-fonte-padrao" aria-label="Voltar ao tamanho padrão do texto">A</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- CABEÇALHO INSTITUCIONAL: marca oficial da SECOM-MT (frontend/assets/marcas/LEIA-ME.txt) -->
+  <header class="site-header">
+    <div class="site-header-inner">
+      <div class="site-brand">
+        <span class="logo-plate">
+          <img class="logo" src="/static/assets/marcas/_govmt_sema_horizontal.png" width="1698" height="543"
+               alt="Governo de Mato Grosso — SEMA, Secretaria de Estado de Meio Ambiente">
+        </span>
+        <span class="site-title">
+          <span class="site-name">Agente de Inteligência Documental</span>
+          <span class="site-subtitle">Contratos e Checklists</span>
+        </span>
+      </div>
+      <div class="header-user">
+        <span class="status-pill" role="status"><span class="dot" id="health-dot" aria-hidden="true"></span><span id="health-text">Verificando…</span></span>
+        <span class="user-id"><b id="user-name"></b><small id="user-profile"></small></span>
+        <span class="row">
+          <button class="btn small" id="btn-password" type="button">Alterar senha</button>
+          <button class="btn small" id="btn-logout" type="button">Sair</button>
+        </span>
+      </div>
+    </div>
+  </header>
+
   <!-- ACESSO: configuração inicial, login e troca de senha -->
   <div class="auth-screen" id="auth-screen">
     <div class="auth-card">
-      <div class="brand auth-brand">
-        <span class="brand-mark">AD</span>
-        <div>
-          <strong>Agente de Inteligência Documental</strong>
-          <small>Contratos e Checklists · versão <span id="app-version"></span></small>
-        </div>
-      </div>
 
       <form id="login-form" class="auth-form hidden" autocomplete="on">
         <h1>Entrar</h1>
@@ -78,15 +117,9 @@
     </div>
   </div>
 
+  <div class="layout">
   <aside class="sidebar">
-    <div class="brand">
-      <span class="brand-mark">AD</span>
-      <div>
-        <strong>Agente Documental</strong>
-        <small>Contratos e Checklists</small>
-      </div>
-    </div>
-    <nav>
+    <nav class="sidebar-nav" id="menu" aria-label="Menu principal">
       <button class="nav-item active" data-view="dashboard">Painel</button>
       <button class="nav-item" data-view="perguntas">Perguntas</button>
       <button class="nav-item" data-view="documentos">Documentos</button>
@@ -95,20 +128,16 @@
       <button class="nav-item admin-only" data-view="usuarios">Usuários</button>
       <button class="nav-item admin-only" data-view="configuracoes">Configurações</button>
     </nav>
-    <div class="sidebar-user">
-      <b id="user-name"></b><small id="user-profile"></small>
-      <div class="row">
-        <button class="btn small ghost-light" id="btn-password" type="button">Alterar senha</button>
-        <button class="btn small ghost-light" id="btn-logout" type="button">Sair</button>
-      </div>
-    </div>
-    <div class="sidebar-footer">
-      <span class="dot" id="health-dot"></span>
-      <span id="health-text">Verificando…</span>
-    </div>
   </aside>
 
-  <main>
+  <main id="conteudo" tabindex="-1">
+    <nav class="breadcrumb" aria-label="Você está aqui">
+      <ol>
+        <li><a href="/" id="breadcrumb-inicio">Início</a></li>
+        <li><span id="breadcrumb-atual" aria-current="page"></span></li>
+      </ol>
+    </nav>
+
     <!-- PAINEL -->
     <section class="view active" id="view-dashboard">
       <header class="view-header">
@@ -406,6 +435,23 @@ eports</code>.</p>
       </div>
     </section>
   </main>
+  </div>
+
+  <!-- RODAPÉ INSTITUCIONAL -->
+  <footer class="site-footer" id="rodape" tabindex="-1">
+    <div class="site-footer-inner">
+      <div>
+        <p class="footer-org"><strong>Governo do Estado de Mato Grosso</strong><br>
+          Secretaria de Estado de Meio Ambiente — SEMA-MT</p>
+        <!-- VERIFICAR: endereço, telefone e canal de suporte oficiais da SEMA-MT, se desejado no rodapé -->
+        <p class="footer-system">Agente de Inteligência Documental · versão <span id="app-version"></span> · uso interno.
+          Os documentos são indexados e pesquisados localmente; os arquivos originais nunca são alterados.</p>
+      </div>
+      <ul class="footer-links">
+        <li><a href="/static/acessibilidade.html">Acessibilidade</a></li>
+      </ul>
+    </div>
+  </footer>
 
   <dialog id="reset-dialog">
     <form id="reset-form" class="dialog-form">
@@ -429,7 +475,8 @@ eports</code>.</p>
     <div id="doc-dialog-body"></div>
   </dialog>
 
-  <div class="toast hidden" id="toast"></div>
+  <div class="toast hidden" id="toast" role="status" aria-live="polite"></div>
+  <div class="sr-only" id="a11y-status" aria-live="polite"></div>
 
   <script src="/static/js/app.js"></script>
   <script src="/static/js/search.js"></script>
@@ -437,5 +484,19 @@ eports</code>.</p>
   <script src="/static/js/checklist.js"></script>
   <script src="/static/js/reports.js"></script>
   <script src="/static/js/users.js"></script>
+
+  <!-- VLibras: código de incorporação oficial do Governo Federal (https://vlibras.gov.br), sem alterações.
+       Carrega o tradutor para Libras a partir da Internet; sem Internet, o botão apenas não aparece.
+       O texto só é enviado ao serviço quando a pessoa ativa o VLibras e seleciona um trecho. -->
+  <div vw class="enabled">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper>
+      <div class="vw-plugin-top-wrapper"></div>
+    </div>
+  </div>
+  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+  <script>
+    new window.VLibras.Widget('https://vlibras.gov.br/app');
+  </script>
 </body>
 </html>

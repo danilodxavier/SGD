@@ -121,7 +121,7 @@ def main():
 
     def panel():
         html = urllib.request.urlopen(f"http://127.0.0.1:{port}/", timeout=5).read().decode("utf-8")
-        expect("Agente Documental" in html, "painel não carregou")
+        expect("Agente de Inteligência Documental" in html, "painel não carregou")
         return "painel HTML servido em 127.0.0.1"
 
     def root_detected():
