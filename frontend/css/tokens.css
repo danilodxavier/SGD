@@ -1,0 +1,228 @@
+/* =============================================================================
+   TOKENS DE DESIGN — Agente de Inteligência Documental
+   Padrão visual do Governo do Estado de Mato Grosso, com componentes inspirados no
+   Padrão Digital de Governo (DS Gov.br) e regras do eMAG / WCAG 2.1 AA.
+
+   Regra da equipe: nenhuma cor, fonte, tamanho de fonte, espaçamento, raio ou sombra deve
+   ser escrito diretamente nos componentes. Use sempre os tokens abaixo (var(--...)).
+   Documentação: docs/PADRAO_VISUAL.md
+   ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   FONTES INSTITUCIONAIS
+   Nexa (títulos) e Calibri (texto) dependem de licença. Os arquivos NÃO estão no projeto.
+   Depois de confirmada a licença, coloque os arquivos em frontend/assets/fontes/ e
+   remova os comentários abaixo. Até lá, valem as fontes de reserva definidas nos tokens.
+   VERIFICAR: licença de uso da Nexa (Fontfabric) e da Calibri (Microsoft) pelo órgão.
+   ----------------------------------------------------------------------------- */
+/*
+@font-face {
+  font-family: "Nexa";
+  src: url("../assets/fontes/Nexa-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Nexa";
+  src: url("../assets/fontes/Nexa-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+*/
+
+:root {
+  /* ---------------------------------------------------------------- Cores da marca */
+  --mt-azul: #1B3281;          /* Azul Principal — Pantone 2758C (Manual de Identidade Visual MT) */
+  --mt-grafite: #231F20;       /* Cinza/Preto de apoio — textos e blocos de conteúdo */
+
+  /* ---------------------------------------------------------------- Cores de uso (modo normal)
+     Complementares derivadas do azul e do grafite institucionais, todas verificadas quanto ao
+     contraste (scripts/verificar_contraste.py).
+     VERIFICAR: cores complementares oficiais, caso a Secom MT possua uma paleta estendida. */
+  --color-primary: var(--mt-azul);
+  --color-primary-hover: #13245E;
+  --color-primary-active: #0E1B47;
+  --color-primary-light: #E8ECF7;      /* fundos de destaque, item de menu ativo, informação */
+  --color-primary-lighter: #F3F5FB;
+  --color-on-primary: #FFFFFF;         /* texto/ícone sobre o azul */
+
+  --color-text: var(--mt-grafite);
+  --color-text-muted: #4D4A4B;         /* texto secundário (8,7:1 sobre branco) */
+  --color-text-disabled: #6B6869;
+  --color-link: var(--mt-azul);
+  --color-link-hover: #13245E;
+
+  --color-bg: #F4F5F8;                 /* fundo da página */
+  --color-surface: #FFFFFF;            /* cartões, painéis, tabelas, campos */
+  --color-surface-alt: #F8F9FB;        /* cabeçalho de tabela, áreas de citação */
+  --color-surface-disabled: #E6E7EB;
+
+  --color-border: #D5D9E2;             /* divisórias e contornos decorativos */
+  --color-border-strong: #767B85;      /* contorno de campos e controles (≥ 3:1 — WCAG 1.4.11) */
+
+  --color-focus: #B35C00;              /* indicador de foco sobre fundos claros (4,7:1) */
+  --color-focus-on-dark: #FFC94D;      /* indicador de foco sobre o azul (7,5:1) */
+
+  /* Estruturas institucionais escuras: cabeçalho, barra de acessibilidade, rodapé e menu ativo */
+  --color-header-bg: var(--mt-azul);
+  --color-header-bg-strong: #13245E;   /* barra de acessibilidade, rodapé inferior */
+  --color-header-text: #FFFFFF;
+  --color-header-hover: rgba(255, 255, 255, 0.12);   /* fundo ao passar o mouse sobre itens escuros */
+  --color-header-active: rgba(255, 255, 255, 0.2);
+  --color-header-border: rgba(255, 255, 255, 0.35);
+
+  /* Painel de código/registros (logs, trechos técnicos) */
+  --color-code-bg: #1E2333;
+  --color-code-text: #E8ECF7;
+
+  /* Aviso flutuante (toast) */
+  --color-toast-bg: var(--mt-grafite);
+  --color-toast-text: #FFFFFF;
+
+  --color-success: #1A6634;
+  --color-success-bg: #E3F1E7;
+  --color-warning: #6E4500;
+  --color-warning-bg: #FFF3D1;
+  --color-danger: #A3151C;
+  --color-danger-bg: #FCE6E7;
+  --color-info: var(--mt-azul);
+  --color-info-bg: var(--color-primary-light);
+  --color-neutral-bg: #ECEEF2;
+
+  --color-overlay: rgba(14, 27, 71, 0.55);   /* fundo atrás de modais */
+  --color-shadow: rgba(14, 27, 71, 0.16);
+
+  /* ---------------------------------------------------------------- Tipografia */
+  --font-heading: "Nexa", "Montserrat", "Segoe UI", Arial, sans-serif;
+  --font-body: Calibri, Carlito, "Segoe UI", Arial, sans-serif;
+  --font-mono: Consolas, "Cascadia Mono", "Courier New", monospace;
+
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Tamanhos sempre em rem: os botões A+ / A- mudam o tamanho da raiz e tudo acompanha. */
+  --text-xs: 0.75rem;     /* 12px */
+  --text-sm: 0.875rem;    /* 14px */
+  --text-md: 1rem;        /* 16px — texto padrão */
+  --text-lg: 1.125rem;    /* 18px */
+  --text-xl: 1.25rem;     /* 20px */
+  --text-2xl: 1.5rem;     /* 24px */
+  --text-3xl: 1.75rem;    /* 28px */
+  --text-4xl: 2rem;       /* 32px */
+
+  --line-height-tight: 1.25;
+  --line-height-base: 1.5;
+  --line-height-relaxed: 1.7;
+
+  /* ---------------------------------------------------------------- Espaçamentos (escala de 4px) */
+  --space-0: 0;
+  --space-1: 0.25rem;     /* 4px */
+  --space-2: 0.5rem;      /* 8px */
+  --space-3: 0.75rem;     /* 12px */
+  --space-4: 1rem;        /* 16px */
+  --space-5: 1.25rem;     /* 20px */
+  --space-6: 1.5rem;      /* 24px */
+  --space-8: 2rem;        /* 32px */
+  --space-10: 2.5rem;     /* 40px */
+  --space-12: 3rem;       /* 48px */
+
+  /* ---------------------------------------------------------------- Bordas, raios e sombras */
+  --border-width: 1px;
+  --border-width-strong: 2px;
+  --focus-width: 3px;
+  --focus-offset: 2px;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 1px 2px var(--color-shadow);
+  --shadow-md: 0 4px 12px var(--color-shadow);
+  --shadow-lg: 0 12px 32px var(--color-shadow);
+
+  /* ---------------------------------------------------------------- Dimensões e camadas */
+  --control-height: 2.5rem;            /* altura mínima de botões e campos (40px) */
+  --control-height-sm: 2rem;
+  --touch-target: 2.75rem;             /* alvo de toque recomendado (44px) */
+  --content-max-width: 75rem;          /* 1200px */
+  --sidebar-width: 15rem;
+
+  --z-header: 10;
+  --z-overlay: 20;
+  --z-toast: 30;
+  --z-skip: 40;
+
+  --transition-fast: 120ms ease-in-out;
+
+  /* ---------------------------------------------------------------- Pontos de quebra (referência)
+     Variáveis CSS não funcionam dentro de @media; use estes valores literais nas consultas:
+       --bp-sm: 576px   celular grande
+       --bp-md: 992px   tablet / notebook pequeno
+       --bp-lg: 1280px  desktop
+     (mesmos pontos do DS Gov.br) */
+  --bp-sm: 576px;
+  --bp-md: 992px;
+  --bp-lg: 1280px;
+}
+
+/* -----------------------------------------------------------------------------
+   MODO ALTO CONTRASTE
+   Ativado pela barra de acessibilidade (atributo data-contraste="alto" no <html>).
+   Fundo preto, texto branco, ações em amarelo e foco em ciano: contraste ≥ 7:1.
+   ----------------------------------------------------------------------------- */
+:root[data-contraste="alto"] {
+  --color-primary: #FFFF00;
+  --color-primary-hover: #FFFF66;
+  --color-primary-active: #FFFF99;
+  --color-primary-light: #000000;
+  --color-primary-lighter: #000000;
+  --color-on-primary: #000000;
+
+  --color-text: #FFFFFF;
+  --color-text-muted: #FFFFFF;
+  --color-text-disabled: #BFBFBF;
+  --color-link: #FFFF00;
+  --color-link-hover: #FFFF66;
+
+  --color-bg: #000000;
+  --color-surface: #000000;
+  --color-surface-alt: #000000;
+  --color-surface-disabled: #000000;
+
+  --color-border: #FFFFFF;
+  --color-border-strong: #FFFFFF;
+
+  --color-focus: #00FFFF;
+  --color-focus-on-dark: #00FFFF;
+
+  --color-header-bg: #000000;
+  --color-header-bg-strong: #000000;
+  --color-header-text: #FFFF00;
+  --color-header-hover: #000000;
+  --color-header-active: #000000;
+  --color-header-border: #FFFFFF;
+
+  --color-code-bg: #000000;
+  --color-code-text: #FFFFFF;
+
+  --color-toast-bg: #000000;
+  --color-toast-text: #FFFF00;
+
+  --color-success: #00FF00;
+  --color-success-bg: #000000;
+  --color-warning: #FFFF00;
+  --color-warning-bg: #000000;
+  --color-danger: #FF8080;
+  --color-danger-bg: #000000;
+  --color-info: #00FFFF;
+  --color-info-bg: #000000;
+  --color-neutral-bg: #000000;
+
+  --color-overlay: rgba(0, 0, 0, 0.85);
+  --color-shadow: transparent;
+}

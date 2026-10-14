@@ -231,7 +231,7 @@ async function loadDashboard() {
             <td><a href="${fileUrl(c.source_document_id)}" target="_blank" rel="noopener">${esc(c.filename)}</a></td>
           </tr>`).join("")}
         </tbody></table></div>
-      <p class="muted small" style="margin-top:8px">Dados extraídos do termo de contrato original. Aditivos posteriores
+      <p class="muted small" style="margin-top: var(--space-2)">Dados extraídos do termo de contrato original. Aditivos posteriores
         podem alterá-los — consulte a aba Perguntas.</p>`
       : `<p class="empty">Nenhum contrato identificado até o momento.</p>`;
   } catch (e) { toast(e.message, true); }
@@ -247,7 +247,7 @@ async function loadConfig() {
     $("#cfg-root").value = c.documents_root;
     const st = $("#cfg-root-status");
     st.textContent = c.documents_root_message;
-    st.style.color = c.documents_root_ok ? "var(--ok)" : "var(--err)";
+    st.style.color = c.documents_root_ok ? "var(--color-success)" : "var(--color-danger)";
     const engines = [
       ["Endereço do painel", `http://${c.app_host}:${c.app_port}`],
       ["Indexação automática ao iniciar", c.auto_index ? "Sim" : "Não"],

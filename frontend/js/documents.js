@@ -53,7 +53,7 @@ async function showDocument(id) {
       <dl class="meta">${rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")}</dl>
       ${d.sections.length ? `<div class="section-title">Seções identificadas</div>
         <ul>${d.sections.map((s) => `<li>${esc(s)}</li>`).join("")}</ul>` : ""}
-      ${d.status !== "REMOVIDO" ? `<div class="row" style="margin-top:14px">
+      ${d.status !== "REMOVIDO" ? `<div class="row" style="margin-top: var(--space-4)">
         <button class="btn primary admin-only" data-reindex="${d.id}">Reindexar este documento</button>
         <a class="btn" href="${fileUrl(d.id)}" target="_blank" rel="noopener">Visualizar</a>
         <button class="btn local-only" data-open="${d.id}">Abrir no Windows</button></div>` : ""}`;
