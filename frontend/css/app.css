@@ -121,6 +121,11 @@ kbd {
 }
 .site-footer p { margin: 0 0 var(--space-2); max-width: 48rem; }
 .site-footer strong { font-family: var(--font-heading); }
+.site-footer address { font-style: normal; margin: 0 0 var(--space-2); }
+.site-footer .site-footer-bottom {
+  margin: 0; max-width: none; padding: var(--space-3) var(--space-6); background: var(--color-header-bg-strong);
+  border-top: var(--border-width) solid var(--color-header-border); font-size: var(--text-xs); text-align: center;
+}
 .footer-links { list-style: none; margin: 0; padding: 0; display: flex; gap: var(--space-4); }
 .site-footer a { color: var(--color-header-text); }
 .site-footer a:hover { color: var(--color-header-text); text-decoration: none; }

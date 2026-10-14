@@ -12,11 +12,13 @@
    FONTES INSTITUCIONAIS
    Manual de Uso da Marca do Governo de MT (SECOM, abril/2026): a tipografia da marca é a
    Uni Neue; "quando não for possível usar a tipologia da marca, deve-se usar a tipologia
-   secundária (Calibri), como por exemplo [...] na web". Por isso o texto usa Calibri, que já vem
-   instalada no Windows com o Office, e os títulos tentam a Uni Neue antes de cair na Calibri.
-   Os arquivos de fonte NÃO estão no projeto. Depois de confirmada a licença, coloque-os em
-   frontend/assets/fontes/ e remova os comentários abaixo.
-   VERIFICAR: licença de uso da Uni Neue pelo órgão (o briefing citava Nexa; o manual da SECOM cita Uni Neue).
+   secundária (Calibri), como por exemplo [...] na web".
+   Decisão (14/10/2026): títulos em Uni Neue e texto em Calibri. Sem a Uni Neue instalada no
+   computador, os títulos usam a Calibri, que já vem no Windows com o Office.
+   Os arquivos de fonte NÃO estão no projeto. Para que a Uni Neue apareça em todos os computadores,
+   confirme a licença de uso pelo órgão, coloque os arquivos em frontend/assets/fontes/ e remova os
+   comentários abaixo.
+   VERIFICAR: licença da Uni Neue para incorporação ao sistema (arquivos .woff2).
    ----------------------------------------------------------------------------- */
 /*
 @font-face {
@@ -38,8 +40,9 @@
 :root {
   /* ---------------------------------------------------------------- Cores da marca */
   --mt-azul: #1B3281;          /* Azul Principal — Pantone 2758C / CMYK 100-90-0-20 (Manual da Marca MT)
-                                  VERIFICAR: o manual não traz o hexadecimal; #1B3281 veio do briefing, e os
-                                  arquivos oficiais de logomarca da SECOM usam #222C78. Confirmar com a SECOM. */
+                                  Decisão (14/10/2026): usar #1B3281. O manual não traz o hexadecimal, e os
+                                  arquivos de logomarca da SECOM usam #222C78; a marca é usada como imagem,
+                                  sem recolorir, então a diferença não afeta a logomarca. */
   --mt-grafite: #231F20;       /* Cinza/Preto de apoio — textos e blocos de conteúdo */
 
   /* ---------------------------------------------------------------- Cores de uso (modo normal)
