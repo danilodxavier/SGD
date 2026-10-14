@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agente de Inteligência Documental</title>
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body class="auth-pending">
+  <!-- ACESSO: configuração inicial, login e troca de senha -->
+  <div class="auth-screen" id="auth-screen">
+    <div class="auth-card">
+      <div class="brand auth-brand">
+        <span class="brand-mark">AD</span>
+        <div>
+          <strong>Agente de Inteligência Documental</strong>
+          <small>Contratos e Checklists · versão <span id="app-version"></span></small>
+        </div>
+      </div>
+
+      <form id="login-form" class="auth-form hidden" autocomplete="on">
+        <h1>Entrar</h1>
+        <label>Usuário
+          <input type="text" id="login-username" autocomplete="username" maxlength="50" required>
+        </label>
+        <label>Senha
+          <input type="password" id="login-password" autocomplete="current-password" maxlength="200" required>
+        </label>
+        <button class="btn primary" type="submit">Entrar</button>
+        <p class="muted small">Esqueceu a senha? Peça a um administrador do sistema para redefini-la.</p>
+      </form>
+
+      <form id="setup-form" class="auth-form hidden" autocomplete="off">
+        <h1>Configuração inicial</h1>
+        <p class="muted">Nenhum usuário foi cadastrado. Crie o primeiro <b>administrador</b> do sistema.</p>
+        <label>Usuário
+          <input type="text" id="setup-username" maxlength="50" placeholder="ex.: maria.silva" required>
+        </label>
+        <label>Nome completo
+          <input type="text" id="setup-name" maxlength="120" required>
+        </label>
+        <label>Senha
+          <input type="password" id="setup-password" autocomplete="new-password" maxlength="200" required>
+        </label>
+        <label>Repita a senha
+          <input type="password" id="setup-password2" autocomplete="new-password" maxlength="200" required>
+        </label>
+        <p class="muted small">Senha com pelo menos 8 caracteres, contendo letras e números.</p>
+        <button class="btn primary" type="submit">Criar administrador e entrar</button>
+      </form>
+
+      <div id="setup-remote" class="auth-form hidden">
+        <h1>Sistema ainda não configurado</h1>
+        <p>O primeiro administrador deve ser criado no computador onde o sistema está instalado, acessando
+          <code>http://127.0.0.1:8000</code> nesse computador.</p>
+      </div>
+
+      <form id="password-form" class="auth-form hidden" autocomplete="off">
+        <h1>Alterar senha</h1>
+        <p class="muted" id="password-reason"></p>
+        <label>Senha atual
+          <input type="password" id="pw-current" autocomplete="current-password" maxlength="200" required>
+        </label>
+        <label>Nova senha
+          <input type="password" id="pw-new" autocomplete="new-password" maxlength="200" required>
+        </label>
+        <label>Repita a nova senha
+          <input type="password" id="pw-new2" autocomplete="new-password" maxlength="200" required>
+        </label>
+        <p class="muted small">Pelo menos 8 caracteres, com letras e números, diferente da senha atual.</p>
+        <div class="row">
+          <button class="btn primary" type="submit">Salvar nova senha</button>
+          <button class="btn" type="button" id="pw-cancel">Cancelar</button>
+        </div>
+      </form>
+      <p class="auth-message hidden" id="auth-message"></p>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-mark">AD</span>
+      <div>
+        <strong>Agente Documental</strong>
+        <small>Contratos e Checklists</small>
+      </div>
+    </div>
+    <nav>
+      <button class="nav-item active" data-view="dashboard">Painel</button>
+      <button class="nav-item" data-view="perguntas">Perguntas</button>
+      <button class="nav-item" data-view="documentos">Documentos</button>
+      <button class="nav-item" data-view="checklist">Checklist</button>
+      <button class="nav-item" data-view="relatorios">Relatórios</button>
+      <button class="nav-item admin-only" data-view="usuarios">Usuários</button>
+      <button class="nav-item admin-only" data-view="configuracoes">Configurações</button>
+    </nav>
+    <div class="sidebar-user">
+      <b id="user-name"></b><small id="user-profile"></small>
+      <div class="row">
+        <button class="btn small ghost-light" id="btn-password" type="button">Alterar senha</button>
+        <button class="btn small ghost-light" id="btn-logout" type="button">Sair</button>
+      </div>
+    </div>
+    <div class="sidebar-footer">
+      <span class="dot" id="health-dot"></span>
+      <span id="health-text">Verificando…</span>
+    </div>
+  </aside>
+
+  <main>
+    <!-- PAINEL -->
+    <section class="view active" id="view-dashboard">
+      <header class="view-header">
+        <div>
+          <h1>Painel</h1>
+          <p class="muted" id="dash-root"></p>
+        </div>
+        <button class="btn primary admin-only" id="dash-index">Atualizar índice</button>
+      </header>
+      <div class="indexer-bar hidden" id="indexer-bar">
+        <div class="indexer-text" id="indexer-text"></div>
+        <div class="progress"><div class="progress-fill" id="indexer-progress"></div></div>
+      </div>
+      <div class="cards" id="dash-cards"></div>
+      <div class="panel">
+        <h2>Contratos identificados</h2>
+        <div id="dash-contracts"></div>
+      </div>
+      <div class="panel">
+        <h2>Última indexação</h2>
+        <div id="dash-last-run" class="muted"></div>
+      </div>
+    </section>
+
+    <!-- PERGUNTAS -->
+    <section class="view" id="view-perguntas">
+      <header class="view-header">
+        <div>
+          <h1>Perguntas</h1>
+          <p class="muted">As respostas usam exclusivamente os documentos do diretório configurado.</p>
+        </div>
+      </header>
+      <form class="ask-form" id="ask-form">
+        <input type="text" id="ask-input" placeholder="Digite sua pergunta..." autocomplete="off" maxlength="1000">
+        <button class="btn primary" type="submit">Pesquisar</button>
+      </form>
+      <div class="chips" id="ask-examples"></div>
+      <div id="ask-result"></div>
+    </section>
+
+    <!-- DOCUMENTOS -->
+    <section class="view" id="view-documentos">
+      <header class="view-header">
+        <div>
+          <h1>Documentos</h1>
+          <p class="muted" id="docs-count"></p>
+        </div>
+        <div class="row">
+          <button class="btn" id="docs-duplicates">Verificar duplicidades</button>
+          <button class="btn" data-download="/api/reports/inventario?format=xlsx">Exportar inventário (XLSX)</button>
+        </div>
+      </header>
+      <div class="filters">
+        <input type="search" id="docs-q" placeholder="Filtrar por nome, pasta ou nº do contrato">
+        <select id="docs-status">
+          <option value="">Todos os status</option>
+          <option value="COM_TEXTO">Documento com texto</option>
+          <option value="ESCANEADO">Documento escaneado</option>
+          <option value="SEM_TEXTO">Sem texto extraível</option>
+          <option value="CORROMPIDO">Corrompido / protegido</option>
+          <option value="NAO_SUPORTADO">Formato não suportado</option>
+          <option value="REMOVIDO">Removido do diretório</option>
+        </select>
+        <select id="docs-type">
+          <option value="">Todos os tipos</option>
+          <option value="CONTRATO">Contrato</option>
+          <option value="ADITIVO">Termo Aditivo</option>
+          <option value="APOSTILAMENTO">Apostilamento</option>
+          <option value="PORTARIA">Portaria</option>
+          <option value="NOTIFICACAO">Notificação</option>
+          <option value="CERTIDAO">Certidão / Regularidade</option>
+          <option value="FATURA">Fatura / Nota Fiscal</option>
+          <option value="RELATORIO">Relatório</option>
+          <option value="EDITAL">Edital</option>
+          <option value="TERMO_REFERENCIA">Termo de Referência</option>
+          <option value="PLANILHA">Planilha</option>
+          <option value="OUTRO">Outro</option>
+        </select>
+      </div>
+      <div id="docs-duplicates-result"></div>
+      <div class="table-wrap">
+        <table class="table" id="docs-table">
+          <thead>
+            <tr><th>Documento</th><th>Tipo</th><th>Status</th><th>Contrato</th><th>Tamanho</th><th>Modificado</th><th></th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CHECKLIST -->
+    <section class="view" id="view-checklist">
+      <header class="view-header">
+        <div>
+          <h1>Checklist</h1>
+          <p class="muted">Relaciona cada requisito aos documentos do diretório. Os arquivos originais não são alterados.</p>
+        </div>
+        <div class="row">
+          <select id="ck-select"><option value="">Novo checklist</option></select>
+          <button class="btn" id="ck-delete" disabled>Excluir</button>
+        </div>
+      </header>
+
+      <div class="panel">
+        <div class="ck-form">
+          <label>Nome
+            <input type="text" id="ck-name" maxlength="200" placeholder="Ex.: Prorrogação — Contrato 034/2022">
+          </label>
+          <label>Contrato (opcional)
+            <input type="text" id="ck-contract" maxlength="30" placeholder="034/2022">
+          </label>
+        </div>
+        <p class="note hidden" id="ck-owner-note"></p>
+        <label class="block-label">Requisitos — um por linha
+          <textarea id="ck-text" rows="10" placeholder="DOCUMENTOS CONTRATUAIS
+1. Contrato assinado (obrigatório)
+2. Termo aditivo de prorrogação
+DOCUMENTOS DE REGULARIDADE
+3. Certidão de regularidade do FGTS
+4. Certidão negativa de débitos trabalhistas"></textarea>
+        </label>
+        <p class="muted small">Aceita listas numeradas ou com marcadores. Linhas em maiúsculas ou terminadas em “:” viram
+          grupos. Informe o contrato para restringir a busca aos documentos dele (e às certidões com o CNPJ da contratada).</p>
+        <div class="row">
+          <label class="btn" for="ck-file">Carregar de arquivo…</label>
+          <input type="file" id="ck-file" class="hidden" accept=".txt,.md,.csv,.doc,.docx,.rtf,.odt,.xls,.xlsx,.ods,.pdf">
+          <span class="spacer"></span>
+          <button class="btn" id="ck-save">Salvar</button>
+          <button class="btn primary" id="ck-run">Salvar e executar</button>
+        </div>
+      </div>
+
+      <div id="ck-results" class="hidden">
+        <div class="panel">
+          <div class="ck-results-head">
+            <div>
+              <h2 id="ck-title"></h2>
+              <p class="muted small" id="ck-run-info"></p>
+            </div>
+            <div class="row">
+              <select id="ck-filter"><option value="">Todos os status</option></select>
+              <span class="muted small">Exportar:</span>
+              <span class="export-buttons" id="ck-export"></span>
+            </div>
+          </div>
+          <div class="chips" id="ck-summary"></div>
+          <div id="ck-items"></div>
+        </div>
+        <div class="panel">
+          <h2>Organização virtual dos documentos</h2>
+          <p class="muted small">Agrupamento lógico para atendimento do checklist — nenhum arquivo foi copiado ou movido.</p>
+          <div id="ck-organization"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RELATÓRIOS -->
+    <section class="view" id="view-relatorios">
+      <header class="view-header">
+        <div>
+          <h1>Relatórios</h1>
+          <p class="muted">Gerados a partir do índice local. Uma cópia de cada relatório fica em <code>data
+eports</code>.</p>
+        </div>
+      </header>
+      <div class="report-grid" id="rep-cards"></div>
+      <div class="panel">
+        <h2>Relatórios gerados</h2>
+        <div id="rep-files"></div>
+      </div>
+    </section>
+
+    <!-- USUÁRIOS -->
+    <section class="view" id="view-usuarios">
+      <header class="view-header">
+        <div>
+          <h1>Usuários</h1>
+          <p class="muted">Quem pode acessar o sistema. Administradores gerenciam usuários e configurações;
+            usuários de Consulta usam perguntas, documentos, checklists e relatórios.</p>
+        </div>
+      </header>
+      <div class="panel">
+        <h2>Novo usuário</h2>
+        <form class="user-form" id="user-form" autocomplete="off">
+          <label>Usuário
+            <input type="text" id="new-username" maxlength="50" placeholder="ex.: maria.silva" required>
+          </label>
+          <label>Nome completo
+            <input type="text" id="new-name" maxlength="120" required>
+          </label>
+          <label>Perfil
+            <select id="new-profile">
+              <option value="consulta">Consulta</option>
+              <option value="admin">Administrador</option>
+            </select>
+          </label>
+          <label>Senha temporária
+            <input type="password" id="new-password" autocomplete="new-password" maxlength="200" required>
+          </label>
+          <button class="btn primary" type="submit">Criar usuário</button>
+        </form>
+        <p class="muted small">A senha temporária deve ser trocada pelo usuário no primeiro acesso. Informe-a
+          pessoalmente, nunca por e-mail ou mensagem em grupo.</p>
+      </div>
+      <div class="table-wrap">
+        <table class="table" id="users-table">
+          <thead><tr><th>Usuário</th><th>Nome</th><th>Perfil</th><th>Situação</th><th>Último acesso</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CONFIGURAÇÕES -->
+    <section class="view" id="view-configuracoes">
+      <header class="view-header">
+        <div><h1>Configurações</h1></div>
+      </header>
+      <div class="panel">
+        <h2>Diretório documental</h2>
+        <p class="muted">Os documentos originais são apenas lidos: nunca são movidos, renomeados ou alterados.</p>
+        <div class="row">
+          <input type="text" id="cfg-root" placeholder="D:\Documentos">
+          <button class="btn local-only" id="cfg-browse" type="button">Selecionar pasta…</button>
+          <button class="btn primary" id="cfg-save" type="button">Salvar</button>
+        </div>
+        <p id="cfg-root-status" class="muted"></p>
+      </div>
+      <div class="panel">
+        <h2>Indexação</h2>
+        <p class="muted">A indexação incremental processa apenas arquivos novos ou alterados.</p>
+        <div class="row">
+          <button class="btn primary" id="cfg-index">Iniciar indexação</button>
+          <button class="btn" id="cfg-reindex">Reindexar tudo</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Verificação do sistema</h2>
+        <button class="btn" id="cfg-diagnostics">Verificar sistema</button>
+        <ul class="checks" id="cfg-checks"></ul>
+      </div>
+      <div class="panel">
+        <h2>OCR — documentos digitalizados</h2>
+        <p class="muted">Reconhece o texto de PDFs digitalizados e imagens (JPG, PNG, TIFF) na própria máquina.
+          Os originais não são alterados.</p>
+        <div class="row ocr-row">
+          <label class="check"><input type="checkbox" id="ocr-enabled"> Ativar OCR</label>
+          <select id="ocr-engine">
+            <option value="auto">Automático (Windows, depois Tesseract)</option>
+            <option value="windows">OCR do Windows</option>
+            <option value="tesseract">Tesseract OCR</option>
+          </select>
+          <button class="btn primary" id="ocr-save" type="button">Salvar</button>
+          <button class="btn" id="ocr-test" type="button">Testar OCR</button>
+          <button class="btn" id="ocr-retry" type="button">Reprocessar digitalizados</button>
+        </div>
+        <ul class="checks" id="ocr-engines"></ul>
+        <pre class="logs hidden" id="ocr-test-result"></pre>
+      </div>
+      <div class="panel">
+        <h2>Mecanismo de respostas (IA opcional)</h2>
+        <p class="muted">Com um LLM local (Ollama ou LM Studio), a IA redige as respostas a partir dos trechos dos
+          documentos. Toda data, valor, CNPJ e número citado é conferido nos trechos; se algo não constar, a resposta
+          da IA é descartada e vale a do mecanismo local. Nada é enviado para fora desta máquina.</p>
+        <div class="ai-form">
+          <label>Mecanismo
+            <select id="ai-provider">
+              <option value="local">Local — somente documentos (sem IA)</option>
+              <option value="llm_local">LLM local (Ollama / LM Studio)</option>
+            </select>
+          </label>
+          <label>Endereço do servidor
+            <input type="text" id="ai-url" placeholder="http://127.0.0.1:11434/v1">
+          </label>
+          <label>Modelo
+            <select id="ai-model"><option value="">—</option></select>
+          </label>
+        </div>
+        <div class="row">
+          <button class="btn" id="ai-list" type="button">Listar modelos</button>
+          <button class="btn primary" id="ai-save" type="button">Salvar</button>
+          <button class="btn" id="ai-test" type="button">Testar conexão</button>
+        </div>
+        <p class="muted small">Endereços: Ollama <code>http://127.0.0.1:11434/v1</code> · LM Studio
+          <code>http://127.0.0.1:1234/v1</code>. Endereços externos são bloqueados (LOCAL ONLY).</p>
+        <ul class="checks" id="ai-status"></ul>
+      </div>
+      <div class="panel">
+        <h2>Sistema</h2>
+        <dl class="meta" id="cfg-engines"></dl>
+      </div>
+      <div class="panel">
+        <h2>Logs</h2>
+        <button class="btn" id="cfg-logs">Carregar últimos registros</button>
+        <pre class="logs hidden" id="cfg-logs-content"></pre>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="reset-dialog">
+    <form id="reset-form" class="dialog-form">
+      <h3>Redefinir senha de <span id="reset-user"></span></h3>
+      <label>Senha temporária
+        <input type="password" id="reset-password" autocomplete="new-password" maxlength="200" required>
+      </label>
+      <p class="muted small">O usuário deverá trocá-la no próximo acesso. As sessões abertas dele serão encerradas.</p>
+      <div class="row">
+        <button class="btn primary" type="submit">Redefinir</button>
+        <button class="btn" type="button" id="reset-cancel">Cancelar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="doc-dialog">
+    <div class="dialog-head">
+      <h3 id="doc-dialog-title"></h3>
+      <button class="btn ghost" id="doc-dialog-close" aria-label="Fechar">✕</button>
+    </div>
+    <div id="doc-dialog-body"></div>
+  </dialog>
+
+  <div class="toast hidden" id="toast"></div>
+
+  <script src="/static/js/app.js"></script>
+  <script src="/static/js/search.js"></script>
+  <script src="/static/js/documents.js"></script>
+  <script src="/static/js/checklist.js"></script>
+  <script src="/static/js/reports.js"></script>
+  <script src="/static/js/users.js"></script>
+</body>
+</html>

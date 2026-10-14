@@ -1,0 +1,22 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+
+data/database/*
+data/index/*
+data/cache/*
+data/logs/*
+data/reports/*
+data/backups/*
+data/app.pid
+!data/**/.gitkeep
+
+exemplos/
+
+# Dados que nunca devem ir para o Git (documentos, backups com usuários, configuração local)
+DOCUMENTOS/
+BACKUP/
+*.antes_restauracao_*
+.env.antes_restauracao_*
