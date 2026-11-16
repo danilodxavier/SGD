@@ -4,7 +4,7 @@ SAD-002,Criar repositório GitHub privado e enviar histórico,Gerenciamento,1,M,
 SAD-003,Criar quadro Kanban no GitHub Projects e importar backlog,Gerenciamento,1,M,2,-,Projeto com colunas Backlog/Pronto/Em andamento/Revisão/Concluído e todas as issues deste CSV
 SAD-010,Diagramas C4 (contexto contêiner componente),Arquitetura,2,M,3,-,docs/arquitetura/C4.md com 3 níveis em Mermaid
 SAD-011,ADR framework de agentes (LangGraph x CrewAI),Arquitetura,2,M,3,RF-15..18,ADR com critérios ponderados e prova de conceito mínima
-SAD-012,ADR LLMs e roteamento (local x free tier),Arquitetura,2,M,5,RF-15;RNF-01;RNF-10,Benchmark rápido de 3+ modelos em 10 perguntas; decisão registrada
+SAD-012,ADR LLMs e roteamento (local x free tier) + protocolo de benchmark,Arquitetura,2,M,3,RF-15;RNF-01;RNF-10,ADR-004 com abstração e política de envio; protocolo de benchmark definido
 SAD-013,ADR embeddings e reranker,Arquitetura,2,M,3,RF-05,Comparação bge-m3 x alternativas em amostra PT-BR
 SAD-014,ADR banco vetorial sem dependência obrigatória de Docker,Arquitetura,2,M,3,RF-05;RNF-02,Decisão entre sqlite-vec / LanceDB / Qdrant / Chroma
 SAD-015,ADR OCR portátil e leitura de PDF,Arquitetura,2,S,2,RF-02,Decisão Tesseract/PyMuPDF/Docling registrada
@@ -29,6 +29,7 @@ SAD-051,Geração com citação literal e recusa por ausência,RAG F1,5,M,5,RF-0
 SAD-052,Golden set >= 100 perguntas com split validação/teste,RAG F1,5,M,8,RF-06..20,Arquivos JSONL revisados pelo responsável
 SAD-053,Suíte de métricas (Precision/Recall@k MRR nDCG faithfulness etc.),RAG F1,5,M,5,RNF-12,scripts/avaliar.py gera relatório completo
 SAD-054,Baseline v1 regras x v2 RAG em AVALIACAO.md,RAG F1,5,M,2,-,Tabela comparativa publicada
+SAD-055,Benchmark de 3+ LLMs locais no conjunto de validação,RAG F1,5,M,3,RNF-04;RNF-05;RNF-06,Faithfulness citações latência p95 e tokens comparados; modelo escolhido registrado em MODELOS_IA.md
 SAD-060,Agrupamento de documentos por processo/contrato/tema,Linha do tempo,6,M,5,RF-11,Pureza >= 0.90
 SAD-061,Classificador de relações (8 classes) com matriz de confusão,Linha do tempo,6,M,8,RF-12,F1-macro >= 0.85
 SAD-062,Hierarquia normativa e vigência,Linha do tempo,6,M,5,RF-14,Norma revogada nunca usada como fundamento atual

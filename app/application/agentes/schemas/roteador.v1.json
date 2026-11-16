@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Decisão do roteador",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "rota",
+    "agentes",
+    "consultas_busca",
+    "filtros",
+    "justificativa"
+  ],
+  "properties": {
+    "rota": {
+      "enum": [
+        "F1_simples",
+        "F1_complexa",
+        "F2"
+      ]
+    },
+    "agentes": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "procurador_estado",
+          "advogado",
+          "controlador_geral",
+          "fiscal_contrato",
+          "gestor_publico",
+          "analista_administrativo",
+          "analista_orcamentario_financeiro",
+          "especialista_licitacoes",
+          "analista_linha_do_tempo"
+        ]
+      },
+      "maxItems": 4,
+      "uniqueItems": true
+    },
+    "consultas_busca": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "maxItems": 3
+    },
+    "filtros": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tipo_documental": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "processo": {
+          "type": "string"
+        },
+        "data_referencia": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "justificativa": {
+      "type": "string",
+      "maxLength": 300
+    }
+  }
+}

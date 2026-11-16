@@ -1,0 +1,226 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Parecer de agente especialista",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "agente",
+    "parecer",
+    "afirmacoes",
+    "fundamentacao_legal",
+    "riscos",
+    "lacunas",
+    "conflitos",
+    "confianca"
+  ],
+  "properties": {
+    "agente": {
+      "type": "string"
+    },
+    "parecer": {
+      "type": "string",
+      "maxLength": 1200
+    },
+    "afirmacoes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "texto",
+          "tipo",
+          "citacoes"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "texto": {
+            "type": "string"
+          },
+          "tipo": {
+            "enum": [
+              "fato",
+              "inferencia"
+            ]
+          },
+          "raciocinio": {
+            "type": "string"
+          },
+          "citacoes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^T[0-9]+$"
+            },
+            "minItems": 1
+          }
+        }
+      }
+    },
+    "fundamentacao_legal": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "norma",
+          "dispositivo",
+          "trecho",
+          "vigente"
+        ],
+        "properties": {
+          "norma": {
+            "type": "string"
+          },
+          "dispositivo": {
+            "type": "string"
+          },
+          "trecho": {
+            "type": "string",
+            "pattern": "^T[0-9]+$"
+          },
+          "vigente": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "riscos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "descricao",
+          "probabilidade",
+          "impacto"
+        ],
+        "properties": {
+          "descricao": {
+            "type": "string"
+          },
+          "probabilidade": {
+            "enum": [
+              "baixa",
+              "media",
+              "alta"
+            ]
+          },
+          "impacto": {
+            "enum": [
+              "baixo",
+              "medio",
+              "alto"
+            ]
+          },
+          "mitigacao": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "alternativas": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "descricao",
+          "pros",
+          "contras"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "descricao": {
+            "type": "string"
+          },
+          "pros": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "contras": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "riscos": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "descricao",
+                "probabilidade",
+                "impacto"
+              ],
+              "properties": {
+                "descricao": {
+                  "type": "string"
+                },
+                "probabilidade": {
+                  "enum": [
+                    "baixa",
+                    "media",
+                    "alta"
+                  ]
+                },
+                "impacto": {
+                  "enum": [
+                    "baixo",
+                    "medio",
+                    "alto"
+                  ]
+                },
+                "mitigacao": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "recomendacao": {
+      "type": "string"
+    },
+    "lacunas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "conflitos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "descricao",
+          "trechos"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "descricao": {
+            "type": "string"
+          },
+          "trechos": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^T[0-9]+$"
+            },
+            "minItems": 2
+          }
+        }
+      }
+    },
+    "confianca": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    }
+  }
+}

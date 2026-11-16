@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Linha do tempo processual",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "processo",
+    "eventos",
+    "relacoes",
+    "fases",
+    "inconsistencias",
+    "lacunas",
+    "confianca"
+  ],
+  "properties": {
+    "processo": {
+      "type": "string"
+    },
+    "eventos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "documento_id",
+          "data",
+          "descricao",
+          "trecho"
+        ],
+        "properties": {
+          "documento_id": {
+            "type": "integer"
+          },
+          "data": {
+            "type": "string"
+          },
+          "descricao": {
+            "type": "string"
+          },
+          "trecho": {
+            "type": "string",
+            "pattern": "^T[0-9]+$"
+          }
+        }
+      }
+    },
+    "relacoes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "origem",
+          "destino",
+          "tipo",
+          "trecho",
+          "confianca"
+        ],
+        "properties": {
+          "origem": {
+            "type": "integer"
+          },
+          "destino": {
+            "type": "integer"
+          },
+          "tipo": {
+            "enum": [
+              "continuacao",
+              "aditivo",
+              "alteracao",
+              "revogacao",
+              "substituicao",
+              "ruptura",
+              "contradicao",
+              "retomada",
+              "regulamenta",
+              "fundamenta"
+            ]
+          },
+          "trecho": {
+            "type": "string",
+            "pattern": "^T[0-9]+$"
+          },
+          "confianca": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "justificativa": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "fases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "nome",
+          "inicio",
+          "documentos"
+        ],
+        "properties": {
+          "nome": {
+            "type": "string"
+          },
+          "inicio": {
+            "type": "string"
+          },
+          "fim": {
+            "type": "string"
+          },
+          "documentos": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    },
+    "inconsistencias": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "lacunas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "confianca": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    }
+  }
+}

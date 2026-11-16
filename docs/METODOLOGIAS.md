@@ -16,4 +16,14 @@
 | Kanban (GitHub Projects) | Gestão do fluxo | `scripts/github/criar_backlog.ps1` (publicação pendente) | 1– |
 | Objetivos SMART | TAP | `TERMO_DE_ABERTURA.md` §2 | 1 |
 
-Planejadas: C4, Clean Architecture/SOLID, TDD, GitHub Flow, CI/CD, CRISP-DM/LLMOps, avaliação RAG (RAGAS/DeepEval), métricas de IR (Precision/Recall@k, MRR, nDCG).
+| Modelo C4 (contexto, contêiner, componente) + diagrama de sequência e implantação | Arquitetura | `docs/arquitetura/C4.md` | 2 |
+| Matriz de decisão ponderada (critérios × pesos) | Escolha LangGraph × CrewAI | `docs/adr/ADR-003-framework-multiagentes.md` | 2 |
+| Decisões baseadas em evidência (spikes: `nvidia-smi`, `pip --dry-run`, teste de extensão SQLite) | ADRs 004, 006, 010 | `docs/fases/FASE_02.md` §2 | 2 |
+| Clean Architecture, SOLID (ISP/DIP com portas), strangler fig | Estrutura-alvo do código | `docs/adr/ADR-013-clean-architecture-e-migracao.md` | 2 |
+| Modelagem ER + grafo de propriedades em tabelas | Dados e linha do tempo | `docs/arquitetura/MODELO_DE_DADOS.md` | 2 |
+| Engenharia de prompt versionada + saída estruturada (JSON Schema 2020-12) | Agentes | `app/application/agentes/prompts/`, `schemas/` | 2 |
+| Testes de contrato de especificação | Prompts × schemas × catálogo | `tests/test_agentes_specs.py` | 2 |
+| Matriz de rastreabilidade bidirecional | Requisitos → ADR → componente → teste | `docs/projeto/RASTREABILIDADE.md` | 2 |
+| Planejamento de avaliação (CRISP-DM/LLMOps): golden set, split validação/teste, juiz calibrado (κ de Cohen) | Avaliação | `docs/adr/ADR-011-avaliacao.md` | 2 |
+
+Planejadas: TDD na implementação, GitHub Flow, CI/CD, RAGAS, métricas de IR (Precision/Recall@k, MRR, nDCG).

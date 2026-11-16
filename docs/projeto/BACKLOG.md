@@ -1,6 +1,6 @@
 # Product Backlog — SAD-GD
 
-**Fonte única:** [`backlog.csv`](backlog.csv) (51 itens, 227 pontos). O GitHub renderiza o CSV como tabela.
+**Fonte única:** [`backlog.csv`](backlog.csv) (52 itens, 228 pontos). O GitHub renderiza o CSV como tabela.
 
 ## Publicação no GitHub Projects (Kanban)
 
@@ -26,7 +26,7 @@ Colunas do quadro: **Backlog → Pronto → Em andamento → Em revisão → Con
 | Arquitetura | 2 | 12 | M |
 | Infraestrutura | 3 | 4 | M |
 | Base de conhecimento | 4 | 6 | M |
-| RAG F1 | 5 | 5 | M |
+| RAG F1 | 5 | 6 | M |
 | Linha do tempo | 6 | 4 | M |
 | Multiagentes | 7 | 6 | M |
 | Apoio à decisão | 8 | 2 | M |

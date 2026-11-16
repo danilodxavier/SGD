@@ -14,6 +14,8 @@
 | 2026-11-16 | **Somente ferramentas gratuitas**, preferencialmente locais e open source | `docs/adr/ADR-001-execucao-local.md` |
 | 2026-11-16 | **Tudo é salvo em subpastas do projeto** (modelos, caches, corpus, backups, avaliações, relatórios). Nada em `%TEMP%`, `%USERPROFILE%` ou outras unidades | ver "Convenção de pastas" |
 | 2026-11-16 | Corpus acadêmico público/sintético para avaliação e demonstração; dados reais só locais, com LLM local | `docs/adr/ADR-002-corpus-academico.md` |
+| 2026-11-16 | Fase 1 aprovada; documentos, trechos e contratos do banco v1 **excluídos** (nova versão usará novos documentos); raiz documental = `corpus\` | `docs/fases/FASE_01.md` §7 |
+| 2026-11-16 | Stack proposta na Fase 2 (ADR-003 a ADR-013), pendente de aprovação | `docs/fases/FASE_02.md` |
 
 ### Convenção de pastas (tudo dentro do projeto)
 
@@ -25,7 +27,8 @@
 ├── scripts\        utilitários (indexar, diagnóstico, backup, github, avaliação)
 ├── corpus\         base documental acadêmica (publico\, sintetico\) — manifesto versionado, arquivos grandes no .gitignore
 ├── avaliacao\      golden set, execuções e resultados de métricas
-├── modelos\        pesos de embeddings/reranker/LLM (HF_HOME, cache Ollama quando possível) — .gitignore
+├── modelos\        pesos de embeddings/reranker/LLM (HF_HOME, OLLAMA_MODELS) — .gitignore
+├── ferramentas\    binários auxiliares instalados no projeto (Tesseract, Python via uv se necessário) — .gitignore
 ├── data\           banco, índices, cache, logs, relatórios — .gitignore
 ├── BACKUP\         backups (banco, .env) — .gitignore
 ├── DOCUMENTOS\     documentos reais locais (opcional) — .gitignore, nunca enviados à nuvem

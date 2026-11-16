@@ -7,6 +7,12 @@
 | 2026-11-16 | Diagnóstico de inchaço em SQLite: registros lógicos removidos + freelist (1,16 M páginas livres) explicam 6,6 GB; `VACUUM INTO` gera cópia compacta verificável sem tocar no original | Fase 0 — banco reduzido de 6,6 GB para 1,7 GB |
 | 2026-11-16 | Tabelas FTS5 sem *external content* não são limpas por `ON DELETE CASCADE`; a remoção precisa ser explícita | Fase 0 — análise do indexador v1 |
 | 2026-11-16 | Limites de hardware local para IA: 6 GB de VRAM comportam LLM 7–8B Q4; 16 GB de RAM exigem carregar modelos sob demanda | Fase 1 — riscos R01/R02 |
+| 2026-11-16 | Após `DELETE` em massa numa tabela FTS5 comum, os segmentos do índice continuam no arquivo; é preciso `INSERT INTO t(t) VALUES('rebuild')` (ou `optimize`) antes do `VACUUM` (1,48 GB → 0,11 MB) | Fase 1 — exclusão dos documentos |
+| 2026-11-16 | `pip install --dry-run --report` resolve dependências usando metadados PEP 658 sem baixar wheels — forma barata de verificar compatibilidade de uma stack com uma versão nova do Python | Fase 2 — ADR-010 |
+| 2026-11-16 | Entradas do `py` launcher podem apontar para instalações removidas; verificar o executável antes de planejar em cima delas | Fase 2 — Python 3.13 quebrado |
+| 2026-11-16 | Licenças importam na escolha de stack: PyMuPDF é AGPL-3.0; Phoenix é Elastic License 2.0; LangGraph e bge-m3 são permissivos | Fase 2 — ADR-007/009 |
+| 2026-11-16 | Langfuse v3 self-hosted depende de Postgres + ClickHouse + Redis + S3; para máquina única com 16 GB, uma ferramenta pip-only (Phoenix) é mais adequada | Fase 2 — ADR-009 |
+| 2026-11-16 | Ferramentas de IA com telemetria ativa por padrão (CrewAI, RAGAS, DeepEval) exigem opt-out explícito em contexto LGPD | Fase 2 — ADR-003/011 |
 
 ## Domínio (setor público)
 

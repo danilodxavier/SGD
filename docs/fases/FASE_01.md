@@ -4,7 +4,7 @@
 |---|---|
 | Período | 2026-11-16 |
 | Executor | Claude Code (`claude-opus-5-5`) |
-| Situação | **Aguardando aprovação** |
+| Situação | **Aprovada em 2026-11-16** (ver §7) |
 
 ## 1. Planejamento da sprint
 
@@ -21,7 +21,7 @@ Objetivo: produzir os artefatos de iniciação e planejamento (PMBOK 7 + Scrum) 
 | EAP com dicionário | `docs/projeto/EAP.md` |
 | Cronograma (11 sprints, Gantt, caminho crítico) | `docs/projeto/CRONOGRAMA.md` |
 | Matriz de riscos (14 riscos P×I) | `docs/projeto/RISCOS.md` |
-| Product backlog (51 itens, 227 pontos), DoR/DoD | `docs/projeto/backlog.csv`, `docs/projeto/BACKLOG.md` |
+| Product backlog (51 itens, 227 pontos; 52/228 após ajuste da Fase 2), DoR/DoD | `docs/projeto/backlog.csv`, `docs/projeto/BACKLOG.md` |
 | Script de publicação no GitHub Projects | `scripts/github/criar_backlog.ps1` |
 | ADR-001 execução local / ADR-002 corpus acadêmico | `docs/adr/` |
 | Continuidade, modelos de IA, metodologias, habilidades, avaliação, changelog | `docs/CONTINUIDADE.md`, `docs/MODELOS_IA.md`, `docs/METODOLOGIAS.md`, `docs/HABILIDADES.md`, `docs/AVALIACAO.md`, `CHANGELOG.md` |
@@ -58,4 +58,16 @@ Objetivo: produzir os artefatos de iniciação e planejamento (PMBOK 7 + Scrum) 
 
 ## 7. Aprovação
 
-- [ ] Aprovado por: ______ em ____/____/______
+- [x] Aprovado pelo responsável em 2026-11-16 ("Vamos continuar, conforme sugerido"): cronograma com data-limite assumida de 2027-02-12 e repositório GitHub privado recomendado.
+- Ressalva do responsável: **excluir os documentos, trechos e contratos do banco**, pois a nova versão usará novos documentos.
+
+### Execução da ressalva (2026-11-16)
+
+| Ação | Resultado |
+|---|---|
+| Exclusão no banco v1 `data\database\documents.db` | 5.670 documentos, 229.002 trechos (+ índice FTS5), 387 contratos, 28 itens de contrato e 5 resultados de checklist removidos |
+| Índice FTS5 | reconstruído (`rebuild`) e banco compactado (`VACUUM`): **1,72 GB → 0,11 MB**; `integrity_check = ok` |
+| Mantidos | 2 usuários, 1 checklist (4 itens, sem resultados), configurações, histórico de indexações |
+| Raiz documental | configuração e `.env` apontam para `<projeto>\corpus` (subpastas `publico\` e `sintetico\` criadas) — evita reindexar o compartilhamento de rede real ao iniciar |
+| Recuperação | o banco original completo continua em `BACKUP\pre-reestruturacao\documents.db` |
+| Verificação | testes v1 verdes; configuração carregada com `documents_root=...\corpus` |

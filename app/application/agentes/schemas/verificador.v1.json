@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Veredito do verificador de fontes",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "afirmacoes",
+    "taxa_suporte"
+  ],
+  "properties": {
+    "afirmacoes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "veredito",
+          "motivo"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "veredito": {
+            "enum": [
+              "suportada",
+              "parcial",
+              "sem_suporte"
+            ]
+          },
+          "motivo": {
+            "type": "string",
+            "maxLength": 300
+          }
+        }
+      }
+    },
+    "taxa_suporte": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    }
+  }
+}

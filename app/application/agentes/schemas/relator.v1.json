@@ -1,0 +1,198 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Resposta final do relator",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "resposta",
+    "classificacao",
+    "confianca",
+    "fontes",
+    "lacunas",
+    "aviso"
+  ],
+  "properties": {
+    "resposta": {
+      "type": "string"
+    },
+    "classificacao": {
+      "enum": [
+        "fato",
+        "inferencia",
+        "conflito",
+        "ausencia"
+      ]
+    },
+    "confianca": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "consensos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "divergencias": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tema",
+          "posicoes"
+        ],
+        "properties": {
+          "tema": {
+            "type": "string"
+          },
+          "posicoes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "agente",
+                "posicao"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "agente": {
+                  "type": "string"
+                },
+                "posicao": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "alternativas": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "descricao",
+          "pros",
+          "contras"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "descricao": {
+            "type": "string"
+          },
+          "pros": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "contras": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "riscos": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "descricao",
+                "probabilidade",
+                "impacto"
+              ],
+              "properties": {
+                "descricao": {
+                  "type": "string"
+                },
+                "probabilidade": {
+                  "enum": [
+                    "baixa",
+                    "media",
+                    "alta"
+                  ]
+                },
+                "impacto": {
+                  "enum": [
+                    "baixo",
+                    "medio",
+                    "alto"
+                  ]
+                },
+                "mitigacao": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "riscos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "descricao",
+          "probabilidade",
+          "impacto"
+        ],
+        "properties": {
+          "descricao": {
+            "type": "string"
+          },
+          "probabilidade": {
+            "enum": [
+              "baixa",
+              "media",
+              "alta"
+            ]
+          },
+          "impacto": {
+            "enum": [
+              "baixo",
+              "medio",
+              "alto"
+            ]
+          },
+          "mitigacao": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "base_legal": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "precedentes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "lacunas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "fontes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^T[0-9]+$"
+      }
+    },
+    "aviso": {
+      "type": "string"
+    }
+  }
+}
