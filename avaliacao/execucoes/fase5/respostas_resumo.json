@@ -13,7 +13,7 @@
       "erros": 0,
       "latencia_ms": {
         "p50": 3,
-        "p95": 9
+        "p95": 6
       },
       "tokens_medios": {
         "entrada": 0.0,
@@ -71,7 +71,7 @@
       "falsa_recusa": 0.0698,
       "citacao_correta": 0.8372,
       "precisao_citacoes": 0.7479,
-      "taxa_alucinacao_numerica": 0.0488,
+      "taxa_alucinacao_numerica": 0.0244,
       "erros": 0,
       "latencia_ms": {
         "p50": 16146,
@@ -91,7 +91,7 @@
       "falsa_recusa": 0.0698,
       "citacao_correta": 0.8372,
       "precisao_citacoes": 0.7479,
-      "taxa_alucinacao_numerica": 0.0488,
+      "taxa_alucinacao_numerica": 0.0244,
       "erros": 0,
       "latencia_ms": {
         "p50": 16146,
@@ -113,7 +113,7 @@
       "falsa_recusa": 0.0698,
       "citacao_correta": 0.8605,
       "precisao_citacoes": 0.83,
-      "taxa_alucinacao_numerica": 0.025,
+      "taxa_alucinacao_numerica": 0.0,
       "erros": 0,
       "latencia_ms": {
         "p50": 13914,
@@ -133,7 +133,7 @@
       "falsa_recusa": 0.0694,
       "citacao_correta": 0.8611,
       "precisao_citacoes": 0.8149,
-      "taxa_alucinacao_numerica": 0.0373,
+      "taxa_alucinacao_numerica": 0.0224,
       "erros": 0,
       "latencia_ms": {
         "p50": 14377,
@@ -153,7 +153,7 @@
       "falsa_recusa": 0.0693,
       "citacao_correta": 0.8614,
       "precisao_citacoes": 0.8085,
-      "taxa_alucinacao_numerica": 0.0426,
+      "taxa_alucinacao_numerica": 0.0319,
       "erros": 0,
       "latencia_ms": {
         "p50": 14574,

@@ -33,6 +33,8 @@
 | 2026-11-16 | Antes de concluir que um modelo é ruim, inspecionar saídas brutas: duas quedas de qualidade eram defeitos de integração | Fase 5 |
 | 2026-11-16 | Métricas automáticas de alucinação devem considerar exatamente o que o modelo viu (inclusive metadados), senão geram falsos positivos | Fase 5 — achado 4 |
 | 2026-11-16 | `# noqa` dentro de uma string multilinha vira conteúdo da string — conferir o efeito de supressões de lint | Fase 5 — incidente |
+| 2026-11-16 | Classificadores por regras ajustados num gabarito sintético atingem 1,00 com facilidade; só uma verificação em dados reais diz algo sobre generalização | Fase 6 |
+| 2026-11-16 | Uma tag inserida pelo próprio pipeline ([REVOGADO]) pode virar ruído para etapas seguintes — neutralizar marcadores internos antes de analisar o texto | Fase 6 |
 
 ## Domínio (setor público)
 
@@ -43,4 +45,7 @@
 | 2026-11-16 | LGPD: documentos públicos podem conter dados pessoais; separar corpus de avaliação de dados reais | ADR-002 |
 | 2026-11-16 | No texto compilado oficial, dispositivos revogados ou com redação substituída aparecem tachados, e a nota de revogação do ato inteiro fica logo abaixo do título — evidências documentais de vigência | Fase 4 — extrator HTML |
 | 2026-11-16 | Revogação parcial (ex.: Lei 12.462 teve artigos revogados pela 14.133) não pode ser confundida com revogação total | Fase 4 — metadados |
+| 2026-11-16 | Textos compilados do portal da legislação anotam alterações na voz passiva e entre parênteses — "(Revogado pela Lei nº X)", "(Redação dada pela Lei nº X)", "(Vide…)": quem age é o ato referido, não o documento que contém a nota | Fase 6 |
+| 2026-11-16 | Revogar "dispositivos e seção" de uma lei é revogação parcial; a lei continua vigente (ex.: Lei 8.429 após a 14.230) | Fase 6 |
+| 2026-11-16 | Contradição ≠ alteração: o aditivo altera legitimamente o contrato; um relatório ou apostilamento que declara outro valor/prazo contradiz a cadeia contrato → aditivos | Fase 6 |
 | 2026-11-16 | Atos oficiais não têm proteção autoral (Lei 9.610/1998, art. 8º, IV) — podem compor corpus público versionado | Fase 4 — corpus |

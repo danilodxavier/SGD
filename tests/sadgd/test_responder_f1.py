@@ -85,6 +85,60 @@ def test_fontes_numericas_sao_normalizadas_mas_continuam_validadas():
     assert r.observacoes == ["citacoes_invalidas_descartadas"]  # o 999 não estava no contexto
 
 
+class ConflitosFalsos:
+    def __init__(self, itens):
+        self.itens, self.consultados = itens, None
+
+    def entre(self, documentos):
+        self.consultados = set(documentos)
+        return [c for c in self.itens if c.origem in documentos and c.destino in documentos]
+
+
+def test_conflito_do_grafo_gera_resposta_deterministica_sem_llm():
+    from app.application.respostas.f1 import Conflito
+
+    contrato = tr(11, "3.1. O valor global do contrato é de R$ 1.200.000,00.")
+    relatorio = tr(21, "O Contrato nº 012/2023, de valor global de R$ 1.250.000,00, foi executado.",
+                   arquivo="sintetico/P01/S021_relatorio.docx", dispositivo=None)
+    relatorio.documento_id, relatorio.titulo = 2, "RELATÓRIO DE FISCALIZAÇÃO Nº 007/2024"
+    llm = LLMFalso(saida())
+    conflitos = ConflitosFalsos([Conflito(1, 2, "valor_global", "R$ 1.200.000,00", "R$ 1.250.000,00")])
+    r = ResponderF1(llm, conflitos=conflitos).responder("Qual é o valor global do Contrato nº 012/2023?",
+                                                         [contrato, relatorio])
+    assert r.classificacao == "conflito" and llm.mensagens is None
+    assert "R$ 1.200.000,00" in r.resposta and "R$ 1.250.000,00" in r.resposta and "[T11]" in r.resposta
+    assert {t.id for t in r.fontes} == {11, 21}
+    assert r.resposta.startswith("Foram identificadas informações divergentes")
+
+
+def test_conflito_cita_o_trecho_que_contem_o_valor_mesmo_fora_do_contexto():
+    """Caso real T015: o contexto tinha um trecho do aditivo sem a data vigente — a citação precisa conter o valor."""
+    from app.application.respostas.f1 import Conflito
+
+    aditivo_ctx = tr(31, "CLÁUSULA PRIMEIRA – DO OBJETO\n1.1. Prorrogação do Contrato nº 058/2023.")
+    aditivo_ctx.documento_id = 1
+    apost = tr(41, "a vigência do Contrato nº 058/2023 encerra-se em 30/07/2025", arquivo="sintetico/S062.pdf")
+    apost.documento_id = 2
+    evidencia = tr(32, "2.1. O término da vigência passa de 30/06/2024 para 30/06/2025.")
+    evidencia.documento_id = 1
+    conflito = Conflito(1, 2, "vigencia_fim", "30/06/2025", "30/07/2025", trecho_origem=evidencia, trecho_destino=apost)
+    r = ResponderF1(LLMFalso(saida()), conflitos=ConflitosFalsos([conflito])).responder(
+        "Qual a data de término da vigência do Contrato nº 058/2023?", [aditivo_ctx, apost])
+    assert {t.id for t in r.fontes} == {32, 41} and "[T32]" in r.resposta
+
+
+def test_conflito_de_outro_campo_nao_interfere():
+    from app.application.respostas.f1 import Conflito
+
+    relatorio = tr(21, "de valor global de R$ 1.250.000,00", arquivo="sintetico/P01/S021.docx")
+    relatorio.documento_id = 2
+    conflitos = ConflitosFalsos([Conflito(1, 2, "valor_global", "R$ 1.200.000,00", "R$ 1.250.000,00")])
+    llm = LLMFalso(saida())
+    r = ResponderF1(llm, conflitos=conflitos).responder("Qual o período de vigência do Contrato nº 012/2023?",
+                                                         [TRECHOS[0], relatorio])
+    assert r.classificacao == "fato" and llm.mensagens is not None  # pergunta sobre vigência; conflito é de valor
+
+
 def test_conflito_preserva_as_duas_fontes():
     s = saida(classificacao="conflito", resposta="Divergência: R$ 1,2 mi [T11] e outro valor [T12].",
               fontes=["T11", "T12"])

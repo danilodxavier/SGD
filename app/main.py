@@ -47,6 +47,9 @@ def create_app(auto_index=True):
     for module in (routes_auth, routes_system, routes_documents, routes_search, routes_questions, routes_checklist,
                    routes_reports):
         app.include_router(module.router)
+    from app.interfaces.api import linha_do_tempo as api_linha_do_tempo  # SAD-GD (Fase 6)
+
+    app.include_router(api_linha_do_tempo.router)
 
     @app.exception_handler(StarletteHTTPException)
     async def http_error(request: Request, exc: StarletteHTTPException):

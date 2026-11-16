@@ -4,7 +4,7 @@
 |---|---|
 | Período | 2026-11-16 |
 | Executor | Claude Code (`claude-opus-5-5`) |
-| Situação | **Aguardando aprovação** |
+| Situação | **Aprovada em 2026-11-16** |
 
 ## 1. Entregas
 
@@ -98,4 +98,4 @@ Escolha: **Qwen 2.5 7B** — melhor exatidão, latência e, sobretudo, **recusa*
 
 ## 9. Aprovação
 
-- [ ] Aprovado por: ______ em ____/____/______
+- [x] Aprovado pelo responsável em 2026-11-16 ("aprovado"). Sem resposta sobre o download do Qwen 2.5 3B — não realizado.

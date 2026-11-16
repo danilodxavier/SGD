@@ -5,6 +5,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 ## [Não lançado] — Reestruturação SAD-GD
 
 ### Adicionado
+- Fase 6 (linha do tempo): extração de referências, classificador de relações por regras (notas de compilação, revogação parcial, retomada), detecção de contradições, agrupamento, vigência pelo grafo, respostas de conflito determinísticas, API `/api/sadgd/processos` e `/api/sadgd/linha-do-tempo`, scripts de construção e avaliação do grafo; 21 novos testes.
 - Fase 5 (RAG): recuperação híbrida com RRF, filtro de vigência e reranker; ResponderF1 com citações e salvaguardas; golden set de 177 perguntas validadas; suíte de avaliação em estágios (recuperação, respostas, relatório, CI); baseline v1 × v2; benchmark Qwen 2.5 7B × Llama 3.1 8B; 31 novos testes.
 - Fase 4 (ingestão): corpus público (69 atos oficiais) e sintético (117 documentos, 27 processos, 99 relações, gabarito); chunking estrutural jurídico; extrator de HTML legal com detecção de texto tachado; metadados por regras; indexação híbrida incremental (FTS5 + sqlite-vec + bge-m3) com parada limpa e retomada; scripts de avaliação (chunking, metadados, OCR); migração 003; 53 novos testes.
 - Fase 3 (infraestrutura): camadas `app/domain`, `app/application/portas.py`, `app/infrastructure` (SQLite + sqlite-vec com migrações, adaptador LLM OpenAI-compatível, tracer SQLite); banco único `sadgd.db`; Ollama e Tesseract portáteis (`scripts/sadgd/*.ps1`); dependências em camadas e `constraints.txt`; `pyproject.toml` (pytest, coverage, ruff); CI no GitHub Actions; diagnóstico SAD-GD; 46 novos testes.
@@ -20,6 +21,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 - Relatório de auditoria `docs/fases/FASE_00.md`.
 
 ### Alterado
+- Gabarito sintético revisado (99 → 103 relações) via `gerar_corpus_sintetico.py --somente-gabarito`; métrica de alucinação numérica normaliza datas por extenso e citações de atos.
 - `LLMPort.chat` aceita `json_livre`; CI executa a avaliação reduzida (`avaliar.py ci`).
 - OCR `auto` passa a priorizar o Tesseract (CER 0,09% contra 0,52%). Embeddings em float32 e carga sequencial de pesos (`HF_DEACTIVATE_ASYNC_LOAD`).
 - `instalar.bat`, `start.bat`, `stop.bat` e diagnóstico adaptados ao SAD-GD; IA da v1 passa a usar o Ollama do projeto; caches de IA forçados para dentro do projeto e telemetria de terceiros desativada.

@@ -49,5 +49,11 @@
 | Avaliação em estágios com cache e retomada (LLMOps com recursos limitados) | Avaliação | `scripts/sadgd/avaliar*.py` | 5 |
 | Teste de regressão de qualidade no CI (piso calibrado) | CI | `scripts/sadgd/avaliar.py ci` | 5 |
 | Análise de erros com inspeção das saídas brutas antes de concluir sobre o modelo | Geração | `docs/fases/FASE_05.md` §4 | 5 |
+| Sistema baseado em regras explicáveis (marcadores linguísticos, voz passiva, escopo de frase) | Relações entre documentos | `app/application/linha_do_tempo/grafo.py` | 6 |
+| Union-find (componentes conexos) para agrupamento | Processos | `grafo.py` (`agrupar`) | 6 |
+| Avaliação multiclasse: P/R/F1 por classe, F1-macro, matriz de confusão; pureza/pureza inversa | Relações e agrupamento | `scripts/sadgd/avaliar_relacoes.py` | 6 |
+| Validação externa (holdout real) contra sobreajuste a dados sintéticos | Corpus público | `docs/fases/FASE_06.md` §3.1 | 6 |
+| Revisão do gabarito antes da avaliação (qualidade de rótulos) | Gabarito sintético | `docs/fases/FASE_06.md` §2 | 6 |
+| Testes de regressão a partir de erros reais | Grafo, métricas | `tests/sadgd/test_linha_do_tempo.py` | 6 |
 
 Planejadas: GitHub Flow, RAGAS com juiz calibrado (κ de Cohen).

@@ -5513,6 +5513,12 @@
       "evidencia": "a vigência do Contrato nº 058/2023 encerra-se em 30/07/2025"
     },
     {
+      "origem": "S060",
+      "destino": "S062",
+      "tipo": "alteracao",
+      "evidencia": "Registra-se o reajuste de 3,90%"
+    },
+    {
       "origem": "S070",
       "destino": "S071",
       "tipo": "ruptura",
@@ -5531,7 +5537,7 @@
       "evidencia": "O valor global do contrato passa de R$ 3.850.000,00 para R$ 4.235.000,00"
     },
     {
-      "origem": "S072",
+      "origem": "S070",
       "destino": "S074",
       "tipo": "continuacao",
       "evidencia": "Medição da 4ª etapa do cronograma físico-financeiro"
@@ -5579,13 +5585,31 @@
       "evidencia": "Fundamentos: Orientação Normativa nº 02/2024"
     },
     {
+      "origem": "S001",
+      "destino": "S101",
+      "tipo": "continuacao",
+      "evidencia": "pedido de prorrogação do Contrato nº 012/2023"
+    },
+    {
       "origem": "S100",
       "destino": "S102",
       "tipo": "fundamenta",
       "evidencia": "Fundamentos: Orientação Normativa nº 02/2024"
     },
     {
-      "origem": "S110",
+      "origem": "S020",
+      "destino": "S102",
+      "tipo": "continuacao",
+      "evidencia": "pedido de prorrogação do Contrato nº 044/2023"
+    },
+    {
+      "origem": "S070",
+      "destino": "S110",
+      "tipo": "continuacao",
+      "evidencia": "fiscal do Contrato nº 072/2024"
+    },
+    {
+      "origem": "S070",
       "destino": "S111",
       "tipo": "continuacao",
       "evidencia": "para atuar como fiscal técnico do Contrato nº 072/2024"

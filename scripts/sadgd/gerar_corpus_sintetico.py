@@ -441,6 +441,7 @@ def gerar():
                     formato="pdf_digitalizado", fatos={"vigencia_fim_declarada": "30/07/2025"},
                     assinante=("Coordenador de Contratos", "Paulo Henrique Veloso"))
     rel("S061", "S062", "contradicao", "a vigência do Contrato nº 058/2023 encerra-se em 30/07/2025")
+    rel("S060", "S062", "alteracao", "Registra-se o reajuste de 3,90%")  # o apostilamento também reajusta
     CONTRADICOES.append({"documentos": ["S061", "S062"], "campo": "vigencia_fim",
                          "valores": {"S061": "30/06/2025", "S062": "30/07/2025"}})
 
@@ -476,7 +477,7 @@ def gerar():
                      "dois por cento).", "Valor da medição: R$ 412.300,00."], formato="txt",
                     fatos={"valor_medicao": "R$ 412.300,00"},
                     assinante=("Engenheiro Fiscal", "Tatiana Rezende Coutinho"))
-    rel("S072", "S074", "continuacao", "Medição da 4ª etapa do cronograma físico-financeiro")
+    rel("S070", "S074", "continuacao", "Medição da 4ª etapa do cronograma físico-financeiro")  # cita o contrato
 
     # P09 — Instrução de compra: termo de referência → parecer jurídico → despacho → contrato
     documento_livre("P09_compra_mobiliario", "S080", "termo_referencia", "015/2024", date(2024, 4, 3),
@@ -552,6 +553,7 @@ def gerar():
                     fatos={"decisao": "prorrogar com condicionantes", "avaliacao_resultado": "negativo"},
                     assinante=("Secretário de Estado de Gestão Pública", "Henrique Bastos Lacerda"))
     rel("S100", "S101", "fundamenta", "Fundamentos: Orientação Normativa nº 02/2024")
+    rel("S001", "S101", "continuacao", "pedido de prorrogação do Contrato nº 012/2023")
     documento_livre("P11_orientacoes_decisoes", "S102", "decisao_gestao", "DG-011/2025", date(2025, 7, 30),
                     "DECISÃO DA GESTÃO DG-011/2025 — PRORROGAÇÃO DO CONTRATO Nº 044/2023",
                     ["Contexto: pedido de prorrogação do Contrato nº 044/2023 (vigilância), sem ocorrências "
@@ -562,6 +564,7 @@ def gerar():
                     fatos={"decisao": "prorrogar", "avaliacao_resultado": "positivo"},
                     assinante=("Secretário de Estado de Gestão Pública", "Henrique Bastos Lacerda"))
     rel("S100", "S102", "fundamenta", "Fundamentos: Orientação Normativa nº 02/2024")
+    rel("S020", "S102", "continuacao", "pedido de prorrogação do Contrato nº 044/2023")
 
     # P12 — Documentos com dados pessoais fictícios (anonimização, Fase 7) e ofício digitalizado
     documento_livre("P12_pessoal", "S110", "oficio", "321/2024", date(2024, 9, 12),
@@ -580,7 +583,9 @@ def gerar():
                      "como fiscal substituta."], formato="pdf_digitalizado",
                     fatos={"fiscal_titular": "Joaquim Pereira Lins"},
                     assinante=("Secretário de Estado de Gestão Pública", "Henrique Bastos Lacerda"))
-    rel("S110", "S111", "continuacao", "para atuar como fiscal técnico do Contrato nº 072/2024")
+    # a portaria não cita o ofício: ambos dão continuidade ao Contrato nº 072/2024
+    rel("S070", "S110", "continuacao", "fiscal do Contrato nº 072/2024")
+    rel("S070", "S111", "continuacao", "para atuar como fiscal técnico do Contrato nº 072/2024")
 
 
 # ---------------------------------------------------------------- famílias paramétricas (semente fixa)
@@ -864,7 +869,7 @@ def salvar_pdf_digitalizado(caminho, linhas, d: Doc):
         tmp.unlink()
 
 
-def main():
+def main(somente_gabarito=False):
     import random
 
     gerar()
@@ -872,8 +877,9 @@ def main():
     familias_contratos(rng)
     familias_normas(rng)
     DESTINO.mkdir(parents=True, exist_ok=True)
-    for item in DESTINO.iterdir():  # limpa o conteúdo gerado anteriormente, preservando a pasta
-        shutil.rmtree(item) if item.is_dir() else item.unlink()
+    if not somente_gabarito:
+        for item in DESTINO.iterdir():  # limpa o conteúdo gerado anteriormente, preservando a pasta
+            shutil.rmtree(item) if item.is_dir() else item.unlink()
     gabarito_docs, manifesto, textos = [], [], {}
     agora = datetime.now().isoformat(timespec="seconds")
     for d in DOCS:
@@ -883,7 +889,9 @@ def main():
         caminho = pasta / f"{d.arquivo}{extensao}"
         linhas, dispositivos = linhas_documento(d)
         textos[d.id] = "\n".join(linhas)
-        if d.formato == "docx":
+        if somente_gabarito:
+            pass
+        elif d.formato == "docx":
             salvar_docx(caminho, linhas, d)
         elif d.formato == "pdf":
             salvar_pdf(caminho, linhas, d)
@@ -892,7 +900,7 @@ def main():
         else:
             salvar_txt(caminho, linhas)
         relativo = caminho.relative_to(RAIZ / "corpus").as_posix()
-        dados = caminho.read_bytes()
+        dados = caminho.read_bytes() if not somente_gabarito else b""
         gabarito_docs.append({
             "id": d.id, "arquivo": relativo, "processo": d.processo, "formato": d.formato,
             "tipo_documental": d.tipo_documental, "especie": d.especie or None, "numero": d.numero,
@@ -920,6 +928,9 @@ def main():
                 "documentos": gabarito_docs, "relacoes": RELACOES, "contradicoes": CONTRADICOES}
     (DESTINO / "GABARITO.json").write_text(json.dumps(gabarito, ensure_ascii=False, indent=2), encoding="utf-8")
 
+    if somente_gabarito:
+        print(f"[OK] GABARITO.json recalculado: {len(RELACOES)} relações")
+        return
     existentes = []
     if MANIFESTO.exists():
         with MANIFESTO.open(encoding="utf-8", newline="") as f:
@@ -941,4 +952,4 @@ def main():
 if __name__ == "__main__":
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
-    main()
+    main(somente_gabarito="--somente-gabarito" in sys.argv)

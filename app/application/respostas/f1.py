@@ -11,9 +11,32 @@ import re
 from dataclasses import dataclass, field
 from functools import cache
 from pathlib import Path
+from typing import Protocol
 
 from app.application.portas import LLMPort
-from app.domain.politicas import MENSAGEM_AUSENCIA, Classificacao
+from app.domain.politicas import MENSAGEM_AUSENCIA, MENSAGEM_CONFLITO, Classificacao
+
+
+@dataclass(frozen=True)
+class Conflito:
+    origem: int  # documento que fixou o valor vigente
+    destino: int  # documento que declara valor divergente
+    campo: str  # valor_global | vigencia_fim
+    valor_vigente: str
+    valor_declarado: str
+    trecho_origem: object | None = None  # TrechoRecuperado que contém o valor vigente
+    trecho_destino: object | None = None  # TrechoRecuperado que contém o valor divergente
+
+
+class ConflitosPort(Protocol):
+    def entre(self, documentos: set) -> list: ...
+
+
+CAMPOS_DA_PERGUNTA = {  # palavras da pergunta que tornam o conflito daquele campo relevante
+    "valor_global": re.compile(r"\bvalor", re.I),
+    "vigencia_fim": re.compile(r"vig[êe]ncia|t[ée]rmino|encerra|termina|prazo|at[ée] quando", re.I),
+}
+ROTULO_CAMPO = {"valor_global": "valor global", "vigencia_fim": "término da vigência"}
 
 PROMPTS = Path(__file__).resolve().parents[1] / "agentes" / "prompts"
 SCHEMAS = Path(__file__).resolve().parents[1] / "agentes" / "schemas"
@@ -73,13 +96,17 @@ class RespostaF1:
 
 
 class ResponderF1:
-    def __init__(self, llm: LLMPort, *, max_tokens: int = 500, versao_prompt: int = 1):
+    def __init__(self, llm: LLMPort, *, max_tokens: int = 500, versao_prompt: int = 1,
+                 conflitos: ConflitosPort | None = None):
         self.llm, self.max_tokens, self.versao = llm, max_tokens, versao_prompt
+        self.conflitos = conflitos
 
     def responder(self, pergunta: str, trechos) -> RespostaF1:
         if not trechos:
             return RespostaF1(MENSAGEM_AUSENCIA, Classificacao.AUSENCIA.value, 0.0, [],
                               observacoes=["sem_trechos_recuperados"])
+        if self.conflitos is not None and (resposta := self._conflito(pergunta, trechos)):
+            return resposta
         mensagens = [
             {"role": "system", "content": carregar_prompt("relator", self.versao) + "\n\n" + INSTRUCAO_F1 + "\n"
                 + ORDEM_SAIDA},
@@ -88,6 +115,30 @@ class ResponderF1:
         r = self.llm.chat(mensagens, max_tokens=self.max_tokens, temperatura=0.0, json_livre=True)
         dados = r.json if isinstance(r.json, dict) else {}
         return self._validar(dados, trechos, r)
+
+    def _conflito(self, pergunta, trechos):
+        """RF-09: se o grafo registra contradição entre documentos do contexto sobre o campo perguntado, responde
+        de forma determinística com as duas fontes (o sistema não escolhe o valor)."""
+        documentos = {t.documento_id for t in trechos}
+        relevantes = [c for c in self.conflitos.entre(documentos)
+                      if CAMPOS_DA_PERGUNTA.get(c.campo) and CAMPOS_DA_PERGUNTA[c.campo].search(pergunta)]
+        if not relevantes:
+            return None
+        linhas, fontes = [MENSAGEM_CONFLITO], []
+        for c in relevantes:
+            for doc_id, valor, papel, evidencia in ((c.origem, c.valor_vigente, "registro vigente", c.trecho_origem),
+                                                    (c.destino, c.valor_declarado, "valor divergente",
+                                                     c.trecho_destino)):
+                do_doc = [t for t in trechos if t.documento_id == doc_id]
+                # a citação precisa conter o valor: do contexto, senão a evidência registrada no grafo
+                trecho = next((t for t in do_doc if valor in t.texto), None) or evidencia or do_doc[0]
+                fontes.append(trecho)
+                linhas.append(f"- {trecho.titulo or trecho.arquivo}: {ROTULO_CAMPO[c.campo]} = {valor} "
+                              f"({papel}) [{trecho.rotulo}]")
+        linhas.append("É necessária conferência documental.")
+        unicos = list({t.id: t for t in fontes}.values())
+        return RespostaF1("\n".join(linhas), Classificacao.CONFLITO.value, 0.9, unicos, modelo="regra-conflito",
+                          observacoes=["conflito_detectado_no_grafo"])
 
     def _validar(self, dados, trechos, r) -> RespostaF1:
         por_rotulo = {t.rotulo: t for t in trechos}

@@ -16,6 +16,7 @@
 | 2026-11-16 | Corpus acadêmico público/sintético para avaliação e demonstração; dados reais só locais, com LLM local | `docs/adr/ADR-002-corpus-academico.md` |
 | 2026-11-16 | Fase 1 aprovada; documentos, trechos e contratos do banco v1 **excluídos** (nova versão usará novos documentos); raiz documental = `corpus\` | `docs/fases/FASE_01.md` §7 |
 | 2026-11-16 | Fase 2 aprovada: ADR-003 a ADR-013 **aceitos**; autorização para **substituir o que for necessário do projeto antigo** para entregar o novo projeto na íntegra | `docs/fases/FASE_02.md` §8 |
+| 2026-11-16 | Fase 5 aprovada; Fase 6 entregue (grafo documental, contradições, vigência; v2.1: exatidão 0,843, conflito 1,00) | `docs/fases/FASE_06.md` |
 | 2026-11-16 | Fase 4 aprovada; Fase 5 entregue (R@5 0,965; v2 exatidão 0,795 × v1 0,217; Qwen 2.5 7B escolhido) | `docs/fases/FASE_05.md` |
 | 2026-11-16 | Fase 3 aprovada; Fase 4 entregue (corpus 69 + 117, indexação híbrida bge-m3) | `docs/fases/FASE_04.md` |
 | 2026-11-16 | Banco único `data\database\sadgd.db` (v1 + migrações SAD-GD); Ollama e Tesseract portáteis em `ferramentas\` | `docs/fases/FASE_03.md` |
@@ -57,6 +58,8 @@ Variáveis de ambiente que forçam caches para dentro do projeto (definidas em `
 - bge-m3: usar float32 (fp16 é 5× mais lento na GTX 1660 SUPER) e `HF_DEACTIVATE_ASYNC_LOAD=1` (já no config).
 - O portal da legislação federal só aceita o cliente HTTP do Windows com agente padrão (ver coletor).
 - LLM local com saída JSON: NÃO usar schema estrito no Ollama (chaves em ordem alfabética → recusas indevidas); usar `json_livre=True` com a ordem dos campos no prompt (FASE_05 §4).
+- Nunca encadear `scripts\sadgd\ollama.ps1 -Acao iniciar` com `| Out-Null`: o `ollama serve` herda o pipe e o comando não termina.
+- Métricas sintéticas perfeitas exigem verificação externa (corpus público) antes de qualquer conclusão.
 - Nunca editar caminhos Windows com `sed` (as barras invertidas são consumidas); usar PowerShell `[IO.File]` ou Python.
 - Ollama do projeto: `scripts\sadgd\ollama.ps1 -Acao iniciar|parar|status`; Tesseract: `scripts\sadgd\tesseract.ps1`.
 
