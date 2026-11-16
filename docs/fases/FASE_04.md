@@ -4,7 +4,7 @@
 |---|---|
 | Período | 2026-11-16 |
 | Executor | Claude Code (`claude-opus-5-5`) |
-| Situação | **Aguardando aprovação** |
+| Situação | **Aprovada em 2026-11-16** |
 
 ## 1. Planejamento
 
@@ -74,4 +74,4 @@ Itens: SAD-040 a SAD-045. Objetivo: corpus acadêmico reprodutível com gabarito
 
 ## 8. Aprovação
 
-- [ ] Aprovado por: ______ em ____/____/______
+- [x] Aprovado pelo responsável em 2026-11-16 ("aprovado").

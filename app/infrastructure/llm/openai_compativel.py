@@ -43,12 +43,14 @@ class OpenAICompativelAdapter:
         self._tentativas = tentativas
         self._espera = espera_inicial
 
-    def chat(self, mensagens, *, schema=None, max_tokens=700, temperatura=0.0):
+    def chat(self, mensagens, *, schema=None, max_tokens=700, temperatura=0.0, json_livre=False):
         corpo = {"model": self.modelo, "messages": list(mensagens), "max_tokens": max_tokens,
                  "temperature": temperatura, "stream": False}
         if schema is not None:
             corpo["response_format"] = {"type": "json_schema",
                                         "json_schema": {"name": "saida", "schema": schema, "strict": True}}
+        elif json_livre:
+            corpo["response_format"] = {"type": "json_object"}
         inicio = time.perf_counter()
         dados = self._post("/chat/completions", corpo)
         latencia = int((time.perf_counter() - inicio) * 1000)
@@ -58,7 +60,7 @@ class OpenAICompativelAdapter:
             raise ErroLLM("Resposta inesperada do servidor de IA.") from exc
         uso = dados.get("usage") or {}
         conteudo_json = None
-        if schema is not None:
+        if schema is not None or json_livre:
             try:
                 conteudo_json = json.loads(_sem_cercas(texto))
             except ValueError as exc:

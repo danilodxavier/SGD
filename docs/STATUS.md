@@ -5,10 +5,10 @@
 | Campo | Valor |
 |---|---|
 | Atualizado em | 2026-11-16 |
-| Fase atual | **Fase 4 — Ingestão e base de conhecimento** |
+| Fase atual | **Fase 5 — RAG, golden set e avaliação baseline** |
 | Situação da fase | Entregáveis concluídos — **aguardando aprovação do responsável** |
-| Última tarefa concluída | Corpus (69 públicos + 117 sintéticos com gabarito), chunking estrutural, metadados, OCR Tesseract, indexação híbrida com bge-m3 (`docs/fases/FASE_04.md`) |
-| Próxima tarefa exata | Após "Aprovado, siga para a Fase 5": (1) SAD-050 busca híbrida BM25 + densa com RRF, filtro de vigência e reranker bge-reranker-v2-m3 em `app/application/recuperacao/`; (2) SAD-052 golden set ≥ 100 perguntas derivado do `GABARITO.json` + perguntas sobre o corpus público, split 30/70; (3) SAD-053 `scripts/sadgd/avaliar.py` (P@k, R@k, MRR, nDCG, citações, recusa); (4) SAD-054 baseline v1 × v2; (5) SAD-051 geração com citação; (6) SAD-055 benchmark de LLMs |
+| Última tarefa concluída | Recuperação híbrida + rerank (R@5 0,965), ResponderF1, golden set 177 perguntas, avaliação v1 × v2, benchmark Qwen × Llama (`docs/fases/FASE_05.md`) |
+| Próxima tarefa exata | Após "Aprovado, siga para a Fase 6": (1) SAD-060 agrupamento por processo/contrato/tema (`app/application/linha_do_tempo/`); (2) SAD-061 classificador híbrido de relações (regras por marcadores + LLM) avaliado contra as 99 relações do `GABARITO.json` (F1-macro ≥ 0,85, matriz de confusão); (3) detecção determinística de contradições (RF-09) para corrigir o 0% de conflitos do v2; (4) SAD-062 hierarquia/vigência no grafo; (5) SAD-063 API de linha do tempo |
 | Bloqueios | Kanban (SAD-003) depende do `gh`. RAM livre da máquina baixa (1–2 GB): rodar indexações com `--max-minutos 7.5` |
 
 ## Histórico de fases
@@ -19,7 +19,8 @@
 | 1 — Iniciação e planejamento | ✅ Aprovada em 2026-11-16 | `docs/fases/FASE_01.md` |
 | 2 — Arquitetura | ✅ Aprovada em 2026-11-16 | `docs/fases/FASE_02.md` |
 | 3 — Infraestrutura local | ✅ Aprovada em 2026-11-16 | `docs/fases/FASE_03.md` |
-| 4 — Ingestão e base de conhecimento | Aguardando aprovação | `docs/fases/FASE_04.md` |
+| 4 — Ingestão e base de conhecimento | ✅ Aprovada em 2026-11-16 | `docs/fases/FASE_04.md` |
+| 5 — RAG, golden set e baseline | Aguardando aprovação | `docs/fases/FASE_05.md` |
 
 ## Fatos-chave para retomada
 
@@ -29,4 +30,5 @@
 - Indexar: `.venv\Scripts\python.exe scripts\sadgd\indexar.py [--max-minutos 7.5]`. Modelo: `scripts\sadgd\preparar_bge_m3.py` (cópia local em `modelos\bge-m3`).
 - Corpus: `corpus\publico` (`coletar_corpus_publico.py`), `corpus\sintetico` (`gerar_corpus_sintetico.py`, gabarito em `GABARITO.json`), manifesto em `corpus\MANIFESTO.csv`.
 - Avaliações da fase: `scripts\sadgd\avaliar_{chunking,metadados,ocr}.py` → `avaliacao\execucoes\fase4_*.json`.
+- Avaliação: `scripts\sadgd\avaliar.py recuperacao|relatorio|ci` e `scripts\sadgd\avaliar_respostas.py --sistema v1|v2 --modelo <tag> --conjunto validacao|teste [--max-minutos 8.5]` (retomáveis). Resultados em `avaliacao\execucoes\fase5\`. LLM escolhido: `sadgd-qwen2.5-7b`; `llama3.1:8b-instruct-q4_K_M` também instalado.
 - Embeddings em **float32** (fp16 é 5× mais lento nesta GPU); `HF_DEACTIVATE_ASYNC_LOAD=1` é obrigatório (crash nativo sem ele).

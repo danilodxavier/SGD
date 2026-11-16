@@ -27,6 +27,12 @@
 | 2026-11-16 | Portais governamentais podem recusar a assinatura TLS de clientes Python/curl e User-Agents desconhecidos; o cliente HTTP do Windows passa | Fase 4 — coleta |
 | 2026-11-16 | Processos em lote devem gravar progresso e marcar conclusão por lote: um encerramento abrupto entre "gravar documento" e "gravar vetores" deixaria dados órfãos permanentes | Fase 4 — indexador |
 | 2026-11-16 | Um processo pode bloquear a remoção de pasta no Windows só por ter o diretório como pasta corrente | Fase 4 — gerador |
+| 2026-11-16 | Com JSON Schema estrito, o Ollama gera as chaves em ordem alfabética; a ordem dos campos condiciona o "raciocínio" do modelo (classificar antes de responder → recusas indevidas) | Fase 5 — achado 1 |
+| 2026-11-16 | RRF não é sempre melhor que a melhor lista isolada: com uma lista fraca (BM25), a fusão piora; o reranker é o que garante o ganho | Fase 5 — achado 2 |
+| 2026-11-16 | Modelos diferentes variam o formato de campos (ids como número × string); normalizar formato sem relaxar a validação de conteúdo | Fase 5 — achado 3 |
+| 2026-11-16 | Antes de concluir que um modelo é ruim, inspecionar saídas brutas: duas quedas de qualidade eram defeitos de integração | Fase 5 |
+| 2026-11-16 | Métricas automáticas de alucinação devem considerar exatamente o que o modelo viu (inclusive metadados), senão geram falsos positivos | Fase 5 — achado 4 |
+| 2026-11-16 | `# noqa` dentro de uma string multilinha vira conteúdo da string — conferir o efeito de supressões de lint | Fase 5 — incidente |
 
 ## Domínio (setor público)
 

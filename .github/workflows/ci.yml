@@ -55,8 +55,5 @@ jobs:
         run: python -m pytest -q --cov --cov-report=term --cov-report=xml:data/cache/coverage.xml
       - name: Cobertura mínima de domain/ e application/ (RNF-09)
         run: python -m coverage report --include="app/domain/*,app/application/*" --fail-under=80
-      - name: Avaliação reduzida e determinística
-        shell: pwsh
-        run: |
-          if (Test-Path scripts/sadgd/avaliar.py) { python scripts/sadgd/avaliar.py --ci }
-          else { Write-Host "Suíte de avaliação ainda não implementada (Fase 5)." }
+      - name: Avaliação reduzida e determinística (BM25 no corpus sintético, piso de regressão)
+        run: python scripts/sadgd/avaliar.py ci

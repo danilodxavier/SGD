@@ -1,0 +1,24 @@
+{
+  "total": 177,
+  "rejeitados_na_validacao": 0,
+  "por_tipo": {
+    "F1_simples": 66,
+    "F1_complexa": 24,
+    "linha_do_tempo": 54,
+    "F2": 21,
+    "ausente": 12
+  },
+  "por_origem": {
+    "sintetico": 155,
+    "publico": 22
+  },
+  "por_classificacao": {
+    "fato": 134,
+    "conflito": 10,
+    "inferencia": 21,
+    "ausencia": 12
+  },
+  "validacao": 53,
+  "teste": 124,
+  "rejeitados": []
+}

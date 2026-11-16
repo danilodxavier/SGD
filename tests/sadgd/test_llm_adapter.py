@@ -73,6 +73,13 @@ def test_saida_estruturada_valida_json_e_remove_cercas(servidor):
     assert s.recebidos[0]["response_format"]["type"] == "json_schema"
 
 
+def test_json_livre_usa_json_object_sem_schema(servidor):
+    s = servidor(ok('{"resposta": "x", "fontes": []}'))
+    r = OpenAICompativelAdapter("ollama", s.url, "m").chat([], json_livre=True)
+    assert r.json == {"resposta": "x", "fontes": []}
+    assert s.recebidos[0]["response_format"] == {"type": "json_object"}
+
+
 def test_json_invalido_gera_erro(servidor):
     s = servidor(ok("não é json"))
     with pytest.raises(ErroLLM):

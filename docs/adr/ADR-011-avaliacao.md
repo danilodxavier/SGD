@@ -54,4 +54,6 @@
 
 ## Implementação (Fase 3, 2026-11-16)
 
+**Fase 5:** métricas determinísticas implementadas e em uso (P@k, R@k, MRR, nDCG graduado; exatidão por resposta-chave; classificação; citação correta; precisão de citação; alucinação numérica). Golden set de 177 perguntas (53 validação / 124 teste) com fontes validadas contra o índice; revisão humana pendente. Faithfulness com juiz (RAGAS) adiado para a Fase 10, quando houver juiz de outra família calibrado (κ ≥ 0,6). CI: `avaliar.py ci` com piso de regressão.
+
 RAGAS **0.3.1 é incompatível** com o `langchain-community` atual (importa `chat_models.vertexai`, removido). Adotado **RAGAS 0.4.4**, que importa e executa normalmente. As métricas passam a ser importadas de `ragas.metrics.collections` (a importação antiga está depreciada).

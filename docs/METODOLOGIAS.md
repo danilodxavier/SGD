@@ -41,5 +41,13 @@
 | TDD com casos reais de regressão (art. 56 da Lei 9.784; Lei 12.462) | Chunking e metadados | `tests/sadgd/test_chunking.py`, `test_metadados.py` | 4 |
 | Benchmark de configuração (fp16 × fp32 × atenção) antes de decidir | Embeddings | `docs/fases/FASE_04.md` §5 | 4 |
 | Processamento incremental idempotente com retomada (checkpoint por lote) | Indexação | `app/application/ingestao/indexador.py` | 4 |
+| Métricas de IR com relevância graduada (Precision/Recall@k, MRR, nDCG) — TDD | Recuperação | `app/application/avaliacao/metricas.py` | 5 |
+| Golden set com validação automática das fontes contra o índice e split estratificado 30/70 | Avaliação | `scripts/sadgd/gerar_golden_set.py` | 5 |
+| Separação validação × teste (teste nunca usado para ajustes) | Benchmark e ajustes de prompt | `docs/fases/FASE_05.md` | 5 |
+| Estudo de ablação (BM25, denso, híbrido, híbrido+rerank) | Recuperação | `avaliacao/execucoes/fase5/relatorio.json` | 5 |
+| Benchmark comparativo de LLMs sob o mesmo protocolo | Geração | `docs/fases/FASE_05.md` §3 | 5 |
+| Avaliação em estágios com cache e retomada (LLMOps com recursos limitados) | Avaliação | `scripts/sadgd/avaliar*.py` | 5 |
+| Teste de regressão de qualidade no CI (piso calibrado) | CI | `scripts/sadgd/avaliar.py ci` | 5 |
+| Análise de erros com inspeção das saídas brutas antes de concluir sobre o modelo | Geração | `docs/fases/FASE_05.md` §4 | 5 |
 
-Planejadas: GitHub Flow, RAGAS, métricas de IR (Precision/Recall@k, MRR, nDCG).
+Planejadas: GitHub Flow, RAGAS com juiz calibrado (κ de Cohen).

@@ -24,7 +24,8 @@ class LLMPort(Protocol):
     remoto: bool  # True quando o conteúdo sai da máquina (ADR-004)
 
     def chat(self, mensagens: Sequence[dict], *, schema: dict | None = None, max_tokens: int = 700,
-             temperatura: float = 0.0) -> RespostaLLM: ...
+             temperatura: float = 0.0, json_livre: bool = False) -> RespostaLLM: ...
+    # json_livre=True: pede JSON sem impor schema (a ordem dos campos fica a cargo do prompt) — ver FASE_05 §4
 
 
 @runtime_checkable

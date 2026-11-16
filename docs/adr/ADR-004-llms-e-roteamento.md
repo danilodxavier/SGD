@@ -62,4 +62,6 @@ Roteamento acima; especialistas acionados por matriz de gatilhos (≤ 4 em F2); 
 
 - Ollama **portátil** v0.40.16 em `ferramentas\ollama` (zip oficial, sem instalador), servidor em `127.0.0.1:11434`, modelos em `modelos\ollama` (`OLLAMA_MODELS`). Gerenciado por `scripts\sadgd\ollama.ps1` (iniciado por `start.bat`, encerrado por `stop.bat`).
 - Modelo `sadgd-qwen2.5-7b` criado a partir do GGUF já existente do LM Studio (sem novo download); 24/29 camadas na GPU (≈4 GB VRAM), contexto 8192; classificação curta em JSON em ~0,4 s após a carga.
+- **Benchmark (Fase 5, validação):** Qwen 2.5 7B (exatidão 0,846; recusa 1,00; p50 13,9 s) × Llama 3.1 8B (0,718; 0,75; 16,1 s) → Qwen mantido como padrão F1; Llama reservado como verificador/juiz de outra família.
+- **Saída JSON:** schema estrito no Ollama prejudica a qualidade (chaves em ordem alfabética); o `LLMPort` ganhou `json_livre=True` e a validação dos campos fica no código.
 - Primeira carga teve falha transitória de inicialização CUDA (não reproduzida); o adaptador `OpenAICompativelAdapter` repete chamadas com recuo exponencial em erros 5xx/429/conexão e rejeita URLs que não sejam http/https.
