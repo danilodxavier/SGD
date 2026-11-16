@@ -1,0 +1,61 @@
+# CI do SAD-GD (ADR-011, RNF-07, RNF-09, RNF-12) — GitHub Actions, plano gratuito.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONUTF8: "1"
+  HF_HUB_DISABLE_TELEMETRY: "1"
+  RAGAS_DO_NOT_TRACK: "true"
+  PHOENIX_TELEMETRY_ENABLED: "false"
+  LANGSMITH_TRACING: "false"
+
+jobs:
+  segredos:
+    name: Varredura de segredos
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  testes:
+    name: Lint, testes e cobertura (Windows)
+    runs-on: windows-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.15"
+          cache: pip
+          cache-dependency-path: |
+            requirements*.txt
+      - name: Dependências (torch CPU)
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt -r requirements-ia.txt -r requirements-dev.txt
+      - name: Lint (código SAD-GD)
+        run: python -m ruff check .
+      - name: Testes v1 + SAD-GD
+        run: python -m pytest -q --cov --cov-report=term --cov-report=xml:data/cache/coverage.xml
+      - name: Cobertura mínima de domain/ e application/ (RNF-09)
+        run: python -m coverage report --include="app/domain/*,app/application/*" --fail-under=80
+      - name: Avaliação reduzida e determinística
+        shell: pwsh
+        run: |
+          if (Test-Path scripts/sadgd/avaliar.py) { python scripts/sadgd/avaliar.py --ci }
+          else { Write-Host "Suíte de avaliação ainda não implementada (Fase 5)." }

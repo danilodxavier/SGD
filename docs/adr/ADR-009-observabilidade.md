@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |---|---|
-| Status | **Proposto** |
+| Status | **Aceito** (aprovação da Fase 2 em 2026-11-16) |
 | Data | 2026-11-16 |
 | Requisitos | RNF-04, RNF-05, RNF-11, RF-24 |
 
@@ -26,3 +26,10 @@ O prompt mestre sugere Langfuse (self-hosted ou free tier). Constatações:
 - (+) Sem Docker, sem envio externo, dados no projeto.
 - (+) Métricas reproduzíveis por SQL simples.
 - (−) Phoenix acrescenta dependências; por isso é opcional, e a tabela própria garante as métricas mesmo sem ele.
+
+## Implementação (Fase 3, 2026-11-16)
+
+- `SqliteTracer` (`app/infrastructure/tracing/sqlite_tracer.py`) grava spans na tabela `spans` e calcula p50/p95 — testado.
+- Arize Phoenix 21.0.0 validado: servidor local em `127.0.0.1:6006`, dados em `data\observabilidade\phoenix.db`.
+- Telemetria desativada por variáveis cujos nomes foram **conferidos no código das bibliotecas**: `PHOENIX_TELEMETRY_ENABLED=false`, `RAGAS_DO_NOT_TRACK=true`, `HF_HUB_DISABLE_TELEMETRY=1`; `LANGSMITH_TRACING=false`. Definidas em `app/core/config.py` antes de qualquer import e verificadas pelo diagnóstico.
+- `openinference-instrumentation-langchain` **não tem versão para Python 3.15**; o envio de spans ao Phoenix será feito pelo próprio `TracerPort` via OpenTelemetry (OTLP) na Fase 7.

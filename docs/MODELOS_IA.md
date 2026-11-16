@@ -14,8 +14,10 @@ Registro obrigatório (regra 6). Inclui desenvolvimento e produção. Custo em R
 |---|---|---|---|---|---|---|---|
 | Qwen2.5 7B Instruct Q4_K_M | LM Studio (local) | `qwen/qwen2.5-7b-instruct` GGUF | Redação de respostas na v1 (opcional) | v1 | R$ 0 | Herdado da v1; roda na GTX 1660 SUPER | Em uso (v1) |
 | Windows OCR | Microsoft (nativo do Windows) | Windows.Media.Ocr | OCR de imagens/PDF escaneado na v1 | v1 | R$ 0 | Nativo, sem instalação | Em uso (v1) |
+| `sadgd-qwen2.5-7b` (Qwen2.5 7B Instruct Q4_K_M, importado do GGUF) | Ollama 0.40.16 portátil (local) | sha256 `fc258d6a…` | LLM local padrão (roteador, redação, especialistas) | 3– | R$ 0 | ADR-004; 24/29 camadas na GPU de 6 GB | **Em uso** desde a Fase 3 (também pela v1) |
+| Tesseract 5.4.0 + `por` (tessdata_best) | Local (`ferramentas\tesseract`) | 5.4.0.20240606 | OCR portátil | 3– | R$ 0 | ADR-007 | Instalado; uso na Fase 4 |
 
-## Propostos na Fase 2 (aguardando aprovação dos ADRs)
+## Planejados (ADRs aceitos na Fase 2)
 
 | Modelo | Provedor | Finalidade | Fase de adoção | Custo | Justificativa |
 |---|---|---|---|---|---|

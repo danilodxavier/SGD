@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |---|---|
-| Status | **Proposto** |
+| Status | **Aceito** (aprovação da Fase 2 em 2026-11-16) |
 | Data | 2026-11-16 |
 | Requisitos | RF-15, RNF-01, RNF-04, RNF-05, RNF-08, RNF-10 |
 
@@ -57,3 +57,9 @@ Roteamento acima; especialistas acionados por matriz de gatilhos (≤ 4 em F2); 
 - (+) Troca de provedor por configuração (RNF-10); demonstração possível 100% offline.
 - (−) Qualidade F2 limitada localmente; mitigada por verificador, recuperação forte e opção acadêmica em nuvem.
 - Pendência para a Fase 3: instalar Ollama com `OLLAMA_MODELS` apontando para `modelos\ollama`.
+
+## Implementação (Fase 3, 2026-11-16)
+
+- Ollama **portátil** v0.40.16 em `ferramentas\ollama` (zip oficial, sem instalador), servidor em `127.0.0.1:11434`, modelos em `modelos\ollama` (`OLLAMA_MODELS`). Gerenciado por `scripts\sadgd\ollama.ps1` (iniciado por `start.bat`, encerrado por `stop.bat`).
+- Modelo `sadgd-qwen2.5-7b` criado a partir do GGUF já existente do LM Studio (sem novo download); 24/29 camadas na GPU (≈4 GB VRAM), contexto 8192; classificação curta em JSON em ~0,4 s após a carga.
+- Primeira carga teve falha transitória de inicialização CUDA (não reproduzida); o adaptador `OpenAICompativelAdapter` repete chamadas com recuo exponencial em erros 5xx/429/conexão e rejeita URLs que não sejam http/https.

@@ -1,0 +1,35 @@
+[project]
+name = "sad-gd"
+version = "2.0.0.dev0"
+description = "SAD-GD — Sistema de Apoio à Tomada de Decisão e Gestão Documental (setor público)"
+requires-python = ">=3.13"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# arquivos temporários e cache dos testes ficam dentro do projeto (ADR-001)
+addopts = "--basetemp=data/cache/pytest -p no:cacheprovider"
+filterwarnings = ["ignore::DeprecationWarning:starlette.*"]
+
+[tool.coverage.run]
+source = ["app/domain", "app/application", "app/infrastructure"]
+data_file = "data/cache/.coverage"
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true
+
+[tool.ruff]
+line-length = 120
+target-version = "py313"
+cache-dir = "data/cache/ruff"
+# código novo do SAD-GD é verificado integralmente; módulos v1 entram à medida que forem absorvidos (ADR-013)
+include = ["app/domain/**/*.py", "app/application/**/*.py", "app/infrastructure/**/*.py", "tests/sadgd/**/*.py",
+           "scripts/sadgd/**/*.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "SIM"]
+ignore = ["S101"]  # assert é o idioma do pytest
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S", "B017"]
+"app/infrastructure/sqlite/conexao.py" = ["S608"]

@@ -1,0 +1,2 @@
+# SAD-GD — avaliação com LLM-juiz (ADR-011). Telemetria desativada por RAGAS_DO_NOT_TRACK=true
+ragas==0.4.4

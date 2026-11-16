@@ -5,6 +5,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 ## [Não lançado] — Reestruturação SAD-GD
 
 ### Adicionado
+- Fase 3 (infraestrutura): camadas `app/domain`, `app/application/portas.py`, `app/infrastructure` (SQLite + sqlite-vec com migrações, adaptador LLM OpenAI-compatível, tracer SQLite); banco único `sadgd.db`; Ollama e Tesseract portáteis (`scripts/sadgd/*.ps1`); dependências em camadas e `constraints.txt`; `pyproject.toml` (pytest, coverage, ruff); CI no GitHub Actions; diagnóstico SAD-GD; 46 novos testes.
 - Fase 2 (arquitetura): `docs/arquitetura/C4.md`, `docs/arquitetura/MODELO_DE_DADOS.md`, ADR-003 a ADR-013, `docs/agentes/README.md`, `docs/projeto/RASTREABILIDADE.md`.
 - Prompts versionados de 12 agentes + regras comuns (`app/application/agentes/prompts/`) e 5 schemas JSON (`app/application/agentes/schemas/`).
 - `tests/test_agentes_specs.py` (consistência prompts × schemas × catálogo).
@@ -17,6 +18,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 - Relatório de auditoria `docs/fases/FASE_00.md`.
 
 ### Alterado
+- `instalar.bat`, `start.bat`, `stop.bat` e diagnóstico adaptados ao SAD-GD; IA da v1 passa a usar o Ollama do projeto; caches de IA forçados para dentro do projeto e telemetria de terceiros desativada.
 - `app/services/llm.py`: mensagens de erro detalhadas do servidor de IA e filtro de modelos de embedding.
 - Especificação v1 (`AGENTS.md`), `ARQUITETURA.md` e `CONFORMIDADE.md` movidos para `docs/legado/`.
 

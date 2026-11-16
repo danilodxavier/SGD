@@ -164,9 +164,100 @@ def run_checks(documents_root=None, check_port=True):
     except Exception as exc:
         checks.append(_check("banco de dados", ERRO, str(exc)))
 
+    checks.extend(checks_sadgd())
+
     if check_port:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             in_use = s.connect_ex((settings.app_host, settings.app_port)) == 0
         checks.append(_check(f"porta {settings.app_port}", WARNING if in_use else OK,
                              "em uso (o painel pode já estar em execução)" if in_use else "livre"))
+    return checks
+
+
+def _dentro_do_projeto(caminho):
+    try:
+        Path(caminho).resolve().relative_to(BASE_DIR)
+        return True
+    except ValueError:
+        return False
+
+
+def checks_sadgd(gpu=True, ollama=True):
+    """Verificações da infraestrutura SAD-GD (Fase 3): ADR-001, 004, 006, 007, 009, 010."""
+    checks = []
+
+    # RNF-03: caches e dados de IA dentro do projeto
+    variaveis = ("HF_HOME", "TORCH_HOME", "PHOENIX_WORKING_DIR")
+    fora = [f"{v}={os.environ.get(v)}" for v in variaveis if not _dentro_do_projeto(os.environ.get(v, "/"))]
+    for caminho in (settings.database_path, settings.data_dir, settings.ollama_models):
+        if not _dentro_do_projeto(caminho):
+            fora.append(str(caminho))
+    checks.append(_check("pastas no projeto", WARNING if fora else OK,
+                         "fora do projeto: " + ", ".join(fora) if fora else "caches, modelos e dados em subpastas"))
+
+    desligadas = [v for v, esperado in (("HF_HUB_DISABLE_TELEMETRY", "1"), ("RAGAS_DO_NOT_TRACK", "true"),
+                                        ("PHOENIX_TELEMETRY_ENABLED", "false"), ("LANGSMITH_TRACING", "false"))
+                  if os.environ.get(v, "").lower() != esperado]
+    checks.append(_check("telemetria de terceiros", WARNING if desligadas else OK,
+                         "ativa em: " + ", ".join(desligadas) if desligadas else "desativada"))
+
+    try:
+        from app.infrastructure.sqlite.conexao import conectar
+
+        conn = conectar(settings.database_path)
+        try:
+            versao_vec = conn.execute("SELECT vec_version()").fetchone()[0]
+            migracoes = [r[0] for r in conn.execute("SELECT versao FROM schema_migrations ORDER BY versao")]
+        finally:
+            conn.close()
+        checks.append(_check("sqlite-vec", OK, versao_vec))
+        checks.append(_check("migrações SAD-GD", OK if migracoes else ERRO,
+                             ", ".join(migracoes) or "nenhuma aplicada — execute instalar.bat"))
+    except Exception as exc:
+        checks.append(_check("sqlite-vec", ERRO, f"{exc}"))
+
+    for nome, modulo in (("LangGraph", "langgraph"), ("sentence-transformers", "sentence_transformers"),
+                         ("RAGAS", "ragas"), ("Arize Phoenix", "phoenix")):
+        v = _version(modulo)
+        nivel = ERRO if modulo in ("langgraph", "sentence_transformers") else WARNING
+        checks.append(_check(nome, OK if v else nivel, v or "não instalado"))
+
+    if gpu:
+        try:
+            import torch
+
+            if torch.cuda.is_available():
+                checks.append(_check("GPU (torch)", OK, f"{torch.__version__} — {torch.cuda.get_device_name(0)}"))
+            else:
+                checks.append(_check("GPU (torch)", WARNING, f"{torch.__version__} — sem CUDA; embeddings na CPU"))
+        except Exception as exc:
+            checks.append(_check("GPU (torch)", ERRO, f"torch indisponível: {exc}"))
+
+    if ollama:
+        import json
+        import urllib.request
+
+        if not settings.ollama_exe.is_file():
+            checks.append(_check("Ollama", WARNING, "não instalado em ferramentas\\ollama"))
+        else:
+            try:
+                with urllib.request.urlopen(f"{settings.ollama_url}/api/tags", timeout=3) as r:  # noqa: S310
+                    modelos = [m["name"] for m in json.load(r).get("models", [])]
+                ok = any(m.split(":")[0] == settings.llm_modelo_padrao for m in modelos)
+                checks.append(_check("Ollama", OK if ok else WARNING,
+                                     f"em execução; modelos: {', '.join(modelos) or 'nenhum'}"
+                                     + ("" if ok else f" — falta {settings.llm_modelo_padrao}")))
+            except Exception:
+                checks.append(_check("Ollama", WARNING, "instalado, mas parado (start.bat o inicia)"))
+
+    tesseract = Path(settings.tesseract_cmd) if settings.tesseract_cmd else None
+    if tesseract and tesseract.is_file():
+        idiomas = tesseract.parent / "tessdata" / f"{settings.tesseract_lang}.traineddata"
+        checks.append(_check("Tesseract", OK if idiomas.is_file() else WARNING,
+                             f"{tesseract}" + ("" if idiomas.is_file() else f" — falta {idiomas.name}")))
+    else:
+        checks.append(_check("Tesseract", WARNING, "não encontrado em ferramentas\\tesseract"))
+
+    checks.append(_check("GitHub CLI", OK if shutil.which("gh") else WARNING,
+                         "instalado" if shutil.which("gh") else "não instalado (CI/Projects dependem dele)"))
     return checks

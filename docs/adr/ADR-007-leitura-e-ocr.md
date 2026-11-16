@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |---|---|
-| Status | **Proposto** |
+| Status | **Aceito** (aprovação da Fase 2 em 2026-11-16) |
 | Data | 2026-11-16 |
 | Requisitos | RF-01, RF-02, RF-03, RNF-01, RNF-03 |
 
@@ -26,3 +26,7 @@ CER ≤ 10% no PDF escaneado de teste (RF-02), comparando Tesseract × Windows O
 
 - (+) Reaproveitamento máximo; licenças permissivas por padrão.
 - (−) Tesseract exige instalação de binário (fora do pip); documentado em `instalar.bat`/manual.
+
+## Implementação (Fase 3, 2026-11-16)
+
+O instalador oficial do Tesseract **ignora a pasta de destino** (`/D`) e instala em `C:\Program Files\Tesseract-OCR`. Para cumprir ADR-001, `scripts\sadgd\tesseract.ps1` instala temporariamente, copia para `ferramentas\tesseract`, desinstala do sistema e baixa `por.traineddata` (tessdata_best). Verificado: Tesseract 5.4.0 com `eng, osd, por`; nenhum resíduo em Program Files nem no registro de desinstalação. O hash SHA-256 do instalador é conferido.

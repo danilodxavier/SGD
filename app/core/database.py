@@ -200,6 +200,18 @@ def init_db():
             for column, kind in columns.items():
                 if column not in existing:
                     conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {kind}")
+    preparar_esquema_sadgd()
+
+
+def preparar_esquema_sadgd():
+    """Aplica as migrações versionadas do SAD-GD no mesmo arquivo de banco (ADR-006: banco único)."""
+    from app.infrastructure.sqlite.conexao import conectar, migrar
+
+    conn = conectar(settings.database_path)
+    try:
+        return migrar(conn)
+    finally:
+        conn.close()
 
 
 def get_setting(key, default=None):

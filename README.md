@@ -1,4 +1,16 @@
-# Agente de Inteligência Documental — Contratos e Checklists
+# SAD-GD — Sistema de Apoio à Tomada de Decisão e Gestão Documental
+
+> **Projeto em reestruturação (v2, SAD-GD).** Estado atual, fase e próxima tarefa: [`docs/STATUS.md`](docs/STATUS.md).
+> Regras e decisões: [`CLAUDE.md`](CLAUDE.md) · Arquitetura: [`docs/arquitetura/C4.md`](docs/arquitetura/C4.md) ·
+> ADRs: [`docs/adr/`](docs/adr/) · Agentes: [`docs/agentes/`](docs/agentes/README.md) · Avaliação: [`docs/AVALIACAO.md`](docs/AVALIACAO.md).
+>
+> Execução 100% local e gratuita (ADR-001): Python 3.15 · FastAPI · LangGraph · SQLite (FTS5 + sqlite-vec) · Ollama portátil ·
+> bge-m3 · Tesseract · Arize Phoenix. Instalação: `instalar.bat` · Execução: `start.bat` · Diagnóstico: `diagnostico.bat` ·
+> Testes: `.venv\Scripts\python.exe -m pytest -q`.
+>
+> O conteúdo abaixo descreve as funcionalidades herdadas da v1 (ainda disponíveis) e será substituído na Fase 11.
+
+## Funcionalidades da v1 — Agente de Inteligência Documental (Contratos e Checklists)
 
 Aplicação local para Windows 11 que lê os documentos de um diretório, monta um índice pesquisável e responde
 perguntas sobre contratos **exclusivamente com base nos documentos**, sempre citando as fontes. Também avalia

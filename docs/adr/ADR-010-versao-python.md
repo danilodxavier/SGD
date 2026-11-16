@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |---|---|
-| Status | **Proposto** |
+| Status | **Aceito** (aprovação da Fase 2 em 2026-11-16) |
 | Data | 2026-11-16 |
 | Requisitos | RNF-02, RNF-03, RNF-09 |
 | Revisa | Risco R06 e conflito C4 da FASE_00 |
@@ -27,3 +27,10 @@ O risco R06 ("bibliotecas de IA incompatíveis com 3.15") **não se confirmou** 
 
 - (+) Nenhuma migração de ambiente; a v1 continua funcionando.
 - (−) Versão nova do Python reduz a margem para bibliotecas menos mantidas; mitigado pelo plano B e pelo `constraints.txt`.
+
+## Implementação (Fase 3, 2026-11-16)
+
+- Instalados no `.venv` (Python 3.15.0): `torch 2.14.1+cu126` (índice oficial do PyTorch; `torch.cuda.is_available() = True` na GTX 1660 SUPER), LangGraph 1.2.21, sentence-transformers 6.3.0, sqlite-vec 0.1.9, RAGAS 0.4.4, Arize Phoenix 21.0.0. `pyyaml` e `zstandard` instalaram sem compilação manual. `pip check`: sem conflitos.
+- `torch` 2.15 ainda não tem build CUDA para cp315; 2.14.1 é a versão mais recente com CUDA disponível (cu126 e cu130). Escolhido **cu126** pela compatibilidade ampla com Turing (sm_75).
+- Arquivos: `requirements.txt` (núcleo), `requirements-ia.txt`, `requirements-avaliacao.txt`, `requirements-observabilidade.txt`, `requirements-dev.txt` e `constraints.txt` (224 pacotes, ambiente validado).
+- O plano B (Python 3.13 via `uv` no projeto) não foi necessário.

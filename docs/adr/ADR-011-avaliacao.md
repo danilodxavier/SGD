@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |---|---|
-| Status | **Proposto** |
+| Status | **Aceito** (aprovação da Fase 2 em 2026-11-16) |
 | Data | 2026-11-16 |
 | Requisitos | RNF-06, RNF-12, RF-06–20; prompt mestre §4 |
 
@@ -51,3 +51,7 @@
 
 - (+) Métricas centrais (recuperação, citação) não dependem de LLM — reprodutíveis e baratas.
 - (−) Métricas com juiz têm variância; mitigada por calibração humana e temperatura 0.
+
+## Implementação (Fase 3, 2026-11-16)
+
+RAGAS **0.3.1 é incompatível** com o `langchain-community` atual (importa `chat_models.vertexai`, removido). Adotado **RAGAS 0.4.4**, que importa e executa normalmente. As métricas passam a ser importadas de `ragas.metrics.collections` (a importação antiga está depreciada).

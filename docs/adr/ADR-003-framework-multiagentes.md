@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |---|---|
-| Status | **Proposto** (aprovação na revisão da Fase 2) |
+| Status | **Aceito** (aprovação da Fase 2 em 2026-11-16) |
 | Data | 2026-11-16 |
 | Requisitos | RF-15 a RF-20, RNF-05, RNF-08, RNF-11 |
 

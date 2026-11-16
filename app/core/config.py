@@ -7,6 +7,22 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parents[2]
 load_dotenv(BASE_DIR / ".env")
 
+# Caches e dados de bibliotecas de IA ficam dentro do projeto (ADR-001) e sem telemetria de terceiros (LGPD).
+# Definidos antes de qualquer import de huggingface/torch/ragas/langchain.
+_AMBIENTE_PADRAO = {
+    "HF_HOME": BASE_DIR / "modelos" / "hf",
+    "TORCH_HOME": BASE_DIR / "modelos" / "torch",
+    "PHOENIX_WORKING_DIR": BASE_DIR / "data" / "observabilidade",
+    "HF_HUB_DISABLE_TELEMETRY": "1",
+    "RAGAS_DO_NOT_TRACK": "true",
+    "LANGSMITH_TRACING": "false",
+    "LANGCHAIN_TRACING_V2": "false",
+    "PHOENIX_TELEMETRY_ENABLED": "false",
+    "TOKENIZERS_PARALLELISM": "false",
+}
+for _chave, _valor in _AMBIENTE_PADRAO.items():
+    os.environ.setdefault(_chave, str(_valor))
+
 
 def _bool(value, default):
     if value is None or value.strip() == "":
@@ -41,7 +57,7 @@ class Settings:
         self.ssl_certfile = os.getenv("SSL_CERTFILE", "").strip()
         self.ssl_keyfile = os.getenv("SSL_KEYFILE", "").strip()
         self.documents_root = os.getenv("DOCUMENTS_ROOT", r"D:\Documentos").strip()
-        self.database_path = _path(os.getenv("DATABASE_PATH"), r"data\database\documents.db")
+        self.database_path = _path(os.getenv("DATABASE_PATH"), r"data\database\sadgd.db")
         self.log_level = os.getenv("LOG_LEVEL", "INFO").strip().upper()
         self.auto_index = _bool(os.getenv("AUTO_INDEX"), True)
         self.ocr_enabled = _bool(os.getenv("OCR_ENABLED"), True)
@@ -49,7 +65,9 @@ class Settings:
         self.ocr_language = os.getenv("OCR_LANGUAGE", "pt-BR").strip()
         self.ocr_dpi = int(os.getenv("OCR_DPI", "200"))
         self.ocr_max_pages = int(os.getenv("OCR_MAX_PAGES", "50"))
-        self.tesseract_cmd = os.getenv("TESSERACT_CMD", "").strip()
+        tesseract_projeto = BASE_DIR / "ferramentas" / "tesseract" / "tesseract.exe"
+        self.tesseract_cmd = os.getenv("TESSERACT_CMD", "").strip() or (
+            str(tesseract_projeto) if tesseract_projeto.is_file() else "")
         self.tesseract_lang = os.getenv("TESSERACT_LANG", "por").strip()
         self.ai_provider = os.getenv("AI_PROVIDER", "local").strip().lower()
         self.ai_key_configured = bool(os.getenv("OPENAI_API_KEY", "").strip())
@@ -60,6 +78,14 @@ class Settings:
         # endereços fora desta máquina só com autorização expressa no .env (padrão: LOCAL ONLY)
         self.ai_allow_remote = _bool(os.getenv("AI_ALLOW_REMOTE"), False)
         self.data_dir = _path(os.getenv("DATA_DIR"), "data")
+        # SAD-GD (v2)
+        self.corpus_origem = os.getenv("CORPUS_ORIGEM", "real").strip().lower()  # origem padrão (mais restritiva)
+        self.ollama_url = os.getenv("OLLAMA_URL", "http://127.0.0.1:11434").strip().rstrip("/")
+        self.ollama_exe = _path(os.getenv("OLLAMA_EXE"), r"ferramentas\ollama\ollama.exe")
+        self.ollama_models = _path(os.getenv("OLLAMA_MODELS"), r"modelos\ollama")
+        self.llm_modelo_padrao = os.getenv("LLM_MODELO_PADRAO", "sadgd-qwen2.5-7b").strip()
+        self.observabilidade = os.getenv("OBSERVABILIDADE", "sqlite").strip().lower()  # sqlite | phoenix | nenhuma
+        self.versao_sistema = "2.0.0.dev0"
 
     @property
     def https(self):

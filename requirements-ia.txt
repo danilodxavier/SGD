@@ -1,0 +1,13 @@
+# SAD-GD — dependências de IA (ADR-003, 004, 005, 006, 007, 010)
+# torch é instalado antes, pelo instalar.bat, a partir do índice CUDA do PyTorch (cu126);
+# sem GPU NVIDIA, o instalar.bat usa a versão CPU do PyPI.
+langgraph==1.2.21
+langgraph-checkpoint-sqlite
+langchain-core==1.8.1
+sqlite-vec==0.1.9
+sentence-transformers==6.3.0
+transformers==5.23.0
+pytesseract==0.3.13
+scikit-learn==1.9.1
+jsonschema==4.26.0
+pydantic==2.14.3

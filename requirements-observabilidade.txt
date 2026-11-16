@@ -1,0 +1,4 @@
+# SAD-GD â€” observabilidade opcional (ADR-009): Arize Phoenix local
+arize-phoenix==21.0.0
+opentelemetry-sdk==1.45.2
+# openinference-instrumentation-langchain: sem versão para Python 3.15 (2026-11-16); spans enviados pelo TracerPort via OTLP

@@ -13,6 +13,13 @@
 | 2026-11-16 | Licenças importam na escolha de stack: PyMuPDF é AGPL-3.0; Phoenix é Elastic License 2.0; LangGraph e bge-m3 são permissivos | Fase 2 — ADR-007/009 |
 | 2026-11-16 | Langfuse v3 self-hosted depende de Postgres + ClickHouse + Redis + S3; para máquina única com 16 GB, uma ferramenta pip-only (Phoenix) é mais adequada | Fase 2 — ADR-009 |
 | 2026-11-16 | Ferramentas de IA com telemetria ativa por padrão (CrewAI, RAGAS, DeepEval) exigem opt-out explícito em contexto LGPD | Fase 2 — ADR-003/011 |
+| 2026-11-16 | Instaladores NSIS podem ignorar `/D` e instalar em Program Files; ferramentas relocáveis (Tesseract) podem ser copiadas para o projeto e desinstaladas do sistema | Fase 3 — ADR-007 |
+| 2026-11-16 | Ollama tem distribuição portátil (zip) e importa GGUF existente com `ollama create -f Modelfile` — evita baixar o mesmo modelo duas vezes | Fase 3 — ADR-004 |
+| 2026-11-16 | Índices do PyTorch publicam CUDA por versão de Python com atraso: para cp315 havia 2.14.1 (cu126/cu130), não 2.15; listar o índice com ordenação por `[version]`, não alfabética | Fase 3 — ADR-010 |
+| 2026-11-16 | Resolução `pip --dry-run` não garante funcionamento: RAGAS 0.3.1 resolvia, mas quebrava na importação por API removida do langchain-community — sempre testar `import` | Fase 3 — ADR-011 |
+| 2026-11-16 | Nomes de variáveis de opt-out de telemetria devem ser conferidos no código-fonte da biblioteca, não presumidos | Fase 3 — ADR-009 |
+| 2026-11-16 | Em Python, `sqlite3` com `isolation_level=None` permite `BEGIN/COMMIT` explícitos para migrações DDL atômicas | Fase 3 — migrador |
+| 2026-11-16 | `sed` em Git Bash consome barras invertidas de caminhos Windows na substituição; editar caminhos via PowerShell/Python | Fase 3 — incidente |
 
 ## Domínio (setor público)
 

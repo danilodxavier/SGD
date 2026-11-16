@@ -15,7 +15,8 @@
 | 2026-11-16 | **Tudo é salvo em subpastas do projeto** (modelos, caches, corpus, backups, avaliações, relatórios). Nada em `%TEMP%`, `%USERPROFILE%` ou outras unidades | ver "Convenção de pastas" |
 | 2026-11-16 | Corpus acadêmico público/sintético para avaliação e demonstração; dados reais só locais, com LLM local | `docs/adr/ADR-002-corpus-academico.md` |
 | 2026-11-16 | Fase 1 aprovada; documentos, trechos e contratos do banco v1 **excluídos** (nova versão usará novos documentos); raiz documental = `corpus\` | `docs/fases/FASE_01.md` §7 |
-| 2026-11-16 | Stack proposta na Fase 2 (ADR-003 a ADR-013), pendente de aprovação | `docs/fases/FASE_02.md` |
+| 2026-11-16 | Fase 2 aprovada: ADR-003 a ADR-013 **aceitos**; autorização para **substituir o que for necessário do projeto antigo** para entregar o novo projeto na íntegra | `docs/fases/FASE_02.md` §8 |
+| 2026-11-16 | Banco único `data\database\sadgd.db` (v1 + migrações SAD-GD); Ollama e Tesseract portáteis em `ferramentas\` | `docs/fases/FASE_03.md` |
 
 ### Convenção de pastas (tudo dentro do projeto)
 
@@ -50,6 +51,8 @@ Variáveis de ambiente que forçam caches para dentro do projeto (definidas em `
 - O caminho do projeto contém espaço (`GESTAO_ CONTRATO`): sempre usar aspas.
 - `.ps1` para PS 5.1 precisam de UTF-8 com BOM.
 - `gh` CLI ainda não instalado (pendência D5).
+- Nunca editar caminhos Windows com `sed` (as barras invertidas são consumidas); usar PowerShell `[IO.File]` ou Python.
+- Ollama do projeto: `scripts\sadgd\ollama.ps1 -Acao iniciar|parar|status`; Tesseract: `scripts\sadgd\tesseract.ps1`.
 
 ---
 

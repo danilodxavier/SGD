@@ -4,7 +4,7 @@
 |---|---|
 | Período | 2026-11-16 |
 | Executor | Claude Code (`claude-opus-5-5`) |
-| Situação | **Aguardando aprovação** |
+| Situação | **Aprovada em 2026-11-16** — ADRs 003–013 aceitos |
 
 ## 1. Planejamento da sprint
 
@@ -79,4 +79,4 @@ Itens do backlog: SAD-010 a SAD-021. Objetivo: definir a arquitetura-alvo verifi
 
 ## 8. Aprovação
 
-- [ ] Aprovado por: ______ em ____/____/______
+- [x] Aprovado pelo responsável em 2026-11-16: "Aprovado. Troque o que for necessário do projeto antigo, a fim de que o novo projeto seja entregue na íntegra e atenda a todas as expectativas."

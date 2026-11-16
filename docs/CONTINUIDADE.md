@@ -39,4 +39,13 @@ cd "D:\AGENTES\INTELIGENCIA_DOCUMENTAL_GESTAO_ CONTRATO"
 |---|---|
 | branch `backup/pre-reestruturacao`, tag `v1.0.0-pre-reestruturacao` | Código v1 antes da reestruturação |
 | `BACKUP\pre-reestruturacao\documents.db` | Banco v1 original (6,6 GB, antes do expurgo) — não versionado |
+| `BACKUP\pre-reestruturacao\documents_v1_zerado.db` | Banco v1 após a exclusão dos documentos, antes da unificação em `sadgd.db` |
+
+## Serviços locais
+
+| Serviço | Como controlar | Endereço |
+|---|---|---|
+| Painel/API | `start.bat` / `stop.bat` | http://127.0.0.1:8000 |
+| Ollama (LLM local) | `scripts\sadgd\ollama.ps1 -Acao iniciar|parar|status|modelo` (o `start.bat` já inicia) | http://127.0.0.1:11434 |
+| Phoenix (traces, opcional) | `.venv\Scripts\python.exe -m phoenix.server.main serve` | http://127.0.0.1:6006 |
 | `BACKUP\pre-reestruturacao\env.backup` | `.env` da v1 — não versionado |

@@ -24,3 +24,4 @@ BACKUP/
 # SAD-GD: pesos de modelos e caches de IA ficam no projeto, fora do Git (ADR-001)
 modelos/
 ferramentas/
+data/observabilidade/
