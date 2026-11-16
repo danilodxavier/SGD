@@ -5,11 +5,11 @@
 | Campo | Valor |
 |---|---|
 | Atualizado em | 2026-11-16 |
-| Fase atual | **Fase 3 — Infraestrutura local** |
+| Fase atual | **Fase 4 — Ingestão e base de conhecimento** |
 | Situação da fase | Entregáveis concluídos — **aguardando aprovação do responsável** |
-| Última tarefa concluída | Ambiente IA local (torch CUDA, Ollama, Tesseract, Phoenix), camadas domain/application/infrastructure, banco único `sadgd.db`, CI, diagnóstico (`docs/fases/FASE_03.md`) |
-| Próxima tarefa exata | Após "Aprovado, siga para a Fase 4": (1) SAD-040 coletar corpus público com `corpus\MANIFESTO.csv`; (2) SAD-041 gerador do corpus sintético com gabarito; (3) SAD-043 chunking estrutural jurídico com TDD em `app/application/ingestao/`; (4) SAD-042 OCR Tesseract (CER); (5) SAD-044 metadados; (6) SAD-045 embeddings bge-m3 + `trechos_vec` incremental |
-| Bloqueios | Somente o Kanban (SAD-003) depende do `gh` com escopo `project`. Repositório: https://github.com/danilodxavier/SGD — CI verde (run 43928089876: segredos ✅, lint/testes/cobertura ✅) |
+| Última tarefa concluída | Corpus (69 públicos + 117 sintéticos com gabarito), chunking estrutural, metadados, OCR Tesseract, indexação híbrida com bge-m3 (`docs/fases/FASE_04.md`) |
+| Próxima tarefa exata | Após "Aprovado, siga para a Fase 5": (1) SAD-050 busca híbrida BM25 + densa com RRF, filtro de vigência e reranker bge-reranker-v2-m3 em `app/application/recuperacao/`; (2) SAD-052 golden set ≥ 100 perguntas derivado do `GABARITO.json` + perguntas sobre o corpus público, split 30/70; (3) SAD-053 `scripts/sadgd/avaliar.py` (P@k, R@k, MRR, nDCG, citações, recusa); (4) SAD-054 baseline v1 × v2; (5) SAD-051 geração com citação; (6) SAD-055 benchmark de LLMs |
+| Bloqueios | Kanban (SAD-003) depende do `gh`. RAM livre da máquina baixa (1–2 GB): rodar indexações com `--max-minutos 7.5` |
 
 ## Histórico de fases
 
@@ -17,13 +17,16 @@
 |---|---|---|
 | 0 — Auditoria | ✅ Aprovada em 2026-11-16 | `docs/fases/FASE_00.md` |
 | 1 — Iniciação e planejamento | ✅ Aprovada em 2026-11-16 | `docs/fases/FASE_01.md` |
-| 2 — Arquitetura | ✅ Aprovada em 2026-11-16 (ADRs 003–013 aceitos) | `docs/fases/FASE_02.md` |
-| 3 — Infraestrutura local | Aguardando aprovação | `docs/fases/FASE_03.md` |
+| 2 — Arquitetura | ✅ Aprovada em 2026-11-16 | `docs/fases/FASE_02.md` |
+| 3 — Infraestrutura local | ✅ Aprovada em 2026-11-16 | `docs/fases/FASE_03.md` |
+| 4 — Ingestão e base de conhecimento | Aguardando aprovação | `docs/fases/FASE_04.md` |
 
 ## Fatos-chave para retomada
 
-- Diretrizes: **gratuito, máquina local, tudo em subpastas do projeto** (ADR-001); autorização para **substituir componentes v1** conforme a arquitetura (aprovação da Fase 2).
-- Banco único: `data\database\sadgd.db` (tabelas v1 + migrações SAD-GD 001/002). `init_db()` aplica as migrações.
-- Ferramentas: Ollama portátil (`ferramentas\ollama`, `scripts\sadgd\ollama.ps1`), modelo `sadgd-qwen2.5-7b`; Tesseract (`ferramentas\tesseract`, com `por`); Phoenix opcional (`127.0.0.1:6006`).
-- Testes: `.\.venv\Scripts\python.exe -m pytest -q` (300 passam); lint: `python -m ruff check .`; diagnóstico: `diagnostico.bat`.
-- Restauração do código v1: branch `backup/pre-reestruturacao`, tag `v1.0.0-pre-reestruturacao`; banco original em `BACKUP\pre-reestruturacao\`.
+- Diretrizes: gratuito, máquina local, tudo em subpastas do projeto (ADR-001); autorização para substituir componentes v1.
+- Repositório: https://github.com/danilodxavier/SGD (público). CI: segredos + lint + testes + cobertura.
+- Banco: `data\database\sadgd.db` — 186 documentos, 5.691 trechos/vetores (bge-m3, 1024 dims), 96 normas.
+- Indexar: `.venv\Scripts\python.exe scripts\sadgd\indexar.py [--max-minutos 7.5]`. Modelo: `scripts\sadgd\preparar_bge_m3.py` (cópia local em `modelos\bge-m3`).
+- Corpus: `corpus\publico` (`coletar_corpus_publico.py`), `corpus\sintetico` (`gerar_corpus_sintetico.py`, gabarito em `GABARITO.json`), manifesto em `corpus\MANIFESTO.csv`.
+- Avaliações da fase: `scripts\sadgd\avaliar_{chunking,metadados,ocr}.py` → `avaliacao\execucoes\fase4_*.json`.
+- Embeddings em **float32** (fp16 é 5× mais lento nesta GPU); `HF_DEACTIVATE_ASYNC_LOAD=1` é obrigatório (crash nativo sem ele).

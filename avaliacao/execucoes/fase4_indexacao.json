@@ -1,0 +1,63 @@
+{
+  "execucoes": [
+    {
+      "id": 1,
+      "inicio": "2026-11-16T16:13:31",
+      "fim": "2026-11-16T16:21:09",
+      "raiz": "D:\\AGENTES\\INTELIGENCIA_DOCUMENTAL_GESTAO_ CONTRATO\\corpus",
+      "encontrados": 8,
+      "novos": 0,
+      "alterados": 8,
+      "inalterados": 0,
+      "removidos": 0,
+      "erros": 0,
+      "trechos": 1004,
+      "vetores": 1004,
+      "segundos": 458.0,
+      "modelo_embedding": "BAAI/bge-m3"
+    },
+    {
+      "id": 2,
+      "inicio": "2026-11-16T16:23:59",
+      "fim": "2026-11-16T16:30:47",
+      "raiz": "D:\\AGENTES\\INTELIGENCIA_DOCUMENTAL_GESTAO_ CONTRATO\\corpus",
+      "encontrados": 186,
+      "novos": 144,
+      "alterados": 34,
+      "inalterados": 8,
+      "removidos": 0,
+      "erros": 0,
+      "trechos": 4687,
+      "vetores": 4687,
+      "segundos": 408.4,
+      "modelo_embedding": "BAAI/bge-m3"
+    },
+    {
+      "id": 3,
+      "inicio": "2026-11-16T16:31:06",
+      "fim": "2026-11-16T16:31:06",
+      "raiz": "D:\\AGENTES\\INTELIGENCIA_DOCUMENTAL_GESTAO_ CONTRATO\\corpus",
+      "encontrados": 186,
+      "novos": 0,
+      "alterados": 0,
+      "inalterados": 186,
+      "removidos": 0,
+      "erros": 0,
+      "trechos": 0,
+      "vetores": 0,
+      "segundos": 0.0,
+      "modelo_embedding": ""
+    }
+  ],
+  "totais": {
+    "documentos": 186,
+    "trechos": 5691,
+    "normas": 96,
+    "normas_revogadas": 8,
+    "trechos_revogados": 811
+  },
+  "por_origem": {
+    "publico": 69,
+    "sintetico": 117
+  }
+}

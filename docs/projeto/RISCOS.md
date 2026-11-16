@@ -5,7 +5,7 @@ Escala: Probabilidade (P) e Impacto (I) de 1 (muito baixo) a 5 (muito alto). Exp
 | ID | Risco | Categoria | P | I | Exp. | Resposta | Plano / gatilho | Dono |
 |---|---|---|---|---|---|---|---|---|
 | R01 | LLM local 7–8B (6 GB VRAM) com qualidade insuficiente para F2 multiagentes | Técnico | 4 | 5 | **20** | Mitigar | Avaliar em S2 modelos 7–14B quantizados (Qwen2.5/Qwen3, Llama 3.x, Gemma); para o **corpus acadêmico**, permitir free tier em nuvem (Gemini/Groq/OpenRouter) via abstração de provedor; gatilho: faithfulness F2 < 0,85 na validação | Arquiteto |
-| R02 | 16 GB de RAM insuficientes para LLM + embeddings + reranker simultâneos | Técnico | 3 | 4 | 12 | Mitigar | Carregar modelos sob demanda; LLM na GPU, embeddings em lote fora do horário de consulta; quantização | Arquiteto |
+| R02 | 16 GB de RAM insuficientes para LLM + embeddings + reranker simultâneos (**materializado** na Fase 4: 1–2 GB livres) | Técnico | 5 | 3 | 15 | Mitigar | Carregar modelos sob demanda; LLM na GPU, embeddings em lote fora do horário de consulta; quantização | Arquiteto |
 | R03 | Golden set (≥ 100 perguntas) atrasa por depender de curadoria manual | Cronograma | 4 | 4 | **16** | Mitigar | Gerar rascunhos semi-automáticos a partir do corpus sintético (gabarito conhecido) e revisar amostras; começar em S3 | Responsável + agente |
 | R04 | Limites/alterações de cota em free tiers externos | Externo | 3 | 3 | 9 | Mitigar | Provedor local como padrão; cache semântico; repetição com backoff; avaliação com cache de respostas | Arquiteto |
 | R05 | Vazamento de dados pessoais (LGPD) para serviço externo | Legal | 2 | 5 | 10 | Evitar | ADR-002: provedor externo bloqueado para base real (RNF-08, teste automatizado); anonimização (RF-25) | Arquiteto |

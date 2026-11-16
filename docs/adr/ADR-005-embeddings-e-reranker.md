@@ -38,3 +38,11 @@ Não fazer ajuste fino de início. **Portão de decisão na Fase 5:** se Recall@
 | multilingual-e5-large | 512 tokens, cortaria dispositivos longos |
 | Embeddings via API (Gemini/OpenAI) | Envio externo de todo o corpus; viola ADR-002 para dados reais |
 | Esparso do bge-m3 no lugar de BM25 | FTS5 já existe, é exato para números e explicável; reavaliar se houver ganho |
+
+## Implementação (Fase 4, 2026-11-16)
+
+- Pesos oficiais vêm como `pytorch_model.bin`; `scripts/sadgd/preparar_bge_m3.py` baixa e converte para `modelos/bge-m3/model.safetensors` (cópia local, sem rede em execução).
+- **Carga sequencial obrigatória** (`HF_DEACTIVATE_ASYNC_LOAD=1`): a carga paralela do transformers 5 causou `access violation` (CPU e GPU) neste ambiente.
+- **float32 na GPU**: na GTX 1660 SUPER, fp16 rendeu 3,8 trechos/s e fp32 19,0 trechos/s (sem NaN). VRAM ≈ 2,3 GB, com o Ollama descarregado automaticamente antes do lote.
+- Texto do embedding = título + caminho hierárquico + caput + trecho literal (o texto citado no banco permanece literal).
+- Corpus indexado: 5.691 trechos/vetores. Reranker será implementado na Fase 5.

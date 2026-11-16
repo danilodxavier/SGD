@@ -1,0 +1,98 @@
+{
+  "sintetico": {
+    "documentos": 117,
+    "acuracia_tipo": 1.0,
+    "acuracia_numero": 1.0,
+    "numero_nao_extraivel": 7,
+    "acuracia_data": 0.9829
+  },
+  "publico": {
+    "documentos": 69,
+    "acuracia_tipo": 1.0,
+    "acuracia_numero": 1.0,
+    "numero_nao_extraivel": 0,
+    "acuracia_data": 0.9855
+  },
+  "todos": {
+    "documentos": 186,
+    "acuracia_tipo": 1.0,
+    "acuracia_numero": 1.0,
+    "numero_nao_extraivel": 7,
+    "acuracia_data": 0.9839
+  },
+  "erros_tipo": {},
+  "erros_detalhe": [
+    {
+      "origem": "sintetico",
+      "arquivo": "sintetico/F03_contrato_por/S215_relatorio_fiscalizacao_032-2025.pdf",
+      "formato": "pdf_digitalizado",
+      "tipo_ouro": "relatorio_fiscalizacao",
+      "tipo": "relatorio_fiscalizacao",
+      "numero_ouro": "032/2025",
+      "numero": "032/2025",
+      "numero_extraivel": true,
+      "data_ouro": "2025-01-01",
+      "data": "2025-01-10"
+    },
+    {
+      "origem": "sintetico",
+      "arquivo": "sintetico/F08_contrato_mineral/S242_relatorio_fiscalizacao_037-2024.pdf",
+      "formato": "pdf_digitalizado",
+      "tipo_ouro": "relatorio_fiscalizacao",
+      "tipo": "relatorio_fiscalizacao",
+      "numero_ouro": "037/2024",
+      "numero": "037/2024",
+      "numero_extraivel": true,
+      "data_ouro": "2023-11-01",
+      "data": "2023-11-10"
+    },
+    {
+      "origem": "publico",
+      "arquivo": "publico/federal/constituicao/cf1988.htm",
+      "formato": "html",
+      "tipo_ouro": "constituicao",
+      "tipo": "constituicao",
+      "numero_ouro": "1988",
+      "numero": "1988",
+      "numero_extraivel": true,
+      "data_ouro": "1988",
+      "data": null,
+      "situacao": null,
+      "evidencia_situacao": null
+    }
+  ],
+  "normas_revogadas_por_evidencia": [
+    [
+      "publico/federal/decreto/d11317_2022.htm",
+      "Revogado pelo Decreto nº 11.871, de 2023"
+    ],
+    [
+      "publico/federal/decreto/d11871_2023.htm",
+      "Revogado pelo Decreto nº 12.343, de 2024"
+    ],
+    [
+      "publico/federal/decreto/d2271_1997.htm",
+      "Revogado pelo Decreto nº 9.507, de 2018 (Vigência"
+    ],
+    [
+      "publico/federal/decreto/d6170_2007.htm",
+      "Revogado pelo Decreto nº 11.531, de 2023"
+    ],
+    [
+      "publico/federal/decreto/d7892_2013.htm",
+      "Revogado pelo Decreto nº 11.462, de 2023"
+    ],
+    [
+      "publico/federal/decreto/d8420_2015.htm",
+      "Revogado pelo Decreto nº 11.129, de 2022"
+    ],
+    [
+      "publico/federal/lei/lei10520_2002.htm",
+      "Revogado pela Lei nº 14.133, de 2021"
+    ],
+    [
+      "publico/federal/lei/lei8666_1993.htm",
+      "Revogado pela Lei nº 14.133, de 2021"
+    ]
+  ]
+}

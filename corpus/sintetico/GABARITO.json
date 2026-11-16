@@ -1,0 +1,6114 @@
+{
+  "versao": 1,
+  "convencao_relacoes": "o documento de DESTINO contém a evidência e age sobre a ORIGEM (ex.: destino adita/altera/revoga/substitui/regulamenta/retoma/contradiz/dá continuidade à origem; destino é fundamentado pela origem). 'PUB:<arquivo>' referencia documento do corpus público.",
+  "gerado_por": "scripts/sadgd/gerar_corpus_sintetico.py",
+  "aviso": "DOCUMENTO FICTÍCIO — corpus acadêmico SAD-GD. Não corresponde a ato oficial; nomes, números, CNPJ e CPF são inventados.",
+  "documentos": [
+    {
+      "id": "S001",
+      "arquivo": "sintetico/P01_limpeza/S001_contrato_012-2023.docx",
+      "processo": "P01_limpeza",
+      "formato": "docx",
+      "tipo_documental": "contrato",
+      "especie": null,
+      "numero": "012/2023",
+      "data": "2023-03-01",
+      "titulo": "CONTRATO Nº 012/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "objeto": "prestação de serviços continuados de limpeza e conservação predial na sede da SEGEP/VV",
+        "contratada": "Brilho Serviços Gerais Ltda.",
+        "cnpj": "41.258.763/0001-14",
+        "valor_global": "R$ 1.200.000,00",
+        "vigencia_inicio": "01/03/2023",
+        "vigencia_fim": "29/02/2024",
+        "processo": "SEGEP-PRO-2023/00012",
+        "data_assinatura": "27/02/2023"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. O presente contrato tem por objeto "
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O prazo de vigência deste contrato "
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.2",
+          "tipo": "sub",
+          "inicio": "2.2. A prorrogação dependerá de justific"
+        },
+        {
+          "rotulo": "cláusula terceira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA TERCEIRA – DO VALOR"
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.1",
+          "tipo": "sub",
+          "inicio": "3.1. O valor global do contrato é de R$ "
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.2",
+          "tipo": "sub",
+          "inicio": "3.2. O valor mensal estimado é de R$ 100"
+        },
+        {
+          "rotulo": "cláusula quarta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUARTA – DA DOTAÇÃO ORÇAMENTÁRI"
+        },
+        {
+          "rotulo": "cláusula quarta, item 4.1",
+          "tipo": "sub",
+          "inicio": "4.1. As despesas correrão à conta do Pro"
+        },
+        {
+          "rotulo": "cláusula quinta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUINTA – DO PAGAMENTO"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.1",
+          "tipo": "sub",
+          "inicio": "5.1. O pagamento será efetuado em até 30"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.2",
+          "tipo": "sub",
+          "inicio": "5.2. Nenhum pagamento será realizado sem"
+        },
+        {
+          "rotulo": "cláusula sexta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEXTA – DO REAJUSTE"
+        },
+        {
+          "rotulo": "cláusula sexta, item 6.1",
+          "tipo": "sub",
+          "inicio": "6.1. Os preços serão reajustáveis após 1"
+        },
+        {
+          "rotulo": "cláusula sétima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SÉTIMA – DA FISCALIZAÇÃO"
+        },
+        {
+          "rotulo": "cláusula sétima, item 7.1",
+          "tipo": "sub",
+          "inicio": "7.1. A execução será acompanhada por fis"
+        },
+        {
+          "rotulo": "cláusula oitava",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA OITAVA – DAS SANÇÕES"
+        },
+        {
+          "rotulo": "cláusula oitava, item 8.1",
+          "tipo": "sub",
+          "inicio": "8.1. Pela inexecução total ou parcial, a"
+        },
+        {
+          "rotulo": "cláusula nona",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA NONA – DA EXTINÇÃO"
+        },
+        {
+          "rotulo": "cláusula nona, item 9.1",
+          "tipo": "sub",
+          "inicio": "9.1. O contrato poderá ser extinto antec"
+        },
+        {
+          "rotulo": "cláusula décima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA DÉCIMA – DO FORO"
+        },
+        {
+          "rotulo": "cláusula décima, item 10.1",
+          "tipo": "sub",
+          "inicio": "10.1. Fica eleito o foro da Comarca da C"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S002",
+      "arquivo": "sintetico/P01_limpeza/S002_1o_termo_aditivo_012-2023.docx",
+      "processo": "P01_limpeza",
+      "formato": "docx",
+      "tipo_documental": "aditivo",
+      "especie": null,
+      "numero": "1º TA ao Contrato 012/2023",
+      "data": "2024-02-20",
+      "titulo": "PRIMEIRO TERMO ADITIVO AO CONTRATO Nº 012/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "vigencia_fim": "28/02/2025",
+        "prorrogacao_meses": 12
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. O presente termo aditivo tem por ob"
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA PRORROGAÇÃO"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. Fica prorrogada a vigência do Contr"
+        },
+        {
+          "rotulo": "cláusula terceira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA TERCEIRA – DA RATIFICAÇÃO"
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.1",
+          "tipo": "sub",
+          "inicio": "3.1. Ficam ratificadas as demais cláusul"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S003",
+      "arquivo": "sintetico/P01_limpeza/S003_apostilamento_001-2024.pdf",
+      "processo": "P01_limpeza",
+      "formato": "pdf",
+      "tipo_documental": "apostilamento",
+      "especie": null,
+      "numero": "001/2024",
+      "data": "2024-03-15",
+      "titulo": "APOSTILAMENTO Nº 001/2024 AO CONTRATO Nº 012/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "valor_mensal": "R$ 104.500,00",
+        "indice": "IPCA 4,50%"
+      },
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S004",
+      "arquivo": "sintetico/P01_limpeza/S004_2o_termo_aditivo_012-2023.pdf",
+      "processo": "P01_limpeza",
+      "formato": "pdf",
+      "tipo_documental": "aditivo",
+      "especie": null,
+      "numero": "2º TA ao Contrato 012/2023",
+      "data": "2024-08-05",
+      "titulo": "SEGUNDO TERMO ADITIVO AO CONTRATO Nº 012/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "valor_mensal": "R$ 114.950,00",
+        "acrescimo": "10%"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. O presente termo aditivo tem por ob"
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DO VALOR"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. Em decorrência do acréscimo, o valo"
+        },
+        {
+          "rotulo": "cláusula terceira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA TERCEIRA – DA RATIFICAÇÃO"
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.1",
+          "tipo": "sub",
+          "inicio": "3.1. Ficam ratificadas as demais cláusul"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S005",
+      "arquivo": "sintetico/P01_limpeza/S005_notificacao_023-2024.txt",
+      "processo": "P01_limpeza",
+      "formato": "txt",
+      "tipo_documental": "notificacao",
+      "especie": null,
+      "numero": "023/2024",
+      "data": "2024-10-02",
+      "titulo": "NOTIFICAÇÃO Nº 023/2024 — CONTRATO Nº 012/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S006",
+      "arquivo": "sintetico/P01_limpeza/S006_termo_rescisao_002-2024.docx",
+      "processo": "P01_limpeza",
+      "formato": "docx",
+      "tipo_documental": "termo_rescisao",
+      "especie": null,
+      "numero": "002/2024",
+      "data": "2024-11-18",
+      "titulo": "TERMO DE RESCISÃO UNILATERAL DO CONTRATO Nº 012/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "data_extincao": "30/11/2024"
+      },
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S010",
+      "arquivo": "sintetico/P02_ti/S010_contrato_031-2023.pdf",
+      "processo": "P02_ti",
+      "formato": "pdf",
+      "tipo_documental": "contrato",
+      "especie": null,
+      "numero": "031/2023",
+      "data": "2023-07-01",
+      "titulo": "CONTRATO Nº 031/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "objeto": "prestação de serviços de suporte técnico e sustentação do sistema de protocolo eletrônico",
+        "contratada": "Nuvem Clara Tecnologia S.A.",
+        "cnpj": "63.014.527/0001-95",
+        "valor_global": "R$ 960.000,00",
+        "vigencia_inicio": "01/07/2023",
+        "vigencia_fim": "30/06/2024",
+        "processo": "SEGEP-PRO-2023/00031",
+        "data_assinatura": "29/06/2023"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. O presente contrato tem por objeto "
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O prazo de vigência deste contrato "
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.2",
+          "tipo": "sub",
+          "inicio": "2.2. A prorrogação dependerá de justific"
+        },
+        {
+          "rotulo": "cláusula terceira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA TERCEIRA – DO VALOR"
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.1",
+          "tipo": "sub",
+          "inicio": "3.1. O valor global do contrato é de R$ "
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.2",
+          "tipo": "sub",
+          "inicio": "3.2. O valor mensal estimado é de R$ 80."
+        },
+        {
+          "rotulo": "cláusula quarta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUARTA – DA DOTAÇÃO ORÇAMENTÁRI"
+        },
+        {
+          "rotulo": "cláusula quarta, item 4.1",
+          "tipo": "sub",
+          "inicio": "4.1. As despesas correrão à conta do Pro"
+        },
+        {
+          "rotulo": "cláusula quinta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUINTA – DO PAGAMENTO"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.1",
+          "tipo": "sub",
+          "inicio": "5.1. O pagamento será efetuado em até 30"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.2",
+          "tipo": "sub",
+          "inicio": "5.2. Nenhum pagamento será realizado sem"
+        },
+        {
+          "rotulo": "cláusula sexta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEXTA – DO REAJUSTE"
+        },
+        {
+          "rotulo": "cláusula sexta, item 6.1",
+          "tipo": "sub",
+          "inicio": "6.1. Os preços serão reajustáveis após 1"
+        },
+        {
+          "rotulo": "cláusula sétima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SÉTIMA – DA FISCALIZAÇÃO"
+        },
+        {
+          "rotulo": "cláusula sétima, item 7.1",
+          "tipo": "sub",
+          "inicio": "7.1. A execução será acompanhada por fis"
+        },
+        {
+          "rotulo": "cláusula oitava",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA OITAVA – DAS SANÇÕES"
+        },
+        {
+          "rotulo": "cláusula oitava, item 8.1",
+          "tipo": "sub",
+          "inicio": "8.1. Pela inexecução total ou parcial, a"
+        },
+        {
+          "rotulo": "cláusula nona",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA NONA – DA EXTINÇÃO"
+        },
+        {
+          "rotulo": "cláusula nona, item 9.1",
+          "tipo": "sub",
+          "inicio": "9.1. O contrato poderá ser extinto antec"
+        },
+        {
+          "rotulo": "cláusula décima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA DÉCIMA – DO FORO"
+        },
+        {
+          "rotulo": "cláusula décima, item 10.1",
+          "tipo": "sub",
+          "inicio": "10.1. Fica eleito o foro da Comarca da C"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S011",
+      "arquivo": "sintetico/P02_ti/S011_ordem_suspensao_004-2023.txt",
+      "processo": "P02_ti",
+      "formato": "txt",
+      "tipo_documental": "ordem_suspensao",
+      "especie": null,
+      "numero": "004/2023",
+      "data": "2023-10-10",
+      "titulo": "ORDEM DE SUSPENSÃO Nº 004/2023 — CONTRATO Nº 031/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S012",
+      "arquivo": "sintetico/P02_ti/S012_ordem_reinicio_005-2023.txt",
+      "processo": "P02_ti",
+      "formato": "txt",
+      "tipo_documental": "ordem_reinicio",
+      "especie": null,
+      "numero": "005/2023",
+      "data": "2023-12-04",
+      "titulo": "ORDEM DE REINÍCIO Nº 005/2023 — CONTRATO Nº 031/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S013",
+      "arquivo": "sintetico/P02_ti/S013_1o_termo_aditivo_031-2023.docx",
+      "processo": "P02_ti",
+      "formato": "docx",
+      "tipo_documental": "aditivo",
+      "especie": null,
+      "numero": "1º TA ao Contrato 031/2023",
+      "data": "2024-06-20",
+      "titulo": "PRIMEIRO TERMO ADITIVO AO CONTRATO Nº 031/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "vigencia_fim": "24/08/2025"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. Prorrogação da vigência do Contrato"
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. A vigência passa a encerrar-se em 2"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S020",
+      "arquivo": "sintetico/P03_vigilancia/S020_contrato_044-2023.docx",
+      "processo": "P03_vigilancia",
+      "formato": "docx",
+      "tipo_documental": "contrato",
+      "especie": null,
+      "numero": "044/2023",
+      "data": "2023-09-01",
+      "titulo": "CONTRATO Nº 044/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "objeto": "prestação de serviços de vigilância patrimonial armada e desarmada",
+        "contratada": "Guardião Segurança Patrimonial Ltda.",
+        "cnpj": "27.840.396/0001-31",
+        "valor_global": "R$ 2.340.000,00",
+        "vigencia_inicio": "01/09/2023",
+        "vigencia_fim": "31/08/2025",
+        "processo": "SEGEP-PRO-2023/00044",
+        "data_assinatura": "30/08/2023"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. O presente contrato tem por objeto "
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O prazo de vigência deste contrato "
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.2",
+          "tipo": "sub",
+          "inicio": "2.2. A prorrogação dependerá de justific"
+        },
+        {
+          "rotulo": "cláusula terceira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA TERCEIRA – DO VALOR"
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.1",
+          "tipo": "sub",
+          "inicio": "3.1. O valor global do contrato é de R$ "
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.2",
+          "tipo": "sub",
+          "inicio": "3.2. O valor mensal estimado é de R$ 97."
+        },
+        {
+          "rotulo": "cláusula quarta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUARTA – DA DOTAÇÃO ORÇAMENTÁRI"
+        },
+        {
+          "rotulo": "cláusula quarta, item 4.1",
+          "tipo": "sub",
+          "inicio": "4.1. As despesas correrão à conta do Pro"
+        },
+        {
+          "rotulo": "cláusula quinta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUINTA – DO PAGAMENTO"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.1",
+          "tipo": "sub",
+          "inicio": "5.1. O pagamento será efetuado em até 30"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.2",
+          "tipo": "sub",
+          "inicio": "5.2. Nenhum pagamento será realizado sem"
+        },
+        {
+          "rotulo": "cláusula sexta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEXTA – DO REAJUSTE"
+        },
+        {
+          "rotulo": "cláusula sexta, item 6.1",
+          "tipo": "sub",
+          "inicio": "6.1. Os preços serão reajustáveis após 1"
+        },
+        {
+          "rotulo": "cláusula sétima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SÉTIMA – DA FISCALIZAÇÃO"
+        },
+        {
+          "rotulo": "cláusula sétima, item 7.1",
+          "tipo": "sub",
+          "inicio": "7.1. A execução será acompanhada por fis"
+        },
+        {
+          "rotulo": "cláusula oitava",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA OITAVA – DAS SANÇÕES"
+        },
+        {
+          "rotulo": "cláusula oitava, item 8.1",
+          "tipo": "sub",
+          "inicio": "8.1. Pela inexecução total ou parcial, a"
+        },
+        {
+          "rotulo": "cláusula nona",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA NONA – DA EXTINÇÃO"
+        },
+        {
+          "rotulo": "cláusula nona, item 9.1",
+          "tipo": "sub",
+          "inicio": "9.1. O contrato poderá ser extinto antec"
+        },
+        {
+          "rotulo": "cláusula décima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA DÉCIMA – DO FORO"
+        },
+        {
+          "rotulo": "cláusula décima, item 10.1",
+          "tipo": "sub",
+          "inicio": "10.1. Fica eleito o foro da Comarca da C"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S021",
+      "arquivo": "sintetico/P03_vigilancia/S021_relatorio_fiscalizacao_007-2024.docx",
+      "processo": "P03_vigilancia",
+      "formato": "docx",
+      "tipo_documental": "relatorio_fiscalizacao",
+      "especie": null,
+      "numero": "007/2024",
+      "data": "2024-03-08",
+      "titulo": "RELATÓRIO DE FISCALIZAÇÃO Nº 007/2024 — CONTRATO Nº 044/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "valor_global_declarado": "R$ 2.430.000,00"
+      },
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S022",
+      "arquivo": "sintetico/P03_vigilancia/S022_1o_termo_aditivo_044-2023.pdf",
+      "processo": "P03_vigilancia",
+      "formato": "pdf",
+      "tipo_documental": "aditivo",
+      "especie": null,
+      "numero": "1º TA ao Contrato 044/2023",
+      "data": "2025-08-15",
+      "titulo": "PRIMEIRO TERMO ADITIVO AO CONTRATO Nº 044/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "vigencia_fim": "31/08/2026",
+        "valor_prorrogacao": "R$ 1.216.800,00"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. Prorrogação do Contrato nº 044/2023"
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O término da vigência passa de 31/0"
+        },
+        {
+          "rotulo": "cláusula terceira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA TERCEIRA – DO VALOR"
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.1",
+          "tipo": "sub",
+          "inicio": "3.1. O valor do período prorrogado é de "
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S030",
+      "arquivo": "sintetico/P04_portarias_fiscalizacao/S030_portaria_010-2023.docx",
+      "processo": "P04_portarias_fiscalizacao",
+      "formato": "docx",
+      "tipo_documental": "portaria",
+      "especie": "portaria",
+      "numero": "010/2023",
+      "data": "2023-02-14",
+      "titulo": "PORTARIA Nº 010/2023, DE 14 DE FEVEREIRO DE 2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [
+        {
+          "rotulo": "art. 1º",
+          "tipo": "artigo",
+          "inicio": "Art. 1º Esta Portaria disciplina a fisca"
+        },
+        {
+          "rotulo": "art. 2º",
+          "tipo": "artigo",
+          "inicio": "Art. 2º Compete ao fiscal técnico do con"
+        },
+        {
+          "rotulo": "art. 2º, I",
+          "tipo": "sub",
+          "inicio": "I – acompanhar a execução do objeto e re"
+        },
+        {
+          "rotulo": "art. 2º, II",
+          "tipo": "sub",
+          "inicio": "II – atestar as notas fiscais no prazo d"
+        },
+        {
+          "rotulo": "art. 2º, III",
+          "tipo": "sub",
+          "inicio": "III – comunicar ao gestor as falhas que "
+        },
+        {
+          "rotulo": "art. 3º",
+          "tipo": "artigo",
+          "inicio": "Art. 3º O fiscal será designado por port"
+        },
+        {
+          "rotulo": "art. 3º, § 1º",
+          "tipo": "sub",
+          "inicio": "§ 1º A designação recairá preferencialme"
+        },
+        {
+          "rotulo": "art. 3º, § 2º",
+          "tipo": "sub",
+          "inicio": "§ 2º O fiscal substituto atuará nas ausê"
+        },
+        {
+          "rotulo": "art. 4º",
+          "tipo": "artigo",
+          "inicio": "Art. 4º Esta Portaria entra em vigor na "
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S031",
+      "arquivo": "sintetico/P04_portarias_fiscalizacao/S031_portaria_025-2024.docx",
+      "processo": "P04_portarias_fiscalizacao",
+      "formato": "docx",
+      "tipo_documental": "portaria",
+      "especie": "portaria",
+      "numero": "025/2024",
+      "data": "2024-05-06",
+      "titulo": "PORTARIA Nº 025/2024, DE 6 DE MAIO DE 2024",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [
+        {
+          "rotulo": "art. 1º",
+          "tipo": "artigo",
+          "inicio": "Art. 1º O inciso II do art. 2º da Portar"
+        },
+        {
+          "rotulo": "art. 2º",
+          "tipo": "artigo",
+          "inicio": "Art. 2º Esta Portaria entra em vigor na "
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S032",
+      "arquivo": "sintetico/P04_portarias_fiscalizacao/S032_portaria_040-2025.pdf",
+      "processo": "P04_portarias_fiscalizacao",
+      "formato": "pdf",
+      "tipo_documental": "portaria",
+      "especie": "portaria",
+      "numero": "040/2025",
+      "data": "2025-03-10",
+      "titulo": "PORTARIA Nº 040/2025, DE 10 DE MARÇO DE 2025",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [
+        {
+          "rotulo": "art. 1º",
+          "tipo": "artigo",
+          "inicio": "Art. 1º Fica instituído o Manual de Gest"
+        },
+        {
+          "rotulo": "art. 2º",
+          "tipo": "artigo",
+          "inicio": "Art. 2º O fiscal técnico atestará as not"
+        },
+        {
+          "rotulo": "art. 3º",
+          "tipo": "artigo",
+          "inicio": "Art. 3º Ficam revogadas a Portaria nº 01"
+        },
+        {
+          "rotulo": "art. 4º",
+          "tipo": "artigo",
+          "inicio": "Art. 4º Esta Portaria entra em vigor na "
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S040",
+      "arquivo": "sintetico/P05_in_pesquisa_precos/S040_instrucao_normativa_01-2022.docx",
+      "processo": "P05_in_pesquisa_precos",
+      "formato": "docx",
+      "tipo_documental": "instrucao_normativa",
+      "especie": "instrucao_normativa",
+      "numero": "01/2022",
+      "data": "2022-06-01",
+      "titulo": "INSTRUÇÃO NORMATIVA Nº 01/2022, DE 1º DE JUNHO DE 2022",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [
+        {
+          "rotulo": "art. 1º",
+          "tipo": "artigo",
+          "inicio": "Art. 1º A pesquisa de preços observará, "
+        },
+        {
+          "rotulo": "art. 1º, parágrafo único",
+          "tipo": "sub",
+          "inicio": "Parágrafo único. Admite-se número inferi"
+        },
+        {
+          "rotulo": "art. 2º",
+          "tipo": "artigo",
+          "inicio": "Art. 2º São parâmetros da pesquisa:"
+        },
+        {
+          "rotulo": "art. 2º, I",
+          "tipo": "sub",
+          "inicio": "I – painel de preços governamental;"
+        },
+        {
+          "rotulo": "art. 2º, II",
+          "tipo": "sub",
+          "inicio": "II – contratações similares de outros en"
+        },
+        {
+          "rotulo": "art. 2º, III",
+          "tipo": "sub",
+          "inicio": "III – cotações diretas com fornecedores."
+        },
+        {
+          "rotulo": "art. 3º",
+          "tipo": "artigo",
+          "inicio": "Art. 3º Esta Instrução Normativa entra e"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S041",
+      "arquivo": "sintetico/P05_in_pesquisa_precos/S041_instrucao_normativa_03-2025.docx",
+      "processo": "P05_in_pesquisa_precos",
+      "formato": "docx",
+      "tipo_documental": "instrucao_normativa",
+      "especie": "instrucao_normativa",
+      "numero": "03/2025",
+      "data": "2025-04-02",
+      "titulo": "INSTRUÇÃO NORMATIVA Nº 03/2025, DE 2 DE ABRIL DE 2025",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [
+        {
+          "rotulo": "art. 1º",
+          "tipo": "artigo",
+          "inicio": "Art. 1º Esta Instrução Normativa substit"
+        },
+        {
+          "rotulo": "art. 2º",
+          "tipo": "artigo",
+          "inicio": "Art. 2º A pesquisa de preços observará, "
+        },
+        {
+          "rotulo": "art. 2º, § 1º",
+          "tipo": "sub",
+          "inicio": "§ 1º Cotações com mais de 180 (cento e o"
+        },
+        {
+          "rotulo": "art. 2º, § 2º",
+          "tipo": "sub",
+          "inicio": "§ 2º A justificativa para número inferio"
+        },
+        {
+          "rotulo": "art. 3º",
+          "tipo": "artigo",
+          "inicio": "Art. 3º Esta Instrução Normativa entra e"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S050",
+      "arquivo": "sintetico/P06_lei_estadual_compras/S050_lei_11.205-2022.pdf",
+      "processo": "P06_lei_estadual_compras",
+      "formato": "pdf",
+      "tipo_documental": "lei",
+      "especie": "lei",
+      "numero": "11.205/2022",
+      "data": "2022-11-23",
+      "titulo": "LEI Nº 11.205/2022, DE 23 DE NOVEMBRO DE 2022",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [
+        {
+          "rotulo": "art. 1º",
+          "tipo": "artigo",
+          "inicio": "Art. 1º As contratações públicas estadua"
+        },
+        {
+          "rotulo": "art. 2º",
+          "tipo": "artigo",
+          "inicio": "Art. 2º São critérios de sustentabilidad"
+        },
+        {
+          "rotulo": "art. 2º, I",
+          "tipo": "sub",
+          "inicio": "I – menor impacto sobre recursos naturai"
+        },
+        {
+          "rotulo": "art. 2º, II",
+          "tipo": "sub",
+          "inicio": "II – preferência por materiais recicláve"
+        },
+        {
+          "rotulo": "art. 2º, III",
+          "tipo": "sub",
+          "inicio": "III – eficiência energética."
+        },
+        {
+          "rotulo": "art. 3º",
+          "tipo": "artigo",
+          "inicio": "Art. 3º O Poder Executivo regulamentará "
+        },
+        {
+          "rotulo": "art. 4º",
+          "tipo": "artigo",
+          "inicio": "Art. 4º Esta Lei entra em vigor na data "
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S051",
+      "arquivo": "sintetico/P06_lei_estadual_compras/S051_decreto_1.410-2023.docx",
+      "processo": "P06_lei_estadual_compras",
+      "formato": "docx",
+      "tipo_documental": "decreto",
+      "especie": "decreto",
+      "numero": "1.410/2023",
+      "data": "2023-04-18",
+      "titulo": "DECRETO Nº 1.410/2023, DE 18 DE ABRIL DE 2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [
+        {
+          "rotulo": "art. 1º",
+          "tipo": "artigo",
+          "inicio": "Art. 1º Este Decreto regulamenta a Lei n"
+        },
+        {
+          "rotulo": "art. 2º",
+          "tipo": "artigo",
+          "inicio": "Art. 2º Os termos de referência deverão "
+        },
+        {
+          "rotulo": "art. 2º, parágrafo único",
+          "tipo": "sub",
+          "inicio": "Parágrafo único. A ausência da seção dev"
+        },
+        {
+          "rotulo": "art. 3º",
+          "tipo": "artigo",
+          "inicio": "Art. 3º Este Decreto entra em vigor na d"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S052",
+      "arquivo": "sintetico/P06_lei_estadual_compras/S052_decreto_2.087-2025.txt",
+      "processo": "P06_lei_estadual_compras",
+      "formato": "txt",
+      "tipo_documental": "decreto",
+      "especie": "decreto",
+      "numero": "2.087/2025",
+      "data": "2025-02-11",
+      "titulo": "DECRETO Nº 2.087/2025, DE 11 DE FEVEREIRO DE 2025",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [
+        {
+          "rotulo": "art. 1º",
+          "tipo": "artigo",
+          "inicio": "Art. 1º Este Decreto regulamenta a Lei n"
+        },
+        {
+          "rotulo": "art. 2º",
+          "tipo": "artigo",
+          "inicio": "Art. 2º Os termos de referência conterão"
+        },
+        {
+          "rotulo": "art. 3º",
+          "tipo": "artigo",
+          "inicio": "Art. 3º Fica revogado o Decreto nº 1.410"
+        },
+        {
+          "rotulo": "art. 4º",
+          "tipo": "artigo",
+          "inicio": "Art. 4º Este Decreto entra em vigor na d"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S060",
+      "arquivo": "sintetico/P07_manutencao/S060_contrato_058-2023.docx",
+      "processo": "P07_manutencao",
+      "formato": "docx",
+      "tipo_documental": "contrato",
+      "especie": null,
+      "numero": "058/2023",
+      "data": "2023-07-01",
+      "titulo": "CONTRATO Nº 058/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "objeto": "prestação de serviços de manutenção predial preventiva e corretiva",
+        "contratada": "Construtora Alicerce Forte Ltda.",
+        "cnpj": "52.713.608/0001-67",
+        "valor_global": "R$ 780.000,00",
+        "vigencia_inicio": "01/07/2023",
+        "vigencia_fim": "30/06/2024",
+        "processo": "SEGEP-PRO-2023/00058",
+        "data_assinatura": "29/06/2023"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. O presente contrato tem por objeto "
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O prazo de vigência deste contrato "
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.2",
+          "tipo": "sub",
+          "inicio": "2.2. A prorrogação dependerá de justific"
+        },
+        {
+          "rotulo": "cláusula terceira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA TERCEIRA – DO VALOR"
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.1",
+          "tipo": "sub",
+          "inicio": "3.1. O valor global do contrato é de R$ "
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.2",
+          "tipo": "sub",
+          "inicio": "3.2. O valor mensal estimado é de R$ 65."
+        },
+        {
+          "rotulo": "cláusula quarta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUARTA – DA DOTAÇÃO ORÇAMENTÁRI"
+        },
+        {
+          "rotulo": "cláusula quarta, item 4.1",
+          "tipo": "sub",
+          "inicio": "4.1. As despesas correrão à conta do Pro"
+        },
+        {
+          "rotulo": "cláusula quinta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUINTA – DO PAGAMENTO"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.1",
+          "tipo": "sub",
+          "inicio": "5.1. O pagamento será efetuado em até 30"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.2",
+          "tipo": "sub",
+          "inicio": "5.2. Nenhum pagamento será realizado sem"
+        },
+        {
+          "rotulo": "cláusula sexta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEXTA – DO REAJUSTE"
+        },
+        {
+          "rotulo": "cláusula sexta, item 6.1",
+          "tipo": "sub",
+          "inicio": "6.1. Os preços serão reajustáveis após 1"
+        },
+        {
+          "rotulo": "cláusula sétima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SÉTIMA – DA FISCALIZAÇÃO"
+        },
+        {
+          "rotulo": "cláusula sétima, item 7.1",
+          "tipo": "sub",
+          "inicio": "7.1. A execução será acompanhada por fis"
+        },
+        {
+          "rotulo": "cláusula oitava",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA OITAVA – DAS SANÇÕES"
+        },
+        {
+          "rotulo": "cláusula oitava, item 8.1",
+          "tipo": "sub",
+          "inicio": "8.1. Pela inexecução total ou parcial, a"
+        },
+        {
+          "rotulo": "cláusula nona",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA NONA – DA EXTINÇÃO"
+        },
+        {
+          "rotulo": "cláusula nona, item 9.1",
+          "tipo": "sub",
+          "inicio": "9.1. O contrato poderá ser extinto antec"
+        },
+        {
+          "rotulo": "cláusula décima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA DÉCIMA – DO FORO"
+        },
+        {
+          "rotulo": "cláusula décima, item 10.1",
+          "tipo": "sub",
+          "inicio": "10.1. Fica eleito o foro da Comarca da C"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S061",
+      "arquivo": "sintetico/P07_manutencao/S061_1o_termo_aditivo_058-2023.docx",
+      "processo": "P07_manutencao",
+      "formato": "docx",
+      "tipo_documental": "aditivo",
+      "especie": null,
+      "numero": "1º TA ao Contrato 058/2023",
+      "data": "2024-06-10",
+      "titulo": "PRIMEIRO TERMO ADITIVO AO CONTRATO Nº 058/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "vigencia_fim": "30/06/2025"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. Prorrogação da vigência do Contrato"
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O término da vigência passa de 30/0"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S062",
+      "arquivo": "sintetico/P07_manutencao/S062_apostilamento_004-2024.pdf",
+      "processo": "P07_manutencao",
+      "formato": "pdf_digitalizado",
+      "tipo_documental": "apostilamento",
+      "especie": null,
+      "numero": "004/2024",
+      "data": "2024-09-02",
+      "titulo": "APOSTILAMENTO Nº 004/2024 AO CONTRATO Nº 058/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "vigencia_fim_declarada": "30/07/2025"
+      },
+      "dispositivos": [],
+      "texto_referencia": "DOCUMENTO FICTÍCIO — corpus acadêmico SAD-GD. Não corresponde a ato oficial; nomes, números, CNPJ e CPF são inventados.\n\nESTADO DE VALE VERDE\nSECRETARIA DE ESTADO DE GESTÃO PÚBLICA\n\nAPOSTILAMENTO Nº 004/2024 AO CONTRATO Nº 058/2023\n\nSECRETARIA DE ESTADO DE GESTÃO PÚBLICA — SEGEP/VV\n\nRegistra-se o reajuste de 3,90% (três inteiros e noventa centésimos por cento) pelo IPCA.\nPara fins de registro, a vigência do Contrato nº 058/2023 encerra-se em 30/07/2025.\n\nCapital do Estado de Vale Verde, 2 de setembro de 2024.\n\nPaulo Henrique Veloso\nCoordenador de Contratos"
+    },
+    {
+      "id": "S070",
+      "arquivo": "sintetico/P08_obra_escola/S070_contrato_072-2024.pdf",
+      "processo": "P08_obra_escola",
+      "formato": "pdf",
+      "tipo_documental": "contrato",
+      "especie": null,
+      "numero": "072/2024",
+      "data": "2024-02-01",
+      "titulo": "CONTRATO Nº 072/2024",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "objeto": "execução de obra de reforma e ampliação da Escola Estadual Pedra Azul",
+        "contratada": "Engenharia Horizonte Ltda.",
+        "cnpj": "38.506.214/0001-07",
+        "valor_global": "R$ 3.850.000,00",
+        "vigencia_inicio": "01/02/2024",
+        "vigencia_fim": "31/07/2025",
+        "processo": "SEGEP-PRO-2024/00072",
+        "data_assinatura": "30/01/2024"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. O presente contrato tem por objeto "
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O prazo de vigência deste contrato "
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.2",
+          "tipo": "sub",
+          "inicio": "2.2. A prorrogação dependerá de justific"
+        },
+        {
+          "rotulo": "cláusula terceira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA TERCEIRA – DO VALOR"
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.1",
+          "tipo": "sub",
+          "inicio": "3.1. O valor global do contrato é de R$ "
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.2",
+          "tipo": "sub",
+          "inicio": "3.2. O valor mensal estimado é de R$ 213"
+        },
+        {
+          "rotulo": "cláusula quarta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUARTA – DA DOTAÇÃO ORÇAMENTÁRI"
+        },
+        {
+          "rotulo": "cláusula quarta, item 4.1",
+          "tipo": "sub",
+          "inicio": "4.1. As despesas correrão à conta do Pro"
+        },
+        {
+          "rotulo": "cláusula quinta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUINTA – DO PAGAMENTO"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.1",
+          "tipo": "sub",
+          "inicio": "5.1. O pagamento será efetuado em até 30"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.2",
+          "tipo": "sub",
+          "inicio": "5.2. Nenhum pagamento será realizado sem"
+        },
+        {
+          "rotulo": "cláusula sexta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEXTA – DO REAJUSTE"
+        },
+        {
+          "rotulo": "cláusula sexta, item 6.1",
+          "tipo": "sub",
+          "inicio": "6.1. Os preços serão reajustáveis após 1"
+        },
+        {
+          "rotulo": "cláusula sétima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SÉTIMA – DA FISCALIZAÇÃO"
+        },
+        {
+          "rotulo": "cláusula sétima, item 7.1",
+          "tipo": "sub",
+          "inicio": "7.1. A execução será acompanhada por fis"
+        },
+        {
+          "rotulo": "cláusula oitava",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA OITAVA – DAS SANÇÕES"
+        },
+        {
+          "rotulo": "cláusula oitava, item 8.1",
+          "tipo": "sub",
+          "inicio": "8.1. Pela inexecução total ou parcial, a"
+        },
+        {
+          "rotulo": "cláusula nona",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA NONA – DO CRONOGRAMA"
+        },
+        {
+          "rotulo": "cláusula nona, item 9.1",
+          "tipo": "sub",
+          "inicio": "9.1. A execução observará o cronograma f"
+        },
+        {
+          "rotulo": "cláusula décima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA DÉCIMA – DA EXTINÇÃO"
+        },
+        {
+          "rotulo": "cláusula décima, item 10.1",
+          "tipo": "sub",
+          "inicio": "10.1. O contrato poderá ser extinto ante"
+        },
+        {
+          "rotulo": "cláusula décima primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA DÉCIMA PRIMEIRA – DO FORO"
+        },
+        {
+          "rotulo": "cláusula décima primeira, item 11.1",
+          "tipo": "sub",
+          "inicio": "11.1. Fica eleito o foro da Comarca da C"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S071",
+      "arquivo": "sintetico/P08_obra_escola/S071_termo_paralisacao_001-2024.pdf",
+      "processo": "P08_obra_escola",
+      "formato": "pdf_digitalizado",
+      "tipo_documental": "termo_paralisacao",
+      "especie": null,
+      "numero": "001/2024",
+      "data": "2024-06-03",
+      "titulo": "TERMO DE PARALISAÇÃO Nº 001/2024 — CONTRATO Nº 072/2024",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [],
+      "texto_referencia": "DOCUMENTO FICTÍCIO — corpus acadêmico SAD-GD. Não corresponde a ato oficial; nomes, números, CNPJ e CPF são inventados.\n\nESTADO DE VALE VERDE\nSECRETARIA DE ESTADO DE GESTÃO PÚBLICA\n\nTERMO DE PARALISAÇÃO Nº 001/2024 — CONTRATO Nº 072/2024\n\nSECRETARIA DE ESTADO DE GESTÃO PÚBLICA — SEGEP/VV\n\nFica paralisada a obra objeto do Contrato nº 072/2024 a partir de 04/06/2024, em razão de chuvas intensas que comprometeram as fundações.\nO prazo de execução ficará suspenso durante a paralisação.\n\nCapital do Estado de Vale Verde, 3 de junho de 2024.\n\nTatiana Rezende Coutinho\nEngenheiro Fiscal"
+    },
+    {
+      "id": "S072",
+      "arquivo": "sintetico/P08_obra_escola/S072_ordem_reinicio_002-2024.txt",
+      "processo": "P08_obra_escola",
+      "formato": "txt",
+      "tipo_documental": "ordem_reinicio",
+      "especie": null,
+      "numero": "002/2024",
+      "data": "2024-08-19",
+      "titulo": "ORDEM DE REINÍCIO Nº 002/2024 — CONTRATO Nº 072/2024",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S073",
+      "arquivo": "sintetico/P08_obra_escola/S073_1o_termo_aditivo_072-2024.docx",
+      "processo": "P08_obra_escola",
+      "formato": "docx",
+      "tipo_documental": "aditivo",
+      "especie": null,
+      "numero": "1º TA ao Contrato 072/2024",
+      "data": "2024-12-09",
+      "titulo": "PRIMEIRO TERMO ADITIVO AO CONTRATO Nº 072/2024",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "valor_global": "R$ 4.235.000,00"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. Acréscimo de serviços de drenagem n"
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DO VALOR"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O valor global do contrato passa de"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S074",
+      "arquivo": "sintetico/P08_obra_escola/S074_boletim_medicao_04-2025.txt",
+      "processo": "P08_obra_escola",
+      "formato": "txt",
+      "tipo_documental": "boletim_medicao",
+      "especie": null,
+      "numero": "04/2025",
+      "data": "2025-03-05",
+      "titulo": "BOLETIM DE MEDIÇÃO Nº 04/2025 — CONTRATO Nº 072/2024",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "valor_medicao": "R$ 412.300,00"
+      },
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S080",
+      "arquivo": "sintetico/P09_compra_mobiliario/S080_termo_referencia_015-2024.docx",
+      "processo": "P09_compra_mobiliario",
+      "formato": "docx",
+      "tipo_documental": "termo_referencia",
+      "especie": null,
+      "numero": "015/2024",
+      "data": "2024-04-03",
+      "titulo": "TERMO DE REFERÊNCIA Nº 015/2024 — AQUISIÇÃO DE MOBILIÁRIO",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "valor_estimado": "R$ 486.000,00"
+      },
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S081",
+      "arquivo": "sintetico/P09_compra_mobiliario/S081_parecer_juridico_118-2024.pdf",
+      "processo": "P09_compra_mobiliario",
+      "formato": "pdf",
+      "tipo_documental": "parecer_juridico",
+      "especie": null,
+      "numero": "118/2024",
+      "data": "2024-05-07",
+      "titulo": "PARECER JURÍDICO Nº 118/2024 — PROCESSO SEGEP-PRO-2024/00081",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S082",
+      "arquivo": "sintetico/P09_compra_mobiliario/S082_despacho_233-2024.txt",
+      "processo": "P09_compra_mobiliario",
+      "formato": "txt",
+      "tipo_documental": "despacho",
+      "especie": null,
+      "numero": "233/2024",
+      "data": "2024-05-14",
+      "titulo": "DESPACHO Nº 233/2024 — PROCESSO SEGEP-PRO-2024/00081",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S083",
+      "arquivo": "sintetico/P09_compra_mobiliario/S083_contrato_081-2024.docx",
+      "processo": "P09_compra_mobiliario",
+      "formato": "docx",
+      "tipo_documental": "contrato",
+      "especie": null,
+      "numero": "081/2024",
+      "data": "2024-07-01",
+      "titulo": "CONTRATO Nº 081/2024",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "objeto": "aquisição de mobiliário corporativo",
+        "contratada": "Móveis Ergonomia do Cerrado Ltda.",
+        "cnpj": "71.092.384/0001-68",
+        "valor_global": "R$ 452.700,00",
+        "vigencia_inicio": "01/07/2024",
+        "vigencia_fim": "31/12/2024",
+        "processo": "SEGEP-PRO-2024/00081",
+        "data_assinatura": "29/06/2024"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. O presente contrato tem por objeto "
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O prazo de vigência deste contrato "
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.2",
+          "tipo": "sub",
+          "inicio": "2.2. A prorrogação dependerá de justific"
+        },
+        {
+          "rotulo": "cláusula terceira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA TERCEIRA – DO VALOR"
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.1",
+          "tipo": "sub",
+          "inicio": "3.1. O valor global do contrato é de R$ "
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.2",
+          "tipo": "sub",
+          "inicio": "3.2. O valor mensal estimado é de R$ 75."
+        },
+        {
+          "rotulo": "cláusula quarta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUARTA – DA DOTAÇÃO ORÇAMENTÁRI"
+        },
+        {
+          "rotulo": "cláusula quarta, item 4.1",
+          "tipo": "sub",
+          "inicio": "4.1. As despesas correrão à conta do Pro"
+        },
+        {
+          "rotulo": "cláusula quinta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUINTA – DO PAGAMENTO"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.1",
+          "tipo": "sub",
+          "inicio": "5.1. O pagamento será efetuado em até 30"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.2",
+          "tipo": "sub",
+          "inicio": "5.2. Nenhum pagamento será realizado sem"
+        },
+        {
+          "rotulo": "cláusula sexta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEXTA – DO REAJUSTE"
+        },
+        {
+          "rotulo": "cláusula sexta, item 6.1",
+          "tipo": "sub",
+          "inicio": "6.1. Os preços serão reajustáveis após 1"
+        },
+        {
+          "rotulo": "cláusula sétima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SÉTIMA – DA FISCALIZAÇÃO"
+        },
+        {
+          "rotulo": "cláusula sétima, item 7.1",
+          "tipo": "sub",
+          "inicio": "7.1. A execução será acompanhada por fis"
+        },
+        {
+          "rotulo": "cláusula oitava",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA OITAVA – DAS SANÇÕES"
+        },
+        {
+          "rotulo": "cláusula oitava, item 8.1",
+          "tipo": "sub",
+          "inicio": "8.1. Pela inexecução total ou parcial, a"
+        },
+        {
+          "rotulo": "cláusula nona",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA NONA – DA EXTINÇÃO"
+        },
+        {
+          "rotulo": "cláusula nona, item 9.1",
+          "tipo": "sub",
+          "inicio": "9.1. O contrato poderá ser extinto antec"
+        },
+        {
+          "rotulo": "cláusula décima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA DÉCIMA – DO FORO"
+        },
+        {
+          "rotulo": "cláusula décima, item 10.1",
+          "tipo": "sub",
+          "inicio": "10.1. Fica eleito o foro da Comarca da C"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S090",
+      "arquivo": "sintetico/P10_convenio_capacitacao/S090_convenio_007-2023.pdf",
+      "processo": "P10_convenio_capacitacao",
+      "formato": "pdf",
+      "tipo_documental": "convenio",
+      "especie": null,
+      "numero": "007/2023",
+      "data": "2023-05-02",
+      "titulo": "CONVÊNIO Nº 007/2023 — CAPACITAÇÃO DE SERVIDORES",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "valor_repasse": "R$ 320.000,00",
+        "vigencia_fim": "01/05/2025"
+      },
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S091",
+      "arquivo": "sintetico/P10_convenio_capacitacao/S091_denuncia_convenio_001-2024.docx",
+      "processo": "P10_convenio_capacitacao",
+      "formato": "docx",
+      "tipo_documental": "denuncia_convenio",
+      "especie": null,
+      "numero": "001/2024",
+      "data": "2024-04-22",
+      "titulo": "TERMO DE DENÚNCIA DO CONVÊNIO Nº 007/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S092",
+      "arquivo": "sintetico/P10_convenio_capacitacao/S092_termo_retomada_001-2025.txt",
+      "processo": "P10_convenio_capacitacao",
+      "formato": "txt",
+      "tipo_documental": "termo_retomada",
+      "especie": null,
+      "numero": "001/2025",
+      "data": "2025-02-03",
+      "titulo": "TERMO DE RETOMADA DAS AÇÕES DO CONVÊNIO Nº 007/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S100",
+      "arquivo": "sintetico/P11_orientacoes_decisoes/S100_orientacao_02-2024.docx",
+      "processo": "P11_orientacoes_decisoes",
+      "formato": "docx",
+      "tipo_documental": "orientacao",
+      "especie": "orientacao",
+      "numero": "02/2024",
+      "data": "2024-01-15",
+      "titulo": "ORIENTAÇÃO NORMATIVA Nº 02/2024, DE 15 DE JANEIRO DE 2024",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [
+        {
+          "rotulo": "art. 1º",
+          "tipo": "artigo",
+          "inicio": "Art. 1º A prorrogação de contratos de se"
+        },
+        {
+          "rotulo": "art. 2º",
+          "tipo": "artigo",
+          "inicio": "Art. 2º A instrução do processo de prorr"
+        },
+        {
+          "rotulo": "art. 2º, I",
+          "tipo": "sub",
+          "inicio": "I – manifestação do fiscal sobre a quali"
+        },
+        {
+          "rotulo": "art. 2º, II",
+          "tipo": "sub",
+          "inicio": "II – pesquisa de preços que demonstre va"
+        },
+        {
+          "rotulo": "art. 2º, III",
+          "tipo": "sub",
+          "inicio": "III – comprovação de regularidade fiscal"
+        },
+        {
+          "rotulo": "art. 2º, IV",
+          "tipo": "sub",
+          "inicio": "IV – disponibilidade orçamentária."
+        },
+        {
+          "rotulo": "art. 3º",
+          "tipo": "artigo",
+          "inicio": "Art. 3º Esta Orientação entra em vigor n"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S101",
+      "arquivo": "sintetico/P11_orientacoes_decisoes/S101_decisao_gestao_DG-004-2024.txt",
+      "processo": "P11_orientacoes_decisoes",
+      "formato": "txt",
+      "tipo_documental": "decisao_gestao",
+      "especie": null,
+      "numero": "DG-004/2024",
+      "data": "2024-02-26",
+      "titulo": "DECISÃO DA GESTÃO DG-004/2024 — PRORROGAÇÃO DO CONTRATO Nº 012/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "decisao": "prorrogar com condicionantes",
+        "avaliacao_resultado": "negativo"
+      },
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S102",
+      "arquivo": "sintetico/P11_orientacoes_decisoes/S102_decisao_gestao_DG-011-2025.txt",
+      "processo": "P11_orientacoes_decisoes",
+      "formato": "txt",
+      "tipo_documental": "decisao_gestao",
+      "especie": null,
+      "numero": "DG-011/2025",
+      "data": "2025-07-30",
+      "titulo": "DECISÃO DA GESTÃO DG-011/2025 — PRORROGAÇÃO DO CONTRATO Nº 044/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "decisao": "prorrogar",
+        "avaliacao_resultado": "positivo"
+      },
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S110",
+      "arquivo": "sintetico/P12_pessoal/S110_oficio_321-2024.pdf",
+      "processo": "P12_pessoal",
+      "formato": "pdf_digitalizado",
+      "tipo_documental": "oficio",
+      "especie": null,
+      "numero": "321/2024",
+      "data": "2024-09-12",
+      "titulo": "OFÍCIO Nº 321/2024/SEGEP/VV",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "cpf": "123.456.789-09",
+        "email": "joaquim.lins@exemplo.vv.gov"
+      },
+      "dispositivos": [],
+      "texto_referencia": "DOCUMENTO FICTÍCIO — corpus acadêmico SAD-GD. Não corresponde a ato oficial; nomes, números, CNPJ e CPF são inventados.\n\nESTADO DE VALE VERDE\nSECRETARIA DE ESTADO DE GESTÃO PÚBLICA\n\nOFÍCIO Nº 321/2024/SEGEP/VV\n\nSECRETARIA DE ESTADO DE GESTÃO PÚBLICA — SEGEP/VV\n\nEncaminhamos o requerimento do servidor Joaquim Pereira Lins, CPF 123.456.789-09, e-mail joaquim.lins@exemplo.vv.gov, telefone (99) 98877-1122, referente à designação como fiscal do Contrato nº 072/2024.\nSolicitamos manifestação no prazo de 10 (dez) dias.\n\nCapital do Estado de Vale Verde, 12 de setembro de 2024.\n\nRenata Lobo Sampaio\nChefe de Gabinete"
+    },
+    {
+      "id": "S111",
+      "arquivo": "sintetico/P12_pessoal/S111_portaria_designacao_112-2024.pdf",
+      "processo": "P12_pessoal",
+      "formato": "pdf_digitalizado",
+      "tipo_documental": "portaria_designacao",
+      "especie": null,
+      "numero": "112/2024",
+      "data": "2024-09-20",
+      "titulo": "PORTARIA Nº 112/2024 — DESIGNAÇÃO DE FISCAL",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "fiscal_titular": "Joaquim Pereira Lins"
+      },
+      "dispositivos": [],
+      "texto_referencia": "DOCUMENTO FICTÍCIO — corpus acadêmico SAD-GD. Não corresponde a ato oficial; nomes, números, CNPJ e CPF são inventados.\n\nESTADO DE VALE VERDE\nSECRETARIA DE ESTADO DE GESTÃO PÚBLICA\n\nPORTARIA Nº 112/2024 — DESIGNAÇÃO DE FISCAL\n\nSECRETARIA DE ESTADO DE GESTÃO PÚBLICA — SEGEP/VV\n\nDesignar o servidor Joaquim Pereira Lins, matrícula 204.551, CPF 123.456.789-09, para atuar como fiscal técnico do Contrato nº 072/2024.\nDesignar a servidora Ana Clara Moura Teles, matrícula 198.207, CPF 987.654.321-00, como fiscal substituta.\n\nCapital do Estado de Vale Verde, 20 de setembro de 2024.\n\nHenrique Bastos Lacerda\nSecretário de Estado de Gestão Pública"
+    },
+    {
+      "id": "S201",
+      "arquivo": "sintetico/F01_contrato_de/S201_contrato_120-2022.docx",
+      "processo": "F01_contrato_de",
+      "formato": "docx",
+      "tipo_documental": "contrato",
+      "especie": null,
+      "numero": "120/2022",
+      "data": "2022-01-01",
+      "titulo": "CONTRATO Nº 120/2022",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "objeto": "prestação de serviços de copeiragem e recepção",
+        "contratada": "Servir Bem Apoio Administrativo Ltda.",
+        "cnpj": "18.273.645/0001-63",
+        "valor_global": "R$ 1.041.000,00",
+        "vigencia_inicio": "01/01/2022",
+        "vigencia_fim": "31/12/2022",
+        "processo": "SEGEP-PRO-2022/00120",
+        "data_assinatura": "30/12/2021"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. O presente contrato tem por objeto "
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O prazo de vigência deste contrato "
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.2",
+          "tipo": "sub",
+          "inicio": "2.2. A prorrogação dependerá de justific"
+        },
+        {
+          "rotulo": "cláusula terceira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA TERCEIRA – DO VALOR"
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.1",
+          "tipo": "sub",
+          "inicio": "3.1. O valor global do contrato é de R$ "
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.2",
+          "tipo": "sub",
+          "inicio": "3.2. O valor mensal estimado é de R$ 86."
+        },
+        {
+          "rotulo": "cláusula quarta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUARTA – DA DOTAÇÃO ORÇAMENTÁRI"
+        },
+        {
+          "rotulo": "cláusula quarta, item 4.1",
+          "tipo": "sub",
+          "inicio": "4.1. As despesas correrão à conta do Pro"
+        },
+        {
+          "rotulo": "cláusula quinta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUINTA – DO PAGAMENTO"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.1",
+          "tipo": "sub",
+          "inicio": "5.1. O pagamento será efetuado em até 30"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.2",
+          "tipo": "sub",
+          "inicio": "5.2. Nenhum pagamento será realizado sem"
+        },
+        {
+          "rotulo": "cláusula sexta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEXTA – DO REAJUSTE"
+        },
+        {
+          "rotulo": "cláusula sexta, item 6.1",
+          "tipo": "sub",
+          "inicio": "6.1. Os preços serão reajustáveis após 1"
+        },
+        {
+          "rotulo": "cláusula sétima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SÉTIMA – DA FISCALIZAÇÃO"
+        },
+        {
+          "rotulo": "cláusula sétima, item 7.1",
+          "tipo": "sub",
+          "inicio": "7.1. A execução será acompanhada por fis"
+        },
+        {
+          "rotulo": "cláusula oitava",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA OITAVA – DAS SANÇÕES"
+        },
+        {
+          "rotulo": "cláusula oitava, item 8.1",
+          "tipo": "sub",
+          "inicio": "8.1. Pela inexecução total ou parcial, a"
+        },
+        {
+          "rotulo": "cláusula nona",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA NONA – DA EXTINÇÃO"
+        },
+        {
+          "rotulo": "cláusula nona, item 9.1",
+          "tipo": "sub",
+          "inicio": "9.1. O contrato poderá ser extinto antec"
+        },
+        {
+          "rotulo": "cláusula décima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA DÉCIMA – DO FORO"
+        },
+        {
+          "rotulo": "cláusula décima, item 10.1",
+          "tipo": "sub",
+          "inicio": "10.1. Fica eleito o foro da Comarca da C"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S202",
+      "arquivo": "sintetico/F01_contrato_de/S202_1o_termo_aditivo_120-2022.pdf",
+      "processo": "F01_contrato_de",
+      "formato": "pdf",
+      "tipo_documental": "aditivo",
+      "especie": null,
+      "numero": "1º TA ao Contrato 120/2022",
+      "data": "2022-12-11",
+      "titulo": "PRIMEIRO TERMO ADITIVO AO CONTRATO Nº 120/2022",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "vigencia_fim": "31/12/2023"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. Prorrogação da vigência do Contrato"
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O término da vigência passa de 31/1"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S203",
+      "arquivo": "sintetico/F01_contrato_de/S203_apostilamento_010-2023.txt",
+      "processo": "F01_contrato_de",
+      "formato": "txt",
+      "tipo_documental": "apostilamento",
+      "especie": null,
+      "numero": "010/2023",
+      "data": "2023-01-11",
+      "titulo": "APOSTILAMENTO Nº 010/2023 AO CONTRATO Nº 120/2022",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "reajuste": "4,62%"
+      },
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S204",
+      "arquivo": "sintetico/F01_contrato_de/S204_relatorio_fiscalizacao_030-2023.docx",
+      "processo": "F01_contrato_de",
+      "formato": "docx",
+      "tipo_documental": "relatorio_fiscalizacao",
+      "especie": null,
+      "numero": "030/2023",
+      "data": "2022-09-01",
+      "titulo": "RELATÓRIO DE FISCALIZAÇÃO Nº 030/2023 — CONTRATO Nº 120/2022",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "valor_global_declarado": "R$ 1.145.100,00"
+      },
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S205",
+      "arquivo": "sintetico/F02_contrato_com/S205_contrato_121-2023.pdf",
+      "processo": "F02_contrato_com",
+      "formato": "pdf",
+      "tipo_documental": "contrato",
+      "especie": null,
+      "numero": "121/2023",
+      "data": "2023-03-01",
+      "titulo": "CONTRATO Nº 121/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "objeto": "locação de veículos com motorista para apoio às fiscalizações",
+        "contratada": "Rota Segura Locadora Ltda.",
+        "cnpj": "29.384.756/0001-63",
+        "valor_global": "R$ 206.000,00",
+        "vigencia_inicio": "01/03/2023",
+        "vigencia_fim": "28/02/2025",
+        "processo": "SEGEP-PRO-2023/00121",
+        "data_assinatura": "27/02/2023"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. O presente contrato tem por objeto "
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O prazo de vigência deste contrato "
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.2",
+          "tipo": "sub",
+          "inicio": "2.2. A prorrogação dependerá de justific"
+        },
+        {
+          "rotulo": "cláusula terceira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA TERCEIRA – DO VALOR"
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.1",
+          "tipo": "sub",
+          "inicio": "3.1. O valor global do contrato é de R$ "
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.2",
+          "tipo": "sub",
+          "inicio": "3.2. O valor mensal estimado é de R$ 8.5"
+        },
+        {
+          "rotulo": "cláusula quarta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUARTA – DA DOTAÇÃO ORÇAMENTÁRI"
+        },
+        {
+          "rotulo": "cláusula quarta, item 4.1",
+          "tipo": "sub",
+          "inicio": "4.1. As despesas correrão à conta do Pro"
+        },
+        {
+          "rotulo": "cláusula quinta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUINTA – DO PAGAMENTO"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.1",
+          "tipo": "sub",
+          "inicio": "5.1. O pagamento será efetuado em até 30"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.2",
+          "tipo": "sub",
+          "inicio": "5.2. Nenhum pagamento será realizado sem"
+        },
+        {
+          "rotulo": "cláusula sexta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEXTA – DO REAJUSTE"
+        },
+        {
+          "rotulo": "cláusula sexta, item 6.1",
+          "tipo": "sub",
+          "inicio": "6.1. Os preços serão reajustáveis após 1"
+        },
+        {
+          "rotulo": "cláusula sétima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SÉTIMA – DA FISCALIZAÇÃO"
+        },
+        {
+          "rotulo": "cláusula sétima, item 7.1",
+          "tipo": "sub",
+          "inicio": "7.1. A execução será acompanhada por fis"
+        },
+        {
+          "rotulo": "cláusula oitava",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA OITAVA – DAS SANÇÕES"
+        },
+        {
+          "rotulo": "cláusula oitava, item 8.1",
+          "tipo": "sub",
+          "inicio": "8.1. Pela inexecução total ou parcial, a"
+        },
+        {
+          "rotulo": "cláusula nona",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA NONA – DA EXTINÇÃO"
+        },
+        {
+          "rotulo": "cláusula nona, item 9.1",
+          "tipo": "sub",
+          "inicio": "9.1. O contrato poderá ser extinto antec"
+        },
+        {
+          "rotulo": "cláusula décima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA DÉCIMA – DO FORO"
+        },
+        {
+          "rotulo": "cláusula décima, item 10.1",
+          "tipo": "sub",
+          "inicio": "10.1. Fica eleito o foro da Comarca da C"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S206",
+      "arquivo": "sintetico/F02_contrato_com/S206_1o_termo_aditivo_121-2023.txt",
+      "processo": "F02_contrato_com",
+      "formato": "txt",
+      "tipo_documental": "aditivo",
+      "especie": null,
+      "numero": "1º TA ao Contrato 121/2023",
+      "data": "2025-02-08",
+      "titulo": "PRIMEIRO TERMO ADITIVO AO CONTRATO Nº 121/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "vigencia_fim": "28/02/2026"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. Prorrogação da vigência do Contrato"
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O término da vigência passa de 28/0"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S207",
+      "arquivo": "sintetico/F02_contrato_com/S207_apostilamento_011-2024.docx",
+      "processo": "F02_contrato_com",
+      "formato": "docx",
+      "tipo_documental": "apostilamento",
+      "especie": null,
+      "numero": "011/2024",
+      "data": "2024-03-11",
+      "titulo": "APOSTILAMENTO Nº 011/2024 AO CONTRATO Nº 121/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "reajuste": "4,62%"
+      },
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S208",
+      "arquivo": "sintetico/F02_contrato_com/S208_relatorio_fiscalizacao_031-2024.pdf",
+      "processo": "F02_contrato_com",
+      "formato": "pdf",
+      "tipo_documental": "relatorio_fiscalizacao",
+      "especie": null,
+      "numero": "031/2024",
+      "data": "2023-11-01",
+      "titulo": "RELATÓRIO DE FISCALIZAÇÃO Nº 031/2024 — CONTRATO Nº 121/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "valor_global_declarado": "R$ 216.300,00"
+      },
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S209",
+      "arquivo": "sintetico/F02_contrato_com/S209_notificacao_061-2024.pdf",
+      "processo": "F02_contrato_com",
+      "formato": "pdf",
+      "tipo_documental": "notificacao",
+      "especie": null,
+      "numero": "061/2024",
+      "data": "2024-06-01",
+      "titulo": "NOTIFICAÇÃO Nº 061/2024 — CONTRATO Nº 121/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S210",
+      "arquivo": "sintetico/F02_contrato_com/S210_termo_rescisao_071-2024.docx",
+      "processo": "F02_contrato_com",
+      "formato": "docx",
+      "tipo_documental": "termo_rescisao",
+      "especie": null,
+      "numero": "071/2024",
+      "data": "2024-07-01",
+      "titulo": "TERMO DE RESCISÃO DO CONTRATO Nº 121/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S211",
+      "arquivo": "sintetico/F02_contrato_com/S211_contrato_201-2024.txt",
+      "processo": "F02_contrato_com",
+      "formato": "txt",
+      "tipo_documental": "contrato",
+      "especie": null,
+      "numero": "201/2024",
+      "data": "2024-07-12",
+      "titulo": "CONTRATO Nº 201/2024",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "objeto": "locação de veículos com motorista para apoio às fiscalizações (contratação substituta)",
+        "contratada": "Rota Segura Locadora Serviços Ltda.",
+        "cnpj": "29.385.867/0001-94",
+        "valor_global": "R$ 222.480,00",
+        "vigencia_inicio": "12/07/2024",
+        "vigencia_fim": "11/07/2025",
+        "processo": "SEGEP-PRO-2024/00201",
+        "data_assinatura": "10/07/2024"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. O presente contrato tem por objeto "
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O prazo de vigência deste contrato "
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.2",
+          "tipo": "sub",
+          "inicio": "2.2. A prorrogação dependerá de justific"
+        },
+        {
+          "rotulo": "cláusula terceira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA TERCEIRA – DO VALOR"
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.1",
+          "tipo": "sub",
+          "inicio": "3.1. O valor global do contrato é de R$ "
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.2",
+          "tipo": "sub",
+          "inicio": "3.2. O valor mensal estimado é de R$ 18."
+        },
+        {
+          "rotulo": "cláusula quarta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUARTA – DA DOTAÇÃO ORÇAMENTÁRI"
+        },
+        {
+          "rotulo": "cláusula quarta, item 4.1",
+          "tipo": "sub",
+          "inicio": "4.1. As despesas correrão à conta do Pro"
+        },
+        {
+          "rotulo": "cláusula quinta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUINTA – DO PAGAMENTO"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.1",
+          "tipo": "sub",
+          "inicio": "5.1. O pagamento será efetuado em até 30"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.2",
+          "tipo": "sub",
+          "inicio": "5.2. Nenhum pagamento será realizado sem"
+        },
+        {
+          "rotulo": "cláusula sexta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEXTA – DO REAJUSTE"
+        },
+        {
+          "rotulo": "cláusula sexta, item 6.1",
+          "tipo": "sub",
+          "inicio": "6.1. Os preços serão reajustáveis após 1"
+        },
+        {
+          "rotulo": "cláusula sétima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SÉTIMA – DA FISCALIZAÇÃO"
+        },
+        {
+          "rotulo": "cláusula sétima, item 7.1",
+          "tipo": "sub",
+          "inicio": "7.1. A execução será acompanhada por fis"
+        },
+        {
+          "rotulo": "cláusula oitava",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA OITAVA – DAS SANÇÕES"
+        },
+        {
+          "rotulo": "cláusula oitava, item 8.1",
+          "tipo": "sub",
+          "inicio": "8.1. Pela inexecução total ou parcial, a"
+        },
+        {
+          "rotulo": "cláusula nona",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA NONA – DA SUBSTITUIÇÃO"
+        },
+        {
+          "rotulo": "cláusula nona, item 9.1",
+          "tipo": "sub",
+          "inicio": "9.1. Este contrato substitui o Contrato "
+        },
+        {
+          "rotulo": "cláusula décima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA DÉCIMA – DA EXTINÇÃO"
+        },
+        {
+          "rotulo": "cláusula décima, item 10.1",
+          "tipo": "sub",
+          "inicio": "10.1. O contrato poderá ser extinto ante"
+        },
+        {
+          "rotulo": "cláusula décima primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA DÉCIMA PRIMEIRA – DO FORO"
+        },
+        {
+          "rotulo": "cláusula décima primeira, item 11.1",
+          "tipo": "sub",
+          "inicio": "11.1. Fica eleito o foro da Comarca da C"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S212",
+      "arquivo": "sintetico/F03_contrato_por/S212_contrato_122-2024.txt",
+      "processo": "F03_contrato_por",
+      "formato": "txt",
+      "tipo_documental": "contrato",
+      "especie": null,
+      "numero": "122/2024",
+      "data": "2024-05-01",
+      "titulo": "CONTRATO Nº 122/2024",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "objeto": "fornecimento de combustível por meio de cartão magnético",
+        "contratada": "Abastece Vale Verde Ltda.",
+        "cnpj": "30.495.867/0001-26",
+        "valor_global": "R$ 1.641.000,00",
+        "vigencia_inicio": "01/05/2024",
+        "vigencia_fim": "30/04/2026",
+        "processo": "SEGEP-PRO-2024/00122",
+        "data_assinatura": "29/04/2024"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. O presente contrato tem por objeto "
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O prazo de vigência deste contrato "
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.2",
+          "tipo": "sub",
+          "inicio": "2.2. A prorrogação dependerá de justific"
+        },
+        {
+          "rotulo": "cláusula terceira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA TERCEIRA – DO VALOR"
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.1",
+          "tipo": "sub",
+          "inicio": "3.1. O valor global do contrato é de R$ "
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.2",
+          "tipo": "sub",
+          "inicio": "3.2. O valor mensal estimado é de R$ 68."
+        },
+        {
+          "rotulo": "cláusula quarta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUARTA – DA DOTAÇÃO ORÇAMENTÁRI"
+        },
+        {
+          "rotulo": "cláusula quarta, item 4.1",
+          "tipo": "sub",
+          "inicio": "4.1. As despesas correrão à conta do Pro"
+        },
+        {
+          "rotulo": "cláusula quinta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUINTA – DO PAGAMENTO"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.1",
+          "tipo": "sub",
+          "inicio": "5.1. O pagamento será efetuado em até 30"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.2",
+          "tipo": "sub",
+          "inicio": "5.2. Nenhum pagamento será realizado sem"
+        },
+        {
+          "rotulo": "cláusula sexta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEXTA – DO REAJUSTE"
+        },
+        {
+          "rotulo": "cláusula sexta, item 6.1",
+          "tipo": "sub",
+          "inicio": "6.1. Os preços serão reajustáveis após 1"
+        },
+        {
+          "rotulo": "cláusula sétima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SÉTIMA – DA FISCALIZAÇÃO"
+        },
+        {
+          "rotulo": "cláusula sétima, item 7.1",
+          "tipo": "sub",
+          "inicio": "7.1. A execução será acompanhada por fis"
+        },
+        {
+          "rotulo": "cláusula oitava",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA OITAVA – DAS SANÇÕES"
+        },
+        {
+          "rotulo": "cláusula oitava, item 8.1",
+          "tipo": "sub",
+          "inicio": "8.1. Pela inexecução total ou parcial, a"
+        },
+        {
+          "rotulo": "cláusula nona",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA NONA – DA EXTINÇÃO"
+        },
+        {
+          "rotulo": "cláusula nona, item 9.1",
+          "tipo": "sub",
+          "inicio": "9.1. O contrato poderá ser extinto antec"
+        },
+        {
+          "rotulo": "cláusula décima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA DÉCIMA – DO FORO"
+        },
+        {
+          "rotulo": "cláusula décima, item 10.1",
+          "tipo": "sub",
+          "inicio": "10.1. Fica eleito o foro da Comarca da C"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S213",
+      "arquivo": "sintetico/F03_contrato_por/S213_1o_termo_aditivo_122-2024.docx",
+      "processo": "F03_contrato_por",
+      "formato": "docx",
+      "tipo_documental": "aditivo",
+      "especie": null,
+      "numero": "1º TA ao Contrato 122/2024",
+      "data": "2026-04-10",
+      "titulo": "PRIMEIRO TERMO ADITIVO AO CONTRATO Nº 122/2024",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "vigencia_fim": "30/04/2027"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. Prorrogação da vigência do Contrato"
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O término da vigência passa de 30/0"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S214",
+      "arquivo": "sintetico/F03_contrato_por/S214_apostilamento_012-2025.pdf",
+      "processo": "F03_contrato_por",
+      "formato": "pdf",
+      "tipo_documental": "apostilamento",
+      "especie": null,
+      "numero": "012/2025",
+      "data": "2025-05-11",
+      "titulo": "APOSTILAMENTO Nº 012/2025 AO CONTRATO Nº 122/2024",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "reajuste": "3,85%"
+      },
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S215",
+      "arquivo": "sintetico/F03_contrato_por/S215_relatorio_fiscalizacao_032-2025.pdf",
+      "processo": "F03_contrato_por",
+      "formato": "pdf_digitalizado",
+      "tipo_documental": "relatorio_fiscalizacao",
+      "especie": null,
+      "numero": "032/2025",
+      "data": "2025-01-01",
+      "titulo": "RELATÓRIO DE FISCALIZAÇÃO Nº 032/2025 — CONTRATO Nº 122/2024",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "valor_global_declarado": "R$ 1.805.100,00"
+      },
+      "dispositivos": [],
+      "texto_referencia": "DOCUMENTO FICTÍCIO — corpus acadêmico SAD-GD. Não corresponde a ato oficial; nomes, números, CNPJ e CPF são inventados.\n\nESTADO DE VALE VERDE\nSECRETARIA DE ESTADO DE GESTÃO PÚBLICA\n\nRELATÓRIO DE FISCALIZAÇÃO Nº 032/2025 — CONTRATO Nº 122/2024\n\nSECRETARIA DE ESTADO DE GESTÃO PÚBLICA — SEGEP/VV\n\nO Contrato nº 122/2024, de valor global de R$ 1.805.100,00, foi executado regularmente no período avaliado.\nNão há pendências de pagamento nem ocorrências graves.\n\nCapital do Estado de Vale Verde, 1º de janeiro de 2025.\n\nRogério Antunes Siqueira\nFiscal do Contrato"
+    },
+    {
+      "id": "S216",
+      "arquivo": "sintetico/F03_contrato_por/S216_ordem_suspensao_042-2024.txt",
+      "processo": "F03_contrato_por",
+      "formato": "txt",
+      "tipo_documental": "ordem_suspensao",
+      "especie": null,
+      "numero": "042/2024",
+      "data": "2024-09-01",
+      "titulo": "ORDEM DE SUSPENSÃO Nº 042/2024 — CONTRATO Nº 122/2024",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S217",
+      "arquivo": "sintetico/F03_contrato_por/S217_ordem_reinicio_052-2024.txt",
+      "processo": "F03_contrato_por",
+      "formato": "txt",
+      "tipo_documental": "ordem_reinicio",
+      "especie": null,
+      "numero": "052/2024",
+      "data": "2024-10-16",
+      "titulo": "ORDEM DE REINÍCIO Nº 052/2024 — CONTRATO Nº 122/2024",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S218",
+      "arquivo": "sintetico/F04_contrato_de/S218_contrato_123-2022.docx",
+      "processo": "F04_contrato_de",
+      "formato": "docx",
+      "tipo_documental": "contrato",
+      "especie": null,
+      "numero": "123/2022",
+      "data": "2022-07-01",
+      "titulo": "CONTRATO Nº 123/2022",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "objeto": "prestação de serviços de manutenção de aparelhos de ar-condicionado",
+        "contratada": "Clima Frio Refrigeração Ltda.",
+        "cnpj": "41.506.978/0001-07",
+        "valor_global": "R$ 2.089.000,00",
+        "vigencia_inicio": "01/07/2022",
+        "vigencia_fim": "30/06/2023",
+        "processo": "SEGEP-PRO-2022/00123",
+        "data_assinatura": "29/06/2022"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. O presente contrato tem por objeto "
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O prazo de vigência deste contrato "
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.2",
+          "tipo": "sub",
+          "inicio": "2.2. A prorrogação dependerá de justific"
+        },
+        {
+          "rotulo": "cláusula terceira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA TERCEIRA – DO VALOR"
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.1",
+          "tipo": "sub",
+          "inicio": "3.1. O valor global do contrato é de R$ "
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.2",
+          "tipo": "sub",
+          "inicio": "3.2. O valor mensal estimado é de R$ 174"
+        },
+        {
+          "rotulo": "cláusula quarta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUARTA – DA DOTAÇÃO ORÇAMENTÁRI"
+        },
+        {
+          "rotulo": "cláusula quarta, item 4.1",
+          "tipo": "sub",
+          "inicio": "4.1. As despesas correrão à conta do Pro"
+        },
+        {
+          "rotulo": "cláusula quinta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUINTA – DO PAGAMENTO"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.1",
+          "tipo": "sub",
+          "inicio": "5.1. O pagamento será efetuado em até 30"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.2",
+          "tipo": "sub",
+          "inicio": "5.2. Nenhum pagamento será realizado sem"
+        },
+        {
+          "rotulo": "cláusula sexta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEXTA – DO REAJUSTE"
+        },
+        {
+          "rotulo": "cláusula sexta, item 6.1",
+          "tipo": "sub",
+          "inicio": "6.1. Os preços serão reajustáveis após 1"
+        },
+        {
+          "rotulo": "cláusula sétima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SÉTIMA – DA FISCALIZAÇÃO"
+        },
+        {
+          "rotulo": "cláusula sétima, item 7.1",
+          "tipo": "sub",
+          "inicio": "7.1. A execução será acompanhada por fis"
+        },
+        {
+          "rotulo": "cláusula oitava",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA OITAVA – DAS SANÇÕES"
+        },
+        {
+          "rotulo": "cláusula oitava, item 8.1",
+          "tipo": "sub",
+          "inicio": "8.1. Pela inexecução total ou parcial, a"
+        },
+        {
+          "rotulo": "cláusula nona",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA NONA – DA EXTINÇÃO"
+        },
+        {
+          "rotulo": "cláusula nona, item 9.1",
+          "tipo": "sub",
+          "inicio": "9.1. O contrato poderá ser extinto antec"
+        },
+        {
+          "rotulo": "cláusula décima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA DÉCIMA – DO FORO"
+        },
+        {
+          "rotulo": "cláusula décima, item 10.1",
+          "tipo": "sub",
+          "inicio": "10.1. Fica eleito o foro da Comarca da C"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S219",
+      "arquivo": "sintetico/F04_contrato_de/S219_1o_termo_aditivo_123-2022.pdf",
+      "processo": "F04_contrato_de",
+      "formato": "pdf",
+      "tipo_documental": "aditivo",
+      "especie": null,
+      "numero": "1º TA ao Contrato 123/2022",
+      "data": "2023-06-10",
+      "titulo": "PRIMEIRO TERMO ADITIVO AO CONTRATO Nº 123/2022",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "vigencia_fim": "30/06/2024"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. Prorrogação da vigência do Contrato"
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O término da vigência passa de 30/0"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S220",
+      "arquivo": "sintetico/F04_contrato_de/S220_apostilamento_013-2023.txt",
+      "processo": "F04_contrato_de",
+      "formato": "txt",
+      "tipo_documental": "apostilamento",
+      "especie": null,
+      "numero": "013/2023",
+      "data": "2023-07-11",
+      "titulo": "APOSTILAMENTO Nº 013/2023 AO CONTRATO Nº 123/2022",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "reajuste": "3,85%"
+      },
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S221",
+      "arquivo": "sintetico/F04_contrato_de/S221_relatorio_fiscalizacao_033-2023.docx",
+      "processo": "F04_contrato_de",
+      "formato": "docx",
+      "tipo_documental": "relatorio_fiscalizacao",
+      "especie": null,
+      "numero": "033/2023",
+      "data": "2023-03-01",
+      "titulo": "RELATÓRIO DE FISCALIZAÇÃO Nº 033/2023 — CONTRATO Nº 123/2022",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "valor_global_declarado": "R$ 2.193.450,00"
+      },
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S222",
+      "arquivo": "sintetico/F04_contrato_de/S222_ordem_suspensao_043-2022.txt",
+      "processo": "F04_contrato_de",
+      "formato": "txt",
+      "tipo_documental": "ordem_suspensao",
+      "especie": null,
+      "numero": "043/2022",
+      "data": "2022-11-01",
+      "titulo": "ORDEM DE SUSPENSÃO Nº 043/2022 — CONTRATO Nº 123/2022",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S223",
+      "arquivo": "sintetico/F04_contrato_de/S223_ordem_reinicio_053-2022.txt",
+      "processo": "F04_contrato_de",
+      "formato": "txt",
+      "tipo_documental": "ordem_reinicio",
+      "especie": null,
+      "numero": "053/2022",
+      "data": "2022-12-16",
+      "titulo": "ORDEM DE REINÍCIO Nº 053/2022 — CONTRATO Nº 123/2022",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S224",
+      "arquivo": "sintetico/F05_contrato_de/S224_contrato_124-2023.pdf",
+      "processo": "F05_contrato_de",
+      "formato": "pdf",
+      "tipo_documental": "contrato",
+      "especie": null,
+      "numero": "124/2023",
+      "data": "2023-09-01",
+      "titulo": "CONTRATO Nº 124/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "objeto": "prestação de serviços de outsourcing de impressão",
+        "contratada": "Imprime Fácil Soluções Ltda.",
+        "cnpj": "52.617.089/0001-33",
+        "valor_global": "R$ 968.000,00",
+        "vigencia_inicio": "01/09/2023",
+        "vigencia_fim": "31/08/2025",
+        "processo": "SEGEP-PRO-2023/00124",
+        "data_assinatura": "30/08/2023"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. O presente contrato tem por objeto "
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O prazo de vigência deste contrato "
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.2",
+          "tipo": "sub",
+          "inicio": "2.2. A prorrogação dependerá de justific"
+        },
+        {
+          "rotulo": "cláusula terceira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA TERCEIRA – DO VALOR"
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.1",
+          "tipo": "sub",
+          "inicio": "3.1. O valor global do contrato é de R$ "
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.2",
+          "tipo": "sub",
+          "inicio": "3.2. O valor mensal estimado é de R$ 40."
+        },
+        {
+          "rotulo": "cláusula quarta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUARTA – DA DOTAÇÃO ORÇAMENTÁRI"
+        },
+        {
+          "rotulo": "cláusula quarta, item 4.1",
+          "tipo": "sub",
+          "inicio": "4.1. As despesas correrão à conta do Pro"
+        },
+        {
+          "rotulo": "cláusula quinta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUINTA – DO PAGAMENTO"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.1",
+          "tipo": "sub",
+          "inicio": "5.1. O pagamento será efetuado em até 30"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.2",
+          "tipo": "sub",
+          "inicio": "5.2. Nenhum pagamento será realizado sem"
+        },
+        {
+          "rotulo": "cláusula sexta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEXTA – DO REAJUSTE"
+        },
+        {
+          "rotulo": "cláusula sexta, item 6.1",
+          "tipo": "sub",
+          "inicio": "6.1. Os preços serão reajustáveis após 1"
+        },
+        {
+          "rotulo": "cláusula sétima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SÉTIMA – DA FISCALIZAÇÃO"
+        },
+        {
+          "rotulo": "cláusula sétima, item 7.1",
+          "tipo": "sub",
+          "inicio": "7.1. A execução será acompanhada por fis"
+        },
+        {
+          "rotulo": "cláusula oitava",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA OITAVA – DAS SANÇÕES"
+        },
+        {
+          "rotulo": "cláusula oitava, item 8.1",
+          "tipo": "sub",
+          "inicio": "8.1. Pela inexecução total ou parcial, a"
+        },
+        {
+          "rotulo": "cláusula nona",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA NONA – DA EXTINÇÃO"
+        },
+        {
+          "rotulo": "cláusula nona, item 9.1",
+          "tipo": "sub",
+          "inicio": "9.1. O contrato poderá ser extinto antec"
+        },
+        {
+          "rotulo": "cláusula décima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA DÉCIMA – DO FORO"
+        },
+        {
+          "rotulo": "cláusula décima, item 10.1",
+          "tipo": "sub",
+          "inicio": "10.1. Fica eleito o foro da Comarca da C"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S225",
+      "arquivo": "sintetico/F05_contrato_de/S225_1o_termo_aditivo_124-2023.txt",
+      "processo": "F05_contrato_de",
+      "formato": "txt",
+      "tipo_documental": "aditivo",
+      "especie": null,
+      "numero": "1º TA ao Contrato 124/2023",
+      "data": "2025-08-11",
+      "titulo": "PRIMEIRO TERMO ADITIVO AO CONTRATO Nº 124/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "vigencia_fim": "31/08/2026"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. Prorrogação da vigência do Contrato"
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O término da vigência passa de 31/0"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S226",
+      "arquivo": "sintetico/F05_contrato_de/S226_apostilamento_014-2024.docx",
+      "processo": "F05_contrato_de",
+      "formato": "docx",
+      "tipo_documental": "apostilamento",
+      "especie": null,
+      "numero": "014/2024",
+      "data": "2024-09-11",
+      "titulo": "APOSTILAMENTO Nº 014/2024 AO CONTRATO Nº 124/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "reajuste": "4,12%"
+      },
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S227",
+      "arquivo": "sintetico/F05_contrato_de/S227_ordem_suspensao_044-2023.txt",
+      "processo": "F05_contrato_de",
+      "formato": "txt",
+      "tipo_documental": "ordem_suspensao",
+      "especie": null,
+      "numero": "044/2023",
+      "data": "2024-01-01",
+      "titulo": "ORDEM DE SUSPENSÃO Nº 044/2023 — CONTRATO Nº 124/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S228",
+      "arquivo": "sintetico/F05_contrato_de/S228_ordem_reinicio_054-2023.txt",
+      "processo": "F05_contrato_de",
+      "formato": "txt",
+      "tipo_documental": "ordem_reinicio",
+      "especie": null,
+      "numero": "054/2023",
+      "data": "2024-02-15",
+      "titulo": "ORDEM DE REINÍCIO Nº 054/2023 — CONTRATO Nº 124/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S229",
+      "arquivo": "sintetico/F06_contrato_de/S229_contrato_125-2024.txt",
+      "processo": "F06_contrato_de",
+      "formato": "txt",
+      "tipo_documental": "contrato",
+      "especie": null,
+      "numero": "125/2024",
+      "data": "2024-11-01",
+      "titulo": "CONTRATO Nº 125/2024",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "objeto": "prestação de serviços de telefonia móvel corporativa",
+        "contratada": "Conecta Norte Telecomunicações S.A.",
+        "cnpj": "63.728.190/0001-88",
+        "valor_global": "R$ 1.015.000,00",
+        "vigencia_inicio": "01/11/2024",
+        "vigencia_fim": "31/10/2025",
+        "processo": "SEGEP-PRO-2024/00125",
+        "data_assinatura": "30/10/2024"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. O presente contrato tem por objeto "
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O prazo de vigência deste contrato "
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.2",
+          "tipo": "sub",
+          "inicio": "2.2. A prorrogação dependerá de justific"
+        },
+        {
+          "rotulo": "cláusula terceira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA TERCEIRA – DO VALOR"
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.1",
+          "tipo": "sub",
+          "inicio": "3.1. O valor global do contrato é de R$ "
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.2",
+          "tipo": "sub",
+          "inicio": "3.2. O valor mensal estimado é de R$ 84."
+        },
+        {
+          "rotulo": "cláusula quarta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUARTA – DA DOTAÇÃO ORÇAMENTÁRI"
+        },
+        {
+          "rotulo": "cláusula quarta, item 4.1",
+          "tipo": "sub",
+          "inicio": "4.1. As despesas correrão à conta do Pro"
+        },
+        {
+          "rotulo": "cláusula quinta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUINTA – DO PAGAMENTO"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.1",
+          "tipo": "sub",
+          "inicio": "5.1. O pagamento será efetuado em até 30"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.2",
+          "tipo": "sub",
+          "inicio": "5.2. Nenhum pagamento será realizado sem"
+        },
+        {
+          "rotulo": "cláusula sexta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEXTA – DO REAJUSTE"
+        },
+        {
+          "rotulo": "cláusula sexta, item 6.1",
+          "tipo": "sub",
+          "inicio": "6.1. Os preços serão reajustáveis após 1"
+        },
+        {
+          "rotulo": "cláusula sétima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SÉTIMA – DA FISCALIZAÇÃO"
+        },
+        {
+          "rotulo": "cláusula sétima, item 7.1",
+          "tipo": "sub",
+          "inicio": "7.1. A execução será acompanhada por fis"
+        },
+        {
+          "rotulo": "cláusula oitava",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA OITAVA – DAS SANÇÕES"
+        },
+        {
+          "rotulo": "cláusula oitava, item 8.1",
+          "tipo": "sub",
+          "inicio": "8.1. Pela inexecução total ou parcial, a"
+        },
+        {
+          "rotulo": "cláusula nona",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA NONA – DA EXTINÇÃO"
+        },
+        {
+          "rotulo": "cláusula nona, item 9.1",
+          "tipo": "sub",
+          "inicio": "9.1. O contrato poderá ser extinto antec"
+        },
+        {
+          "rotulo": "cláusula décima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA DÉCIMA – DO FORO"
+        },
+        {
+          "rotulo": "cláusula décima, item 10.1",
+          "tipo": "sub",
+          "inicio": "10.1. Fica eleito o foro da Comarca da C"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S230",
+      "arquivo": "sintetico/F06_contrato_de/S230_1o_termo_aditivo_125-2024.docx",
+      "processo": "F06_contrato_de",
+      "formato": "docx",
+      "tipo_documental": "aditivo",
+      "especie": null,
+      "numero": "1º TA ao Contrato 125/2024",
+      "data": "2025-10-11",
+      "titulo": "PRIMEIRO TERMO ADITIVO AO CONTRATO Nº 125/2024",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "vigencia_fim": "31/10/2026"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. Prorrogação da vigência do Contrato"
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O término da vigência passa de 31/1"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S231",
+      "arquivo": "sintetico/F06_contrato_de/S231_apostilamento_015-2025.pdf",
+      "processo": "F06_contrato_de",
+      "formato": "pdf",
+      "tipo_documental": "apostilamento",
+      "especie": null,
+      "numero": "015/2025",
+      "data": "2025-11-11",
+      "titulo": "APOSTILAMENTO Nº 015/2025 AO CONTRATO Nº 125/2024",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "reajuste": "3,85%"
+      },
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S232",
+      "arquivo": "sintetico/F06_contrato_de/S232_relatorio_fiscalizacao_035-2025.txt",
+      "processo": "F06_contrato_de",
+      "formato": "txt",
+      "tipo_documental": "relatorio_fiscalizacao",
+      "especie": null,
+      "numero": "035/2025",
+      "data": "2025-07-01",
+      "titulo": "RELATÓRIO DE FISCALIZAÇÃO Nº 035/2025 — CONTRATO Nº 125/2024",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "valor_global_declarado": "R$ 1.065.750,00"
+      },
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S233",
+      "arquivo": "sintetico/F07_contrato_de/S233_contrato_126-2022.docx",
+      "processo": "F07_contrato_de",
+      "formato": "docx",
+      "tipo_documental": "contrato",
+      "especie": null,
+      "numero": "126/2022",
+      "data": "2022-01-01",
+      "titulo": "CONTRATO Nº 126/2022",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "objeto": "prestação de serviços de dedetização e controle de pragas",
+        "contratada": "Ambiente Limpo Saneamento Ltda.",
+        "cnpj": "74.839.201/0001-13",
+        "valor_global": "R$ 1.477.000,00",
+        "vigencia_inicio": "01/01/2022",
+        "vigencia_fim": "31/12/2022",
+        "processo": "SEGEP-PRO-2022/00126",
+        "data_assinatura": "30/12/2021"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. O presente contrato tem por objeto "
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O prazo de vigência deste contrato "
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.2",
+          "tipo": "sub",
+          "inicio": "2.2. A prorrogação dependerá de justific"
+        },
+        {
+          "rotulo": "cláusula terceira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA TERCEIRA – DO VALOR"
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.1",
+          "tipo": "sub",
+          "inicio": "3.1. O valor global do contrato é de R$ "
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.2",
+          "tipo": "sub",
+          "inicio": "3.2. O valor mensal estimado é de R$ 123"
+        },
+        {
+          "rotulo": "cláusula quarta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUARTA – DA DOTAÇÃO ORÇAMENTÁRI"
+        },
+        {
+          "rotulo": "cláusula quarta, item 4.1",
+          "tipo": "sub",
+          "inicio": "4.1. As despesas correrão à conta do Pro"
+        },
+        {
+          "rotulo": "cláusula quinta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUINTA – DO PAGAMENTO"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.1",
+          "tipo": "sub",
+          "inicio": "5.1. O pagamento será efetuado em até 30"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.2",
+          "tipo": "sub",
+          "inicio": "5.2. Nenhum pagamento será realizado sem"
+        },
+        {
+          "rotulo": "cláusula sexta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEXTA – DO REAJUSTE"
+        },
+        {
+          "rotulo": "cláusula sexta, item 6.1",
+          "tipo": "sub",
+          "inicio": "6.1. Os preços serão reajustáveis após 1"
+        },
+        {
+          "rotulo": "cláusula sétima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SÉTIMA – DA FISCALIZAÇÃO"
+        },
+        {
+          "rotulo": "cláusula sétima, item 7.1",
+          "tipo": "sub",
+          "inicio": "7.1. A execução será acompanhada por fis"
+        },
+        {
+          "rotulo": "cláusula oitava",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA OITAVA – DAS SANÇÕES"
+        },
+        {
+          "rotulo": "cláusula oitava, item 8.1",
+          "tipo": "sub",
+          "inicio": "8.1. Pela inexecução total ou parcial, a"
+        },
+        {
+          "rotulo": "cláusula nona",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA NONA – DA EXTINÇÃO"
+        },
+        {
+          "rotulo": "cláusula nona, item 9.1",
+          "tipo": "sub",
+          "inicio": "9.1. O contrato poderá ser extinto antec"
+        },
+        {
+          "rotulo": "cláusula décima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA DÉCIMA – DO FORO"
+        },
+        {
+          "rotulo": "cláusula décima, item 10.1",
+          "tipo": "sub",
+          "inicio": "10.1. Fica eleito o foro da Comarca da C"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S234",
+      "arquivo": "sintetico/F07_contrato_de/S234_1o_termo_aditivo_126-2022.pdf",
+      "processo": "F07_contrato_de",
+      "formato": "pdf",
+      "tipo_documental": "aditivo",
+      "especie": null,
+      "numero": "1º TA ao Contrato 126/2022",
+      "data": "2022-12-11",
+      "titulo": "PRIMEIRO TERMO ADITIVO AO CONTRATO Nº 126/2022",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "vigencia_fim": "31/12/2023"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. Prorrogação da vigência do Contrato"
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O término da vigência passa de 31/1"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S235",
+      "arquivo": "sintetico/F07_contrato_de/S235_apostilamento_016-2023.txt",
+      "processo": "F07_contrato_de",
+      "formato": "txt",
+      "tipo_documental": "apostilamento",
+      "especie": null,
+      "numero": "016/2023",
+      "data": "2023-01-11",
+      "titulo": "APOSTILAMENTO Nº 016/2023 AO CONTRATO Nº 126/2022",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "reajuste": "4,12%"
+      },
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S236",
+      "arquivo": "sintetico/F07_contrato_de/S236_relatorio_fiscalizacao_036-2023.docx",
+      "processo": "F07_contrato_de",
+      "formato": "docx",
+      "tipo_documental": "relatorio_fiscalizacao",
+      "especie": null,
+      "numero": "036/2023",
+      "data": "2022-09-01",
+      "titulo": "RELATÓRIO DE FISCALIZAÇÃO Nº 036/2023 — CONTRATO Nº 126/2022",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "valor_global_declarado": "R$ 1.550.850,00"
+      },
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S237",
+      "arquivo": "sintetico/F07_contrato_de/S237_ordem_suspensao_046-2022.txt",
+      "processo": "F07_contrato_de",
+      "formato": "txt",
+      "tipo_documental": "ordem_suspensao",
+      "especie": null,
+      "numero": "046/2022",
+      "data": "2022-05-01",
+      "titulo": "ORDEM DE SUSPENSÃO Nº 046/2022 — CONTRATO Nº 126/2022",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S238",
+      "arquivo": "sintetico/F07_contrato_de/S238_ordem_reinicio_056-2022.txt",
+      "processo": "F07_contrato_de",
+      "formato": "txt",
+      "tipo_documental": "ordem_reinicio",
+      "especie": null,
+      "numero": "056/2022",
+      "data": "2022-06-15",
+      "titulo": "ORDEM DE REINÍCIO Nº 056/2022 — CONTRATO Nº 126/2022",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S239",
+      "arquivo": "sintetico/F08_contrato_mineral/S239_contrato_127-2023.pdf",
+      "processo": "F08_contrato_mineral",
+      "formato": "pdf",
+      "tipo_documental": "contrato",
+      "especie": null,
+      "numero": "127/2023",
+      "data": "2023-03-01",
+      "titulo": "CONTRATO Nº 127/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "objeto": "fornecimento de água mineral em garrafões de 20 litros",
+        "contratada": "Fonte Serrana Águas Ltda.",
+        "cnpj": "85.940.312/0001-38",
+        "valor_global": "R$ 648.000,00",
+        "vigencia_inicio": "01/03/2023",
+        "vigencia_fim": "29/02/2024",
+        "processo": "SEGEP-PRO-2023/00127",
+        "data_assinatura": "27/02/2023"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. O presente contrato tem por objeto "
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O prazo de vigência deste contrato "
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.2",
+          "tipo": "sub",
+          "inicio": "2.2. A prorrogação dependerá de justific"
+        },
+        {
+          "rotulo": "cláusula terceira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA TERCEIRA – DO VALOR"
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.1",
+          "tipo": "sub",
+          "inicio": "3.1. O valor global do contrato é de R$ "
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.2",
+          "tipo": "sub",
+          "inicio": "3.2. O valor mensal estimado é de R$ 54."
+        },
+        {
+          "rotulo": "cláusula quarta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUARTA – DA DOTAÇÃO ORÇAMENTÁRI"
+        },
+        {
+          "rotulo": "cláusula quarta, item 4.1",
+          "tipo": "sub",
+          "inicio": "4.1. As despesas correrão à conta do Pro"
+        },
+        {
+          "rotulo": "cláusula quinta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUINTA – DO PAGAMENTO"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.1",
+          "tipo": "sub",
+          "inicio": "5.1. O pagamento será efetuado em até 30"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.2",
+          "tipo": "sub",
+          "inicio": "5.2. Nenhum pagamento será realizado sem"
+        },
+        {
+          "rotulo": "cláusula sexta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEXTA – DO REAJUSTE"
+        },
+        {
+          "rotulo": "cláusula sexta, item 6.1",
+          "tipo": "sub",
+          "inicio": "6.1. Os preços serão reajustáveis após 1"
+        },
+        {
+          "rotulo": "cláusula sétima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SÉTIMA – DA FISCALIZAÇÃO"
+        },
+        {
+          "rotulo": "cláusula sétima, item 7.1",
+          "tipo": "sub",
+          "inicio": "7.1. A execução será acompanhada por fis"
+        },
+        {
+          "rotulo": "cláusula oitava",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA OITAVA – DAS SANÇÕES"
+        },
+        {
+          "rotulo": "cláusula oitava, item 8.1",
+          "tipo": "sub",
+          "inicio": "8.1. Pela inexecução total ou parcial, a"
+        },
+        {
+          "rotulo": "cláusula nona",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA NONA – DA EXTINÇÃO"
+        },
+        {
+          "rotulo": "cláusula nona, item 9.1",
+          "tipo": "sub",
+          "inicio": "9.1. O contrato poderá ser extinto antec"
+        },
+        {
+          "rotulo": "cláusula décima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA DÉCIMA – DO FORO"
+        },
+        {
+          "rotulo": "cláusula décima, item 10.1",
+          "tipo": "sub",
+          "inicio": "10.1. Fica eleito o foro da Comarca da C"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S240",
+      "arquivo": "sintetico/F08_contrato_mineral/S240_1o_termo_aditivo_127-2023.txt",
+      "processo": "F08_contrato_mineral",
+      "formato": "txt",
+      "tipo_documental": "aditivo",
+      "especie": null,
+      "numero": "1º TA ao Contrato 127/2023",
+      "data": "2024-02-09",
+      "titulo": "PRIMEIRO TERMO ADITIVO AO CONTRATO Nº 127/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "vigencia_fim": "28/02/2025"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. Prorrogação da vigência do Contrato"
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O término da vigência passa de 29/0"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S241",
+      "arquivo": "sintetico/F08_contrato_mineral/S241_apostilamento_017-2024.docx",
+      "processo": "F08_contrato_mineral",
+      "formato": "docx",
+      "tipo_documental": "apostilamento",
+      "especie": null,
+      "numero": "017/2024",
+      "data": "2024-03-11",
+      "titulo": "APOSTILAMENTO Nº 017/2024 AO CONTRATO Nº 127/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "reajuste": "4,12%"
+      },
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S242",
+      "arquivo": "sintetico/F08_contrato_mineral/S242_relatorio_fiscalizacao_037-2024.pdf",
+      "processo": "F08_contrato_mineral",
+      "formato": "pdf_digitalizado",
+      "tipo_documental": "relatorio_fiscalizacao",
+      "especie": null,
+      "numero": "037/2024",
+      "data": "2023-11-01",
+      "titulo": "RELATÓRIO DE FISCALIZAÇÃO Nº 037/2024 — CONTRATO Nº 127/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "valor_global_declarado": "R$ 680.400,00"
+      },
+      "dispositivos": [],
+      "texto_referencia": "DOCUMENTO FICTÍCIO — corpus acadêmico SAD-GD. Não corresponde a ato oficial; nomes, números, CNPJ e CPF são inventados.\n\nESTADO DE VALE VERDE\nSECRETARIA DE ESTADO DE GESTÃO PÚBLICA\n\nRELATÓRIO DE FISCALIZAÇÃO Nº 037/2024 — CONTRATO Nº 127/2023\n\nSECRETARIA DE ESTADO DE GESTÃO PÚBLICA — SEGEP/VV\n\nO Contrato nº 127/2023, de valor global de R$ 680.400,00, foi executado regularmente no período avaliado.\nNão há pendências de pagamento nem ocorrências graves.\n\nCapital do Estado de Vale Verde, 1º de novembro de 2023.\n\nRogério Antunes Siqueira\nFiscal do Contrato"
+    },
+    {
+      "id": "S243",
+      "arquivo": "sintetico/F08_contrato_mineral/S243_notificacao_067-2024.pdf",
+      "processo": "F08_contrato_mineral",
+      "formato": "pdf",
+      "tipo_documental": "notificacao",
+      "especie": null,
+      "numero": "067/2024",
+      "data": "2024-06-01",
+      "titulo": "NOTIFICAÇÃO Nº 067/2024 — CONTRATO Nº 127/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S244",
+      "arquivo": "sintetico/F08_contrato_mineral/S244_termo_rescisao_077-2024.docx",
+      "processo": "F08_contrato_mineral",
+      "formato": "docx",
+      "tipo_documental": "termo_rescisao",
+      "especie": null,
+      "numero": "077/2024",
+      "data": "2024-07-01",
+      "titulo": "TERMO DE RESCISÃO DO CONTRATO Nº 127/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S245",
+      "arquivo": "sintetico/F08_contrato_mineral/S245_contrato_207-2024.txt",
+      "processo": "F08_contrato_mineral",
+      "formato": "txt",
+      "tipo_documental": "contrato",
+      "especie": null,
+      "numero": "207/2024",
+      "data": "2024-07-12",
+      "titulo": "CONTRATO Nº 207/2024",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "objeto": "fornecimento de água mineral em garrafões de 20 litros (contratação substituta)",
+        "contratada": "Fonte Serrana Águas Serviços Ltda.",
+        "cnpj": "85.941.423/0001-69",
+        "valor_global": "R$ 699.840,00",
+        "vigencia_inicio": "12/07/2024",
+        "vigencia_fim": "11/07/2025",
+        "processo": "SEGEP-PRO-2024/00207",
+        "data_assinatura": "10/07/2024"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. O presente contrato tem por objeto "
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O prazo de vigência deste contrato "
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.2",
+          "tipo": "sub",
+          "inicio": "2.2. A prorrogação dependerá de justific"
+        },
+        {
+          "rotulo": "cláusula terceira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA TERCEIRA – DO VALOR"
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.1",
+          "tipo": "sub",
+          "inicio": "3.1. O valor global do contrato é de R$ "
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.2",
+          "tipo": "sub",
+          "inicio": "3.2. O valor mensal estimado é de R$ 58."
+        },
+        {
+          "rotulo": "cláusula quarta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUARTA – DA DOTAÇÃO ORÇAMENTÁRI"
+        },
+        {
+          "rotulo": "cláusula quarta, item 4.1",
+          "tipo": "sub",
+          "inicio": "4.1. As despesas correrão à conta do Pro"
+        },
+        {
+          "rotulo": "cláusula quinta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUINTA – DO PAGAMENTO"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.1",
+          "tipo": "sub",
+          "inicio": "5.1. O pagamento será efetuado em até 30"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.2",
+          "tipo": "sub",
+          "inicio": "5.2. Nenhum pagamento será realizado sem"
+        },
+        {
+          "rotulo": "cláusula sexta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEXTA – DO REAJUSTE"
+        },
+        {
+          "rotulo": "cláusula sexta, item 6.1",
+          "tipo": "sub",
+          "inicio": "6.1. Os preços serão reajustáveis após 1"
+        },
+        {
+          "rotulo": "cláusula sétima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SÉTIMA – DA FISCALIZAÇÃO"
+        },
+        {
+          "rotulo": "cláusula sétima, item 7.1",
+          "tipo": "sub",
+          "inicio": "7.1. A execução será acompanhada por fis"
+        },
+        {
+          "rotulo": "cláusula oitava",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA OITAVA – DAS SANÇÕES"
+        },
+        {
+          "rotulo": "cláusula oitava, item 8.1",
+          "tipo": "sub",
+          "inicio": "8.1. Pela inexecução total ou parcial, a"
+        },
+        {
+          "rotulo": "cláusula nona",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA NONA – DA SUBSTITUIÇÃO"
+        },
+        {
+          "rotulo": "cláusula nona, item 9.1",
+          "tipo": "sub",
+          "inicio": "9.1. Este contrato substitui o Contrato "
+        },
+        {
+          "rotulo": "cláusula décima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA DÉCIMA – DA EXTINÇÃO"
+        },
+        {
+          "rotulo": "cláusula décima, item 10.1",
+          "tipo": "sub",
+          "inicio": "10.1. O contrato poderá ser extinto ante"
+        },
+        {
+          "rotulo": "cláusula décima primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA DÉCIMA PRIMEIRA – DO FORO"
+        },
+        {
+          "rotulo": "cláusula décima primeira, item 11.1",
+          "tipo": "sub",
+          "inicio": "11.1. Fica eleito o foro da Comarca da C"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S246",
+      "arquivo": "sintetico/F09_contrato_de/S246_contrato_128-2024.txt",
+      "processo": "F09_contrato_de",
+      "formato": "txt",
+      "tipo_documental": "contrato",
+      "especie": null,
+      "numero": "128/2024",
+      "data": "2024-05-01",
+      "titulo": "CONTRATO Nº 128/2024",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "objeto": "prestação de serviços de digitalização de acervo documental",
+        "contratada": "Arquivo Vivo Gestão Documental Ltda.",
+        "cnpj": "96.051.423/0001-00",
+        "valor_global": "R$ 465.000,00",
+        "vigencia_inicio": "01/05/2024",
+        "vigencia_fim": "30/04/2025",
+        "processo": "SEGEP-PRO-2024/00128",
+        "data_assinatura": "29/04/2024"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. O presente contrato tem por objeto "
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O prazo de vigência deste contrato "
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.2",
+          "tipo": "sub",
+          "inicio": "2.2. A prorrogação dependerá de justific"
+        },
+        {
+          "rotulo": "cláusula terceira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA TERCEIRA – DO VALOR"
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.1",
+          "tipo": "sub",
+          "inicio": "3.1. O valor global do contrato é de R$ "
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.2",
+          "tipo": "sub",
+          "inicio": "3.2. O valor mensal estimado é de R$ 38."
+        },
+        {
+          "rotulo": "cláusula quarta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUARTA – DA DOTAÇÃO ORÇAMENTÁRI"
+        },
+        {
+          "rotulo": "cláusula quarta, item 4.1",
+          "tipo": "sub",
+          "inicio": "4.1. As despesas correrão à conta do Pro"
+        },
+        {
+          "rotulo": "cláusula quinta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUINTA – DO PAGAMENTO"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.1",
+          "tipo": "sub",
+          "inicio": "5.1. O pagamento será efetuado em até 30"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.2",
+          "tipo": "sub",
+          "inicio": "5.2. Nenhum pagamento será realizado sem"
+        },
+        {
+          "rotulo": "cláusula sexta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEXTA – DO REAJUSTE"
+        },
+        {
+          "rotulo": "cláusula sexta, item 6.1",
+          "tipo": "sub",
+          "inicio": "6.1. Os preços serão reajustáveis após 1"
+        },
+        {
+          "rotulo": "cláusula sétima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SÉTIMA – DA FISCALIZAÇÃO"
+        },
+        {
+          "rotulo": "cláusula sétima, item 7.1",
+          "tipo": "sub",
+          "inicio": "7.1. A execução será acompanhada por fis"
+        },
+        {
+          "rotulo": "cláusula oitava",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA OITAVA – DAS SANÇÕES"
+        },
+        {
+          "rotulo": "cláusula oitava, item 8.1",
+          "tipo": "sub",
+          "inicio": "8.1. Pela inexecução total ou parcial, a"
+        },
+        {
+          "rotulo": "cláusula nona",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA NONA – DA EXTINÇÃO"
+        },
+        {
+          "rotulo": "cláusula nona, item 9.1",
+          "tipo": "sub",
+          "inicio": "9.1. O contrato poderá ser extinto antec"
+        },
+        {
+          "rotulo": "cláusula décima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA DÉCIMA – DO FORO"
+        },
+        {
+          "rotulo": "cláusula décima, item 10.1",
+          "tipo": "sub",
+          "inicio": "10.1. Fica eleito o foro da Comarca da C"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S247",
+      "arquivo": "sintetico/F09_contrato_de/S247_1o_termo_aditivo_128-2024.docx",
+      "processo": "F09_contrato_de",
+      "formato": "docx",
+      "tipo_documental": "aditivo",
+      "especie": null,
+      "numero": "1º TA ao Contrato 128/2024",
+      "data": "2025-04-10",
+      "titulo": "PRIMEIRO TERMO ADITIVO AO CONTRATO Nº 128/2024",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "vigencia_fim": "30/04/2026"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. Prorrogação da vigência do Contrato"
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O término da vigência passa de 30/0"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S248",
+      "arquivo": "sintetico/F09_contrato_de/S248_apostilamento_018-2025.pdf",
+      "processo": "F09_contrato_de",
+      "formato": "pdf",
+      "tipo_documental": "apostilamento",
+      "especie": null,
+      "numero": "018/2025",
+      "data": "2025-05-11",
+      "titulo": "APOSTILAMENTO Nº 018/2025 AO CONTRATO Nº 128/2024",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "reajuste": "3,85%"
+      },
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S249",
+      "arquivo": "sintetico/F09_contrato_de/S249_relatorio_fiscalizacao_038-2025.txt",
+      "processo": "F09_contrato_de",
+      "formato": "txt",
+      "tipo_documental": "relatorio_fiscalizacao",
+      "especie": null,
+      "numero": "038/2025",
+      "data": "2025-01-01",
+      "titulo": "RELATÓRIO DE FISCALIZAÇÃO Nº 038/2025 — CONTRATO Nº 128/2024",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "valor_global_declarado": "R$ 418.500,00"
+      },
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S250",
+      "arquivo": "sintetico/F09_contrato_de/S250_notificacao_068-2025.txt",
+      "processo": "F09_contrato_de",
+      "formato": "txt",
+      "tipo_documental": "notificacao",
+      "especie": null,
+      "numero": "068/2025",
+      "data": "2025-08-01",
+      "titulo": "NOTIFICAÇÃO Nº 068/2025 — CONTRATO Nº 128/2024",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S251",
+      "arquivo": "sintetico/F09_contrato_de/S251_termo_rescisao_078-2025.docx",
+      "processo": "F09_contrato_de",
+      "formato": "docx",
+      "tipo_documental": "termo_rescisao",
+      "especie": null,
+      "numero": "078/2025",
+      "data": "2025-08-31",
+      "titulo": "TERMO DE RESCISÃO DO CONTRATO Nº 128/2024",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S252",
+      "arquivo": "sintetico/F09_contrato_de/S252_contrato_208-2025.docx",
+      "processo": "F09_contrato_de",
+      "formato": "docx",
+      "tipo_documental": "contrato",
+      "especie": null,
+      "numero": "208/2025",
+      "data": "2025-09-11",
+      "titulo": "CONTRATO Nº 208/2025",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "objeto": "prestação de serviços de digitalização de acervo documental (contratação substituta)",
+        "contratada": "Arquivo Vivo Gestão Documental Serviços Ltda.",
+        "cnpj": "96.052.534/0001-30",
+        "valor_global": "R$ 502.200,00",
+        "vigencia_inicio": "11/09/2025",
+        "vigencia_fim": "10/09/2026",
+        "processo": "SEGEP-PRO-2025/00208",
+        "data_assinatura": "09/09/2025"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. O presente contrato tem por objeto "
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O prazo de vigência deste contrato "
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.2",
+          "tipo": "sub",
+          "inicio": "2.2. A prorrogação dependerá de justific"
+        },
+        {
+          "rotulo": "cláusula terceira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA TERCEIRA – DO VALOR"
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.1",
+          "tipo": "sub",
+          "inicio": "3.1. O valor global do contrato é de R$ "
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.2",
+          "tipo": "sub",
+          "inicio": "3.2. O valor mensal estimado é de R$ 41."
+        },
+        {
+          "rotulo": "cláusula quarta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUARTA – DA DOTAÇÃO ORÇAMENTÁRI"
+        },
+        {
+          "rotulo": "cláusula quarta, item 4.1",
+          "tipo": "sub",
+          "inicio": "4.1. As despesas correrão à conta do Pro"
+        },
+        {
+          "rotulo": "cláusula quinta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUINTA – DO PAGAMENTO"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.1",
+          "tipo": "sub",
+          "inicio": "5.1. O pagamento será efetuado em até 30"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.2",
+          "tipo": "sub",
+          "inicio": "5.2. Nenhum pagamento será realizado sem"
+        },
+        {
+          "rotulo": "cláusula sexta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEXTA – DO REAJUSTE"
+        },
+        {
+          "rotulo": "cláusula sexta, item 6.1",
+          "tipo": "sub",
+          "inicio": "6.1. Os preços serão reajustáveis após 1"
+        },
+        {
+          "rotulo": "cláusula sétima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SÉTIMA – DA FISCALIZAÇÃO"
+        },
+        {
+          "rotulo": "cláusula sétima, item 7.1",
+          "tipo": "sub",
+          "inicio": "7.1. A execução será acompanhada por fis"
+        },
+        {
+          "rotulo": "cláusula oitava",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA OITAVA – DAS SANÇÕES"
+        },
+        {
+          "rotulo": "cláusula oitava, item 8.1",
+          "tipo": "sub",
+          "inicio": "8.1. Pela inexecução total ou parcial, a"
+        },
+        {
+          "rotulo": "cláusula nona",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA NONA – DA SUBSTITUIÇÃO"
+        },
+        {
+          "rotulo": "cláusula nona, item 9.1",
+          "tipo": "sub",
+          "inicio": "9.1. Este contrato substitui o Contrato "
+        },
+        {
+          "rotulo": "cláusula décima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA DÉCIMA – DA EXTINÇÃO"
+        },
+        {
+          "rotulo": "cláusula décima, item 10.1",
+          "tipo": "sub",
+          "inicio": "10.1. O contrato poderá ser extinto ante"
+        },
+        {
+          "rotulo": "cláusula décima primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA DÉCIMA PRIMEIRA – DO FORO"
+        },
+        {
+          "rotulo": "cláusula décima primeira, item 11.1",
+          "tipo": "sub",
+          "inicio": "11.1. Fica eleito o foro da Comarca da C"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S253",
+      "arquivo": "sintetico/F10_contrato_de/S253_contrato_129-2022.docx",
+      "processo": "F10_contrato_de",
+      "formato": "docx",
+      "tipo_documental": "contrato",
+      "especie": null,
+      "numero": "129/2022",
+      "data": "2022-07-01",
+      "titulo": "CONTRATO Nº 129/2022",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "objeto": "prestação de serviços de jardinagem e paisagismo",
+        "contratada": "Verde Vida Paisagismo Ltda.",
+        "cnpj": "17.162.534/0001-17",
+        "valor_global": "R$ 1.020.000,00",
+        "vigencia_inicio": "01/07/2022",
+        "vigencia_fim": "30/06/2023",
+        "processo": "SEGEP-PRO-2022/00129",
+        "data_assinatura": "29/06/2022"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. O presente contrato tem por objeto "
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O prazo de vigência deste contrato "
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.2",
+          "tipo": "sub",
+          "inicio": "2.2. A prorrogação dependerá de justific"
+        },
+        {
+          "rotulo": "cláusula terceira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA TERCEIRA – DO VALOR"
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.1",
+          "tipo": "sub",
+          "inicio": "3.1. O valor global do contrato é de R$ "
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.2",
+          "tipo": "sub",
+          "inicio": "3.2. O valor mensal estimado é de R$ 85."
+        },
+        {
+          "rotulo": "cláusula quarta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUARTA – DA DOTAÇÃO ORÇAMENTÁRI"
+        },
+        {
+          "rotulo": "cláusula quarta, item 4.1",
+          "tipo": "sub",
+          "inicio": "4.1. As despesas correrão à conta do Pro"
+        },
+        {
+          "rotulo": "cláusula quinta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUINTA – DO PAGAMENTO"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.1",
+          "tipo": "sub",
+          "inicio": "5.1. O pagamento será efetuado em até 30"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.2",
+          "tipo": "sub",
+          "inicio": "5.2. Nenhum pagamento será realizado sem"
+        },
+        {
+          "rotulo": "cláusula sexta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEXTA – DO REAJUSTE"
+        },
+        {
+          "rotulo": "cláusula sexta, item 6.1",
+          "tipo": "sub",
+          "inicio": "6.1. Os preços serão reajustáveis após 1"
+        },
+        {
+          "rotulo": "cláusula sétima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SÉTIMA – DA FISCALIZAÇÃO"
+        },
+        {
+          "rotulo": "cláusula sétima, item 7.1",
+          "tipo": "sub",
+          "inicio": "7.1. A execução será acompanhada por fis"
+        },
+        {
+          "rotulo": "cláusula oitava",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA OITAVA – DAS SANÇÕES"
+        },
+        {
+          "rotulo": "cláusula oitava, item 8.1",
+          "tipo": "sub",
+          "inicio": "8.1. Pela inexecução total ou parcial, a"
+        },
+        {
+          "rotulo": "cláusula nona",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA NONA – DA EXTINÇÃO"
+        },
+        {
+          "rotulo": "cláusula nona, item 9.1",
+          "tipo": "sub",
+          "inicio": "9.1. O contrato poderá ser extinto antec"
+        },
+        {
+          "rotulo": "cláusula décima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA DÉCIMA – DO FORO"
+        },
+        {
+          "rotulo": "cláusula décima, item 10.1",
+          "tipo": "sub",
+          "inicio": "10.1. Fica eleito o foro da Comarca da C"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S254",
+      "arquivo": "sintetico/F10_contrato_de/S254_1o_termo_aditivo_129-2022.pdf",
+      "processo": "F10_contrato_de",
+      "formato": "pdf",
+      "tipo_documental": "aditivo",
+      "especie": null,
+      "numero": "1º TA ao Contrato 129/2022",
+      "data": "2023-06-10",
+      "titulo": "PRIMEIRO TERMO ADITIVO AO CONTRATO Nº 129/2022",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "vigencia_fim": "30/06/2024"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. Prorrogação da vigência do Contrato"
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O término da vigência passa de 30/0"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S255",
+      "arquivo": "sintetico/F10_contrato_de/S255_apostilamento_019-2023.txt",
+      "processo": "F10_contrato_de",
+      "formato": "txt",
+      "tipo_documental": "apostilamento",
+      "especie": null,
+      "numero": "019/2023",
+      "data": "2023-07-11",
+      "titulo": "APOSTILAMENTO Nº 019/2023 AO CONTRATO Nº 129/2022",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "reajuste": "3,85%"
+      },
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S256",
+      "arquivo": "sintetico/F10_contrato_de/S256_notificacao_069-2023.docx",
+      "processo": "F10_contrato_de",
+      "formato": "docx",
+      "tipo_documental": "notificacao",
+      "especie": null,
+      "numero": "069/2023",
+      "data": "2023-10-01",
+      "titulo": "NOTIFICAÇÃO Nº 069/2023 — CONTRATO Nº 129/2022",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S257",
+      "arquivo": "sintetico/F10_contrato_de/S257_termo_rescisao_079-2023.docx",
+      "processo": "F10_contrato_de",
+      "formato": "docx",
+      "tipo_documental": "termo_rescisao",
+      "especie": null,
+      "numero": "079/2023",
+      "data": "2023-10-31",
+      "titulo": "TERMO DE RESCISÃO DO CONTRATO Nº 129/2022",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [],
+      "texto_referencia": null
+    },
+    {
+      "id": "S258",
+      "arquivo": "sintetico/F10_contrato_de/S258_contrato_209-2023.pdf",
+      "processo": "F10_contrato_de",
+      "formato": "pdf",
+      "tipo_documental": "contrato",
+      "especie": null,
+      "numero": "209/2023",
+      "data": "2023-11-11",
+      "titulo": "CONTRATO Nº 209/2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {
+        "objeto": "prestação de serviços de jardinagem e paisagismo (contratação substituta)",
+        "contratada": "Verde Vida Paisagismo Serviços Ltda.",
+        "cnpj": "17.163.645/0001-48",
+        "valor_global": "R$ 1.101.600,00",
+        "vigencia_inicio": "11/11/2023",
+        "vigencia_fim": "10/11/2024",
+        "processo": "SEGEP-PRO-2023/00209",
+        "data_assinatura": "09/11/2023"
+      },
+      "dispositivos": [
+        {
+          "rotulo": "cláusula primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA PRIMEIRA – DO OBJETO"
+        },
+        {
+          "rotulo": "cláusula primeira, item 1.1",
+          "tipo": "sub",
+          "inicio": "1.1. O presente contrato tem por objeto "
+        },
+        {
+          "rotulo": "cláusula segunda",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEGUNDA – DA VIGÊNCIA"
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.1",
+          "tipo": "sub",
+          "inicio": "2.1. O prazo de vigência deste contrato "
+        },
+        {
+          "rotulo": "cláusula segunda, item 2.2",
+          "tipo": "sub",
+          "inicio": "2.2. A prorrogação dependerá de justific"
+        },
+        {
+          "rotulo": "cláusula terceira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA TERCEIRA – DO VALOR"
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.1",
+          "tipo": "sub",
+          "inicio": "3.1. O valor global do contrato é de R$ "
+        },
+        {
+          "rotulo": "cláusula terceira, item 3.2",
+          "tipo": "sub",
+          "inicio": "3.2. O valor mensal estimado é de R$ 91."
+        },
+        {
+          "rotulo": "cláusula quarta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUARTA – DA DOTAÇÃO ORÇAMENTÁRI"
+        },
+        {
+          "rotulo": "cláusula quarta, item 4.1",
+          "tipo": "sub",
+          "inicio": "4.1. As despesas correrão à conta do Pro"
+        },
+        {
+          "rotulo": "cláusula quinta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA QUINTA – DO PAGAMENTO"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.1",
+          "tipo": "sub",
+          "inicio": "5.1. O pagamento será efetuado em até 30"
+        },
+        {
+          "rotulo": "cláusula quinta, item 5.2",
+          "tipo": "sub",
+          "inicio": "5.2. Nenhum pagamento será realizado sem"
+        },
+        {
+          "rotulo": "cláusula sexta",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SEXTA – DO REAJUSTE"
+        },
+        {
+          "rotulo": "cláusula sexta, item 6.1",
+          "tipo": "sub",
+          "inicio": "6.1. Os preços serão reajustáveis após 1"
+        },
+        {
+          "rotulo": "cláusula sétima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA SÉTIMA – DA FISCALIZAÇÃO"
+        },
+        {
+          "rotulo": "cláusula sétima, item 7.1",
+          "tipo": "sub",
+          "inicio": "7.1. A execução será acompanhada por fis"
+        },
+        {
+          "rotulo": "cláusula oitava",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA OITAVA – DAS SANÇÕES"
+        },
+        {
+          "rotulo": "cláusula oitava, item 8.1",
+          "tipo": "sub",
+          "inicio": "8.1. Pela inexecução total ou parcial, a"
+        },
+        {
+          "rotulo": "cláusula nona",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA NONA – DA SUBSTITUIÇÃO"
+        },
+        {
+          "rotulo": "cláusula nona, item 9.1",
+          "tipo": "sub",
+          "inicio": "9.1. Este contrato substitui o Contrato "
+        },
+        {
+          "rotulo": "cláusula décima",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA DÉCIMA – DA EXTINÇÃO"
+        },
+        {
+          "rotulo": "cláusula décima, item 10.1",
+          "tipo": "sub",
+          "inicio": "10.1. O contrato poderá ser extinto ante"
+        },
+        {
+          "rotulo": "cláusula décima primeira",
+          "tipo": "clausula",
+          "inicio": "CLÁUSULA DÉCIMA PRIMEIRA – DO FORO"
+        },
+        {
+          "rotulo": "cláusula décima primeira, item 11.1",
+          "tipo": "sub",
+          "inicio": "11.1. Fica eleito o foro da Comarca da C"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S301",
+      "arquivo": "sintetico/N01_normas_horário/S301_portaria_060-2021.docx",
+      "processo": "N01_normas_horário",
+      "formato": "docx",
+      "tipo_documental": "portaria",
+      "especie": "portaria",
+      "numero": "060/2021",
+      "data": "2021-03-10",
+      "titulo": "PORTARIA Nº 060/2021, DE 10 DE MARÇO DE 2021",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [
+        {
+          "rotulo": "art. 1º",
+          "tipo": "artigo",
+          "inicio": "Art. 1º Esta Portaria disciplina o horár"
+        },
+        {
+          "rotulo": "art. 2º",
+          "tipo": "artigo",
+          "inicio": "Art. 2º Fica estabelecido o parâmetro de"
+        },
+        {
+          "rotulo": "art. 2º, § 1º",
+          "tipo": "sub",
+          "inicio": "§ 1º Exceções serão autorizadas pelo Sec"
+        },
+        {
+          "rotulo": "art. 2º, § 2º",
+          "tipo": "sub",
+          "inicio": "§ 2º As chefias imediatas acompanharão o"
+        },
+        {
+          "rotulo": "art. 3º",
+          "tipo": "artigo",
+          "inicio": "Art. 3º Compete à unidade de gestão de p"
+        },
+        {
+          "rotulo": "art. 3º, I",
+          "tipo": "sub",
+          "inicio": "I – divulgar esta Portaria;"
+        },
+        {
+          "rotulo": "art. 3º, II",
+          "tipo": "sub",
+          "inicio": "II – monitorar sua aplicação;"
+        },
+        {
+          "rotulo": "art. 4º",
+          "tipo": "artigo",
+          "inicio": "Art. 4º Esta Portaria entra em vigor na "
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S302",
+      "arquivo": "sintetico/N01_normas_horário/S302_portaria_080-2022.pdf",
+      "processo": "N01_normas_horário",
+      "formato": "pdf",
+      "tipo_documental": "portaria",
+      "especie": "portaria",
+      "numero": "080/2022",
+      "data": "2022-02-05",
+      "titulo": "PORTARIA Nº 080/2022, DE 5 DE FEVEREIRO DE 2022",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [
+        {
+          "rotulo": "art. 1º",
+          "tipo": "artigo",
+          "inicio": "Art. 1º O art. 2º da Portaria nº 060/202"
+        },
+        {
+          "rotulo": "art. 2º",
+          "tipo": "artigo",
+          "inicio": "Art. 2º Esta Portaria entra em vigor na "
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S303",
+      "arquivo": "sintetico/N01_normas_horário/S303_portaria_095-2023.docx",
+      "processo": "N01_normas_horário",
+      "formato": "docx",
+      "tipo_documental": "portaria",
+      "especie": "portaria",
+      "numero": "095/2023",
+      "data": "2023-01-20",
+      "titulo": "PORTARIA Nº 095/2023, DE 20 DE JANEIRO DE 2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [
+        {
+          "rotulo": "art. 1º",
+          "tipo": "artigo",
+          "inicio": "Art. 1º Esta Portaria substitui integral"
+        },
+        {
+          "rotulo": "art. 2º",
+          "tipo": "artigo",
+          "inicio": "Art. 2º O parâmetro para o horário de ex"
+        },
+        {
+          "rotulo": "art. 3º",
+          "tipo": "artigo",
+          "inicio": "Art. 3º Esta Portaria entra em vigor na "
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S304",
+      "arquivo": "sintetico/N02_normas_uso/S304_portaria_061-2022.pdf",
+      "processo": "N02_normas_uso",
+      "formato": "pdf",
+      "tipo_documental": "portaria",
+      "especie": "portaria",
+      "numero": "061/2022",
+      "data": "2022-04-10",
+      "titulo": "PORTARIA Nº 061/2022, DE 10 DE ABRIL DE 2022",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [
+        {
+          "rotulo": "art. 1º",
+          "tipo": "artigo",
+          "inicio": "Art. 1º Esta Portaria disciplina o uso d"
+        },
+        {
+          "rotulo": "art. 2º",
+          "tipo": "artigo",
+          "inicio": "Art. 2º Fica estabelecido o parâmetro de"
+        },
+        {
+          "rotulo": "art. 2º, § 1º",
+          "tipo": "sub",
+          "inicio": "§ 1º Exceções serão autorizadas pelo Sec"
+        },
+        {
+          "rotulo": "art. 2º, § 2º",
+          "tipo": "sub",
+          "inicio": "§ 2º As chefias imediatas acompanharão o"
+        },
+        {
+          "rotulo": "art. 3º",
+          "tipo": "artigo",
+          "inicio": "Art. 3º Compete à unidade de gestão de p"
+        },
+        {
+          "rotulo": "art. 3º, I",
+          "tipo": "sub",
+          "inicio": "I – divulgar esta Portaria;"
+        },
+        {
+          "rotulo": "art. 3º, II",
+          "tipo": "sub",
+          "inicio": "II – monitorar sua aplicação;"
+        },
+        {
+          "rotulo": "art. 4º",
+          "tipo": "artigo",
+          "inicio": "Art. 4º Esta Portaria entra em vigor na "
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S305",
+      "arquivo": "sintetico/N02_normas_uso/S305_portaria_081-2023.txt",
+      "processo": "N02_normas_uso",
+      "formato": "txt",
+      "tipo_documental": "portaria",
+      "especie": "portaria",
+      "numero": "081/2023",
+      "data": "2023-03-05",
+      "titulo": "PORTARIA Nº 081/2023, DE 5 DE MARÇO DE 2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [
+        {
+          "rotulo": "art. 1º",
+          "tipo": "artigo",
+          "inicio": "Art. 1º O art. 2º da Portaria nº 061/202"
+        },
+        {
+          "rotulo": "art. 2º",
+          "tipo": "artigo",
+          "inicio": "Art. 2º Esta Portaria entra em vigor na "
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S306",
+      "arquivo": "sintetico/N02_normas_uso/S306_portaria_096-2024.txt",
+      "processo": "N02_normas_uso",
+      "formato": "txt",
+      "tipo_documental": "portaria",
+      "especie": "portaria",
+      "numero": "096/2024",
+      "data": "2024-02-20",
+      "titulo": "PORTARIA Nº 096/2024, DE 20 DE FEVEREIRO DE 2024",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [
+        {
+          "rotulo": "art. 1º",
+          "tipo": "artigo",
+          "inicio": "Art. 1º Ficam revogadas a Portaria nº 06"
+        },
+        {
+          "rotulo": "art. 2º",
+          "tipo": "artigo",
+          "inicio": "Art. 2º Esta Portaria entra em vigor na "
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S307",
+      "arquivo": "sintetico/N03_normas_teletrabalho/S307_portaria_062-2023.txt",
+      "processo": "N03_normas_teletrabalho",
+      "formato": "txt",
+      "tipo_documental": "portaria",
+      "especie": "portaria",
+      "numero": "062/2023",
+      "data": "2023-05-10",
+      "titulo": "PORTARIA Nº 062/2023, DE 10 DE MAIO DE 2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [
+        {
+          "rotulo": "art. 1º",
+          "tipo": "artigo",
+          "inicio": "Art. 1º Esta Portaria disciplina o telet"
+        },
+        {
+          "rotulo": "art. 2º",
+          "tipo": "artigo",
+          "inicio": "Art. 2º Fica estabelecido o parâmetro de"
+        },
+        {
+          "rotulo": "art. 2º, § 1º",
+          "tipo": "sub",
+          "inicio": "§ 1º Exceções serão autorizadas pelo Sec"
+        },
+        {
+          "rotulo": "art. 2º, § 2º",
+          "tipo": "sub",
+          "inicio": "§ 2º As chefias imediatas acompanharão o"
+        },
+        {
+          "rotulo": "art. 3º",
+          "tipo": "artigo",
+          "inicio": "Art. 3º Compete à unidade de gestão de p"
+        },
+        {
+          "rotulo": "art. 3º, I",
+          "tipo": "sub",
+          "inicio": "I – divulgar esta Portaria;"
+        },
+        {
+          "rotulo": "art. 3º, II",
+          "tipo": "sub",
+          "inicio": "II – monitorar sua aplicação;"
+        },
+        {
+          "rotulo": "art. 4º",
+          "tipo": "artigo",
+          "inicio": "Art. 4º Esta Portaria entra em vigor na "
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S308",
+      "arquivo": "sintetico/N03_normas_teletrabalho/S308_portaria_082-2024.docx",
+      "processo": "N03_normas_teletrabalho",
+      "formato": "docx",
+      "tipo_documental": "portaria",
+      "especie": "portaria",
+      "numero": "082/2024",
+      "data": "2024-04-05",
+      "titulo": "PORTARIA Nº 082/2024, DE 5 DE ABRIL DE 2024",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [
+        {
+          "rotulo": "art. 1º",
+          "tipo": "artigo",
+          "inicio": "Art. 1º O art. 2º da Portaria nº 062/202"
+        },
+        {
+          "rotulo": "art. 2º",
+          "tipo": "artigo",
+          "inicio": "Art. 2º Esta Portaria entra em vigor na "
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S309",
+      "arquivo": "sintetico/N03_normas_teletrabalho/S309_portaria_097-2025.docx",
+      "processo": "N03_normas_teletrabalho",
+      "formato": "docx",
+      "tipo_documental": "portaria",
+      "especie": "portaria",
+      "numero": "097/2025",
+      "data": "2025-03-20",
+      "titulo": "PORTARIA Nº 097/2025, DE 20 DE MARÇO DE 2025",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [
+        {
+          "rotulo": "art. 1º",
+          "tipo": "artigo",
+          "inicio": "Art. 1º Esta Portaria substitui integral"
+        },
+        {
+          "rotulo": "art. 2º",
+          "tipo": "artigo",
+          "inicio": "Art. 2º O parâmetro para o teletrabalho "
+        },
+        {
+          "rotulo": "art. 3º",
+          "tipo": "artigo",
+          "inicio": "Art. 3º Esta Portaria entra em vigor na "
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S310",
+      "arquivo": "sintetico/N03_normas_teletrabalho/S310_orientacao_12-2024.txt",
+      "processo": "N03_normas_teletrabalho",
+      "formato": "txt",
+      "tipo_documental": "orientacao",
+      "especie": "orientacao",
+      "numero": "12/2024",
+      "data": "2024-06-01",
+      "titulo": "ORIENTAÇÃO NORMATIVA Nº 12/2024, DE 1º DE JUNHO DE 2024",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [
+        {
+          "rotulo": "art. 1º",
+          "tipo": "artigo",
+          "inicio": "Art. 1º A aplicação da Portaria nº 062/2"
+        },
+        {
+          "rotulo": "art. 2º",
+          "tipo": "artigo",
+          "inicio": "Art. 2º Esta Orientação entra em vigor n"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S311",
+      "arquivo": "sintetico/N04_normas_concessão/S311_portaria_063-2021.docx",
+      "processo": "N04_normas_concessão",
+      "formato": "docx",
+      "tipo_documental": "portaria",
+      "especie": "portaria",
+      "numero": "063/2021",
+      "data": "2021-06-10",
+      "titulo": "PORTARIA Nº 063/2021, DE 10 DE JUNHO DE 2021",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [
+        {
+          "rotulo": "art. 1º",
+          "tipo": "artigo",
+          "inicio": "Art. 1º Esta Portaria disciplina o conce"
+        },
+        {
+          "rotulo": "art. 2º",
+          "tipo": "artigo",
+          "inicio": "Art. 2º Fica estabelecido o parâmetro de"
+        },
+        {
+          "rotulo": "art. 2º, § 1º",
+          "tipo": "sub",
+          "inicio": "§ 1º Exceções serão autorizadas pelo Sec"
+        },
+        {
+          "rotulo": "art. 2º, § 2º",
+          "tipo": "sub",
+          "inicio": "§ 2º As chefias imediatas acompanharão o"
+        },
+        {
+          "rotulo": "art. 3º",
+          "tipo": "artigo",
+          "inicio": "Art. 3º Compete à unidade de gestão de p"
+        },
+        {
+          "rotulo": "art. 3º, I",
+          "tipo": "sub",
+          "inicio": "I – divulgar esta Portaria;"
+        },
+        {
+          "rotulo": "art. 3º, II",
+          "tipo": "sub",
+          "inicio": "II – monitorar sua aplicação;"
+        },
+        {
+          "rotulo": "art. 4º",
+          "tipo": "artigo",
+          "inicio": "Art. 4º Esta Portaria entra em vigor na "
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S312",
+      "arquivo": "sintetico/N04_normas_concessão/S312_portaria_083-2022.pdf",
+      "processo": "N04_normas_concessão",
+      "formato": "pdf",
+      "tipo_documental": "portaria",
+      "especie": "portaria",
+      "numero": "083/2022",
+      "data": "2022-05-05",
+      "titulo": "PORTARIA Nº 083/2022, DE 5 DE MAIO DE 2022",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [
+        {
+          "rotulo": "art. 1º",
+          "tipo": "artigo",
+          "inicio": "Art. 1º O art. 2º da Portaria nº 063/202"
+        },
+        {
+          "rotulo": "art. 2º",
+          "tipo": "artigo",
+          "inicio": "Art. 2º Esta Portaria entra em vigor na "
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S313",
+      "arquivo": "sintetico/N04_normas_concessão/S313_portaria_098-2023.txt",
+      "processo": "N04_normas_concessão",
+      "formato": "txt",
+      "tipo_documental": "portaria",
+      "especie": "portaria",
+      "numero": "098/2023",
+      "data": "2023-04-20",
+      "titulo": "PORTARIA Nº 098/2023, DE 20 DE ABRIL DE 2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [
+        {
+          "rotulo": "art. 1º",
+          "tipo": "artigo",
+          "inicio": "Art. 1º Ficam revogadas a Portaria nº 06"
+        },
+        {
+          "rotulo": "art. 2º",
+          "tipo": "artigo",
+          "inicio": "Art. 2º Esta Portaria entra em vigor na "
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S314",
+      "arquivo": "sintetico/N04_normas_concessão/S314_orientacao_13-2022.txt",
+      "processo": "N04_normas_concessão",
+      "formato": "txt",
+      "tipo_documental": "orientacao",
+      "especie": "orientacao",
+      "numero": "13/2022",
+      "data": "2022-06-01",
+      "titulo": "ORIENTAÇÃO NORMATIVA Nº 13/2022, DE 1º DE JUNHO DE 2022",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [
+        {
+          "rotulo": "art. 1º",
+          "tipo": "artigo",
+          "inicio": "Art. 1º A aplicação da Portaria nº 063/2"
+        },
+        {
+          "rotulo": "art. 2º",
+          "tipo": "artigo",
+          "inicio": "Art. 2º Esta Orientação entra em vigor n"
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S315",
+      "arquivo": "sintetico/N05_normas_gestão/S315_portaria_064-2022.pdf",
+      "processo": "N05_normas_gestão",
+      "formato": "pdf",
+      "tipo_documental": "portaria",
+      "especie": "portaria",
+      "numero": "064/2022",
+      "data": "2022-07-10",
+      "titulo": "PORTARIA Nº 064/2022, DE 10 DE JULHO DE 2022",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [
+        {
+          "rotulo": "art. 1º",
+          "tipo": "artigo",
+          "inicio": "Art. 1º Esta Portaria disciplina o gestã"
+        },
+        {
+          "rotulo": "art. 2º",
+          "tipo": "artigo",
+          "inicio": "Art. 2º Fica estabelecido o parâmetro de"
+        },
+        {
+          "rotulo": "art. 2º, § 1º",
+          "tipo": "sub",
+          "inicio": "§ 1º Exceções serão autorizadas pelo Sec"
+        },
+        {
+          "rotulo": "art. 2º, § 2º",
+          "tipo": "sub",
+          "inicio": "§ 2º As chefias imediatas acompanharão o"
+        },
+        {
+          "rotulo": "art. 3º",
+          "tipo": "artigo",
+          "inicio": "Art. 3º Compete à unidade de gestão de p"
+        },
+        {
+          "rotulo": "art. 3º, I",
+          "tipo": "sub",
+          "inicio": "I – divulgar esta Portaria;"
+        },
+        {
+          "rotulo": "art. 3º, II",
+          "tipo": "sub",
+          "inicio": "II – monitorar sua aplicação;"
+        },
+        {
+          "rotulo": "art. 4º",
+          "tipo": "artigo",
+          "inicio": "Art. 4º Esta Portaria entra em vigor na "
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S316",
+      "arquivo": "sintetico/N05_normas_gestão/S316_portaria_084-2023.txt",
+      "processo": "N05_normas_gestão",
+      "formato": "txt",
+      "tipo_documental": "portaria",
+      "especie": "portaria",
+      "numero": "084/2023",
+      "data": "2023-06-05",
+      "titulo": "PORTARIA Nº 084/2023, DE 5 DE JUNHO DE 2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [
+        {
+          "rotulo": "art. 1º",
+          "tipo": "artigo",
+          "inicio": "Art. 1º O art. 2º da Portaria nº 064/202"
+        },
+        {
+          "rotulo": "art. 2º",
+          "tipo": "artigo",
+          "inicio": "Art. 2º Esta Portaria entra em vigor na "
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S317",
+      "arquivo": "sintetico/N05_normas_gestão/S317_portaria_099-2024.docx",
+      "processo": "N05_normas_gestão",
+      "formato": "docx",
+      "tipo_documental": "portaria",
+      "especie": "portaria",
+      "numero": "099/2024",
+      "data": "2024-05-20",
+      "titulo": "PORTARIA Nº 099/2024, DE 20 DE MAIO DE 2024",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [
+        {
+          "rotulo": "art. 1º",
+          "tipo": "artigo",
+          "inicio": "Art. 1º Esta Portaria substitui integral"
+        },
+        {
+          "rotulo": "art. 2º",
+          "tipo": "artigo",
+          "inicio": "Art. 2º O parâmetro para o gestão de ris"
+        },
+        {
+          "rotulo": "art. 3º",
+          "tipo": "artigo",
+          "inicio": "Art. 3º Esta Portaria entra em vigor na "
+        }
+      ],
+      "texto_referencia": null
+    },
+    {
+      "id": "S318",
+      "arquivo": "sintetico/N05_normas_gestão/S318_orientacao_14-2023.txt",
+      "processo": "N05_normas_gestão",
+      "formato": "txt",
+      "tipo_documental": "orientacao",
+      "especie": "orientacao",
+      "numero": "14/2023",
+      "data": "2023-06-01",
+      "titulo": "ORIENTAÇÃO NORMATIVA Nº 14/2023, DE 1º DE JUNHO DE 2023",
+      "orgao": "SEGEP/VV",
+      "fatos": {},
+      "dispositivos": [
+        {
+          "rotulo": "art. 1º",
+          "tipo": "artigo",
+          "inicio": "Art. 1º A aplicação da Portaria nº 064/2"
+        },
+        {
+          "rotulo": "art. 2º",
+          "tipo": "artigo",
+          "inicio": "Art. 2º Esta Orientação entra em vigor n"
+        }
+      ],
+      "texto_referencia": null
+    }
+  ],
+  "relacoes": [
+    {
+      "origem": "S001",
+      "destino": "S002",
+      "tipo": "aditivo",
+      "evidencia": "Fica prorrogada a vigência do Contrato nº 012/2023 por 12 (doze) meses"
+    },
+    {
+      "origem": "S001",
+      "destino": "S003",
+      "tipo": "alteracao",
+      "evidencia": "o valor mensal passa de R$ 100.000,00 para R$ 104.500,00"
+    },
+    {
+      "origem": "S001",
+      "destino": "S004",
+      "tipo": "aditivo",
+      "evidencia": "acréscimo quantitativo de 10% (dez por cento) sobre o valor inicial atualizado"
+    },
+    {
+      "origem": "S001",
+      "destino": "S005",
+      "tipo": "continuacao",
+      "evidencia": "foram constatadas faltas de postos de serviço"
+    },
+    {
+      "origem": "S001",
+      "destino": "S006",
+      "tipo": "ruptura",
+      "evidencia": "fica rescindido unilateralmente o Contrato nº 012/2023"
+    },
+    {
+      "origem": "S005",
+      "destino": "S006",
+      "tipo": "continuacao",
+      "evidencia": "Considerando a Notificação nº 023/2024"
+    },
+    {
+      "origem": "S010",
+      "destino": "S011",
+      "tipo": "ruptura",
+      "evidencia": "Fica suspensa, a partir de 11/10/2023, a execução do Contrato nº 031/2023"
+    },
+    {
+      "origem": "S011",
+      "destino": "S012",
+      "tipo": "retomada",
+      "evidencia": "fica retomada a execução do Contrato nº 031/2023 a partir de 05/12/2023"
+    },
+    {
+      "origem": "S010",
+      "destino": "S013",
+      "tipo": "aditivo",
+      "evidencia": "Prorrogação da vigência do Contrato nº 031/2023 por 12 (doze) meses"
+    },
+    {
+      "origem": "S020",
+      "destino": "S021",
+      "tipo": "contradicao",
+      "evidencia": "de valor global de R$ 2.430.000,00"
+    },
+    {
+      "origem": "S020",
+      "destino": "S022",
+      "tipo": "aditivo",
+      "evidencia": "Prorrogação do Contrato nº 044/2023 por mais 12 (doze) meses"
+    },
+    {
+      "origem": "S030",
+      "destino": "S031",
+      "tipo": "alteracao",
+      "evidencia": "O inciso II do art. 2º da Portaria nº 010/2023 passa a vigorar com a seguinte redação"
+    },
+    {
+      "origem": "S030",
+      "destino": "S032",
+      "tipo": "revogacao",
+      "evidencia": "Ficam revogadas a Portaria nº 010/2023 e a Portaria nº 025/2024"
+    },
+    {
+      "origem": "S031",
+      "destino": "S032",
+      "tipo": "revogacao",
+      "evidencia": "Ficam revogadas a Portaria nº 010/2023 e a Portaria nº 025/2024"
+    },
+    {
+      "origem": "S040",
+      "destino": "S041",
+      "tipo": "substituicao",
+      "evidencia": "substitui integralmente a Instrução Normativa nº 01/2022"
+    },
+    {
+      "origem": "S050",
+      "destino": "S051",
+      "tipo": "regulamenta",
+      "evidencia": "Este Decreto regulamenta a Lei nº 11.205, de 23 de novembro de 2022"
+    },
+    {
+      "origem": "S051",
+      "destino": "S052",
+      "tipo": "revogacao",
+      "evidencia": "Fica revogado o Decreto nº 1.410, de 18 de abril de 2023"
+    },
+    {
+      "origem": "S050",
+      "destino": "S052",
+      "tipo": "regulamenta",
+      "evidencia": "Este Decreto regulamenta a Lei nº 11.205, de 23 de novembro de 2022"
+    },
+    {
+      "origem": "S060",
+      "destino": "S061",
+      "tipo": "aditivo",
+      "evidencia": "Prorrogação da vigência do Contrato nº 058/2023 por 12 (doze) meses"
+    },
+    {
+      "origem": "S061",
+      "destino": "S062",
+      "tipo": "contradicao",
+      "evidencia": "a vigência do Contrato nº 058/2023 encerra-se em 30/07/2025"
+    },
+    {
+      "origem": "S070",
+      "destino": "S071",
+      "tipo": "ruptura",
+      "evidencia": "Fica paralisada a obra objeto do Contrato nº 072/2024"
+    },
+    {
+      "origem": "S071",
+      "destino": "S072",
+      "tipo": "retomada",
+      "evidencia": "Fica autorizada a retomada da obra objeto do Contrato nº 072/2024"
+    },
+    {
+      "origem": "S070",
+      "destino": "S073",
+      "tipo": "aditivo",
+      "evidencia": "O valor global do contrato passa de R$ 3.850.000,00 para R$ 4.235.000,00"
+    },
+    {
+      "origem": "S072",
+      "destino": "S074",
+      "tipo": "continuacao",
+      "evidencia": "Medição da 4ª etapa do cronograma físico-financeiro"
+    },
+    {
+      "origem": "S080",
+      "destino": "S081",
+      "tipo": "continuacao",
+      "evidencia": "análise prévia da contratação descrita no Termo de Referência nº 015/2024"
+    },
+    {
+      "origem": "S081",
+      "destino": "S082",
+      "tipo": "continuacao",
+      "evidencia": "Acolho o Parecer Jurídico nº 118/2024"
+    },
+    {
+      "origem": "S082",
+      "destino": "S083",
+      "tipo": "continuacao",
+      "evidencia": "aquisição de mobiliário corporativo"
+    },
+    {
+      "origem": "S090",
+      "destino": "S091",
+      "tipo": "ruptura",
+      "evidencia": "Fica denunciado o Convênio nº 007/2023"
+    },
+    {
+      "origem": "S091",
+      "destino": "S092",
+      "tipo": "retomada",
+      "evidencia": "ficam retomadas as ações de capacitação previstas no Convênio nº 007/2023"
+    },
+    {
+      "origem": "PUB:lei14133_2021",
+      "destino": "S100",
+      "tipo": "fundamenta",
+      "evidencia": "observará o art. 107 da Lei nº 14.133, de 1º de abril de 2021"
+    },
+    {
+      "origem": "S100",
+      "destino": "S101",
+      "tipo": "fundamenta",
+      "evidencia": "Fundamentos: Orientação Normativa nº 02/2024"
+    },
+    {
+      "origem": "S100",
+      "destino": "S102",
+      "tipo": "fundamenta",
+      "evidencia": "Fundamentos: Orientação Normativa nº 02/2024"
+    },
+    {
+      "origem": "S110",
+      "destino": "S111",
+      "tipo": "continuacao",
+      "evidencia": "para atuar como fiscal técnico do Contrato nº 072/2024"
+    },
+    {
+      "origem": "S201",
+      "destino": "S202",
+      "tipo": "aditivo",
+      "evidencia": "Prorrogação da vigência do Contrato nº 120/2022 por 12 (doze) meses"
+    },
+    {
+      "origem": "S201",
+      "destino": "S203",
+      "tipo": "alteracao",
+      "evidencia": "Fica apostilado ao Contrato nº 120/2022 o reajuste pelo IPCA de 4,62%"
+    },
+    {
+      "origem": "S201",
+      "destino": "S204",
+      "tipo": "contradicao",
+      "evidencia": "de valor global de R$ 1.145.100,00"
+    },
+    {
+      "origem": "S205",
+      "destino": "S206",
+      "tipo": "aditivo",
+      "evidencia": "Prorrogação da vigência do Contrato nº 121/2023 por 12 (doze) meses"
+    },
+    {
+      "origem": "S205",
+      "destino": "S207",
+      "tipo": "alteracao",
+      "evidencia": "Fica apostilado ao Contrato nº 121/2023 o reajuste pelo IPCA de 4,62%"
+    },
+    {
+      "origem": "S205",
+      "destino": "S208",
+      "tipo": "contradicao",
+      "evidencia": "de valor global de R$ 216.300,00"
+    },
+    {
+      "origem": "S205",
+      "destino": "S209",
+      "tipo": "continuacao",
+      "evidencia": "pelo descumprimento reiterado de prazos de atendimento previstos no Contrato nº 121/2023"
+    },
+    {
+      "origem": "S205",
+      "destino": "S210",
+      "tipo": "ruptura",
+      "evidencia": "Fica rescindido o Contrato nº 121/2023"
+    },
+    {
+      "origem": "S205",
+      "destino": "S211",
+      "tipo": "substituicao",
+      "evidencia": "Este contrato substitui o Contrato nº 121/2023"
+    },
+    {
+      "origem": "S212",
+      "destino": "S213",
+      "tipo": "aditivo",
+      "evidencia": "Prorrogação da vigência do Contrato nº 122/2024 por 12 (doze) meses"
+    },
+    {
+      "origem": "S212",
+      "destino": "S214",
+      "tipo": "alteracao",
+      "evidencia": "Fica apostilado ao Contrato nº 122/2024 o reajuste pelo IPCA de 3,85%"
+    },
+    {
+      "origem": "S212",
+      "destino": "S215",
+      "tipo": "contradicao",
+      "evidencia": "de valor global de R$ 1.805.100,00"
+    },
+    {
+      "origem": "S212",
+      "destino": "S216",
+      "tipo": "ruptura",
+      "evidencia": "Fica suspensa a execução do Contrato nº 122/2024"
+    },
+    {
+      "origem": "S216",
+      "destino": "S217",
+      "tipo": "retomada",
+      "evidencia": "Fica retomada a execução do Contrato nº 122/2024"
+    },
+    {
+      "origem": "S218",
+      "destino": "S219",
+      "tipo": "aditivo",
+      "evidencia": "Prorrogação da vigência do Contrato nº 123/2022 por 12 (doze) meses"
+    },
+    {
+      "origem": "S218",
+      "destino": "S220",
+      "tipo": "alteracao",
+      "evidencia": "Fica apostilado ao Contrato nº 123/2022 o reajuste pelo IPCA de 3,85%"
+    },
+    {
+      "origem": "S218",
+      "destino": "S221",
+      "tipo": "contradicao",
+      "evidencia": "de valor global de R$ 2.193.450,00"
+    },
+    {
+      "origem": "S218",
+      "destino": "S222",
+      "tipo": "ruptura",
+      "evidencia": "Fica suspensa a execução do Contrato nº 123/2022"
+    },
+    {
+      "origem": "S222",
+      "destino": "S223",
+      "tipo": "retomada",
+      "evidencia": "Fica retomada a execução do Contrato nº 123/2022"
+    },
+    {
+      "origem": "S224",
+      "destino": "S225",
+      "tipo": "aditivo",
+      "evidencia": "Prorrogação da vigência do Contrato nº 124/2023 por 12 (doze) meses"
+    },
+    {
+      "origem": "S224",
+      "destino": "S226",
+      "tipo": "alteracao",
+      "evidencia": "Fica apostilado ao Contrato nº 124/2023 o reajuste pelo IPCA de 4,12%"
+    },
+    {
+      "origem": "S224",
+      "destino": "S227",
+      "tipo": "ruptura",
+      "evidencia": "Fica suspensa a execução do Contrato nº 124/2023"
+    },
+    {
+      "origem": "S227",
+      "destino": "S228",
+      "tipo": "retomada",
+      "evidencia": "Fica retomada a execução do Contrato nº 124/2023"
+    },
+    {
+      "origem": "S229",
+      "destino": "S230",
+      "tipo": "aditivo",
+      "evidencia": "Prorrogação da vigência do Contrato nº 125/2024 por 12 (doze) meses"
+    },
+    {
+      "origem": "S229",
+      "destino": "S231",
+      "tipo": "alteracao",
+      "evidencia": "Fica apostilado ao Contrato nº 125/2024 o reajuste pelo IPCA de 3,85%"
+    },
+    {
+      "origem": "S229",
+      "destino": "S232",
+      "tipo": "contradicao",
+      "evidencia": "de valor global de R$ 1.065.750,00"
+    },
+    {
+      "origem": "S233",
+      "destino": "S234",
+      "tipo": "aditivo",
+      "evidencia": "Prorrogação da vigência do Contrato nº 126/2022 por 12 (doze) meses"
+    },
+    {
+      "origem": "S233",
+      "destino": "S235",
+      "tipo": "alteracao",
+      "evidencia": "Fica apostilado ao Contrato nº 126/2022 o reajuste pelo IPCA de 4,12%"
+    },
+    {
+      "origem": "S233",
+      "destino": "S236",
+      "tipo": "contradicao",
+      "evidencia": "de valor global de R$ 1.550.850,00"
+    },
+    {
+      "origem": "S233",
+      "destino": "S237",
+      "tipo": "ruptura",
+      "evidencia": "Fica suspensa a execução do Contrato nº 126/2022"
+    },
+    {
+      "origem": "S237",
+      "destino": "S238",
+      "tipo": "retomada",
+      "evidencia": "Fica retomada a execução do Contrato nº 126/2022"
+    },
+    {
+      "origem": "S239",
+      "destino": "S240",
+      "tipo": "aditivo",
+      "evidencia": "Prorrogação da vigência do Contrato nº 127/2023 por 12 (doze) meses"
+    },
+    {
+      "origem": "S239",
+      "destino": "S241",
+      "tipo": "alteracao",
+      "evidencia": "Fica apostilado ao Contrato nº 127/2023 o reajuste pelo IPCA de 4,12%"
+    },
+    {
+      "origem": "S239",
+      "destino": "S242",
+      "tipo": "contradicao",
+      "evidencia": "de valor global de R$ 680.400,00"
+    },
+    {
+      "origem": "S239",
+      "destino": "S243",
+      "tipo": "continuacao",
+      "evidencia": "pelo descumprimento reiterado de prazos de atendimento previstos no Contrato nº 127/2023"
+    },
+    {
+      "origem": "S239",
+      "destino": "S244",
+      "tipo": "ruptura",
+      "evidencia": "Fica rescindido o Contrato nº 127/2023"
+    },
+    {
+      "origem": "S239",
+      "destino": "S245",
+      "tipo": "substituicao",
+      "evidencia": "Este contrato substitui o Contrato nº 127/2023"
+    },
+    {
+      "origem": "S246",
+      "destino": "S247",
+      "tipo": "aditivo",
+      "evidencia": "Prorrogação da vigência do Contrato nº 128/2024 por 12 (doze) meses"
+    },
+    {
+      "origem": "S246",
+      "destino": "S248",
+      "tipo": "alteracao",
+      "evidencia": "Fica apostilado ao Contrato nº 128/2024 o reajuste pelo IPCA de 3,85%"
+    },
+    {
+      "origem": "S246",
+      "destino": "S249",
+      "tipo": "contradicao",
+      "evidencia": "de valor global de R$ 418.500,00"
+    },
+    {
+      "origem": "S246",
+      "destino": "S250",
+      "tipo": "continuacao",
+      "evidencia": "pelo descumprimento reiterado de prazos de atendimento previstos no Contrato nº 128/2024"
+    },
+    {
+      "origem": "S246",
+      "destino": "S251",
+      "tipo": "ruptura",
+      "evidencia": "Fica rescindido o Contrato nº 128/2024"
+    },
+    {
+      "origem": "S246",
+      "destino": "S252",
+      "tipo": "substituicao",
+      "evidencia": "Este contrato substitui o Contrato nº 128/2024"
+    },
+    {
+      "origem": "S253",
+      "destino": "S254",
+      "tipo": "aditivo",
+      "evidencia": "Prorrogação da vigência do Contrato nº 129/2022 por 12 (doze) meses"
+    },
+    {
+      "origem": "S253",
+      "destino": "S255",
+      "tipo": "alteracao",
+      "evidencia": "Fica apostilado ao Contrato nº 129/2022 o reajuste pelo IPCA de 3,85%"
+    },
+    {
+      "origem": "S253",
+      "destino": "S256",
+      "tipo": "continuacao",
+      "evidencia": "pelo descumprimento reiterado de prazos de atendimento previstos no Contrato nº 129/2022"
+    },
+    {
+      "origem": "S253",
+      "destino": "S257",
+      "tipo": "ruptura",
+      "evidencia": "Fica rescindido o Contrato nº 129/2022"
+    },
+    {
+      "origem": "S253",
+      "destino": "S258",
+      "tipo": "substituicao",
+      "evidencia": "Este contrato substitui o Contrato nº 129/2022"
+    },
+    {
+      "origem": "S301",
+      "destino": "S302",
+      "tipo": "alteracao",
+      "evidencia": "O art. 2º da Portaria nº 060/2021 passa a vigorar com o parâmetro de 07h às 17h"
+    },
+    {
+      "origem": "S301",
+      "destino": "S303",
+      "tipo": "substituicao",
+      "evidencia": "Esta Portaria substitui integralmente a Portaria nº 060/2021"
+    },
+    {
+      "origem": "S304",
+      "destino": "S305",
+      "tipo": "alteracao",
+      "evidencia": "O art. 2º da Portaria nº 061/2022 passa a vigorar com o parâmetro de até 20h"
+    },
+    {
+      "origem": "S304",
+      "destino": "S306",
+      "tipo": "revogacao",
+      "evidencia": "Ficam revogadas a Portaria nº 061/2022 e a Portaria nº 081/2023"
+    },
+    {
+      "origem": "S305",
+      "destino": "S306",
+      "tipo": "revogacao",
+      "evidencia": "Ficam revogadas a Portaria nº 061/2022 e a Portaria nº 081/2023"
+    },
+    {
+      "origem": "S307",
+      "destino": "S308",
+      "tipo": "alteracao",
+      "evidencia": "O art. 2º da Portaria nº 062/2023 passa a vigorar com o parâmetro de 3 (três) dias por semana"
+    },
+    {
+      "origem": "S307",
+      "destino": "S309",
+      "tipo": "substituicao",
+      "evidencia": "Esta Portaria substitui integralmente a Portaria nº 062/2023"
+    },
+    {
+      "origem": "PUB:lei14133_2021",
+      "destino": "S310",
+      "tipo": "fundamenta",
+      "evidencia": "observará a Lei nº 14.133, de 1º de abril de 2021"
+    },
+    {
+      "origem": "S307",
+      "destino": "S310",
+      "tipo": "continuacao",
+      "evidencia": "Orienta a aplicação da Portaria nº 062/2023"
+    },
+    {
+      "origem": "S311",
+      "destino": "S312",
+      "tipo": "alteracao",
+      "evidencia": "O art. 2º da Portaria nº 063/2021 passa a vigorar com o parâmetro de R$ 320,00"
+    },
+    {
+      "origem": "S311",
+      "destino": "S313",
+      "tipo": "revogacao",
+      "evidencia": "Ficam revogadas a Portaria nº 063/2021 e a Portaria nº 083/2022"
+    },
+    {
+      "origem": "S312",
+      "destino": "S313",
+      "tipo": "revogacao",
+      "evidencia": "Ficam revogadas a Portaria nº 063/2021 e a Portaria nº 083/2022"
+    },
+    {
+      "origem": "PUB:lei9784_1999",
+      "destino": "S314",
+      "tipo": "fundamenta",
+      "evidencia": "observará a Lei nº 9.784, de 29 de janeiro de 1999"
+    },
+    {
+      "origem": "S311",
+      "destino": "S314",
+      "tipo": "continuacao",
+      "evidencia": "Orienta a aplicação da Portaria nº 063/2021"
+    },
+    {
+      "origem": "S315",
+      "destino": "S316",
+      "tipo": "alteracao",
+      "evidencia": "O art. 2º da Portaria nº 064/2022 passa a vigorar com o parâmetro de semestral"
+    },
+    {
+      "origem": "S315",
+      "destino": "S317",
+      "tipo": "substituicao",
+      "evidencia": "Esta Portaria substitui integralmente a Portaria nº 064/2022"
+    },
+    {
+      "origem": "PUB:lei9784_1999",
+      "destino": "S318",
+      "tipo": "fundamenta",
+      "evidencia": "observará a Lei nº 9.784, de 29 de janeiro de 1999"
+    },
+    {
+      "origem": "S315",
+      "destino": "S318",
+      "tipo": "continuacao",
+      "evidencia": "Orienta a aplicação da Portaria nº 064/2022"
+    }
+  ],
+  "contradicoes": [
+    {
+      "documentos": [
+        "S020",
+        "S021"
+      ],
+      "campo": "valor_global",
+      "valores": {
+        "S020": "R$ 2.340.000,00",
+        "S021": "R$ 2.430.000,00"
+      }
+    },
+    {
+      "documentos": [
+        "S040",
+        "S041"
+      ],
+      "campo": "numero_minimo_cotacoes",
+      "valores": {
+        "S040": "3",
+        "S041": "4"
+      },
+      "observacao": "resolvida por substituição"
+    },
+    {
+      "documentos": [
+        "S061",
+        "S062"
+      ],
+      "campo": "vigencia_fim",
+      "valores": {
+        "S061": "30/06/2025",
+        "S062": "30/07/2025"
+      }
+    },
+    {
+      "documentos": [
+        "S201",
+        "S204"
+      ],
+      "campo": "valor_global",
+      "valores": {
+        "S201": "R$ 1.041.000,00",
+        "S204": "R$ 1.145.100,00"
+      }
+    },
+    {
+      "documentos": [
+        "S205",
+        "S208"
+      ],
+      "campo": "valor_global",
+      "valores": {
+        "S205": "R$ 206.000,00",
+        "S208": "R$ 216.300,00"
+      }
+    },
+    {
+      "documentos": [
+        "S212",
+        "S215"
+      ],
+      "campo": "valor_global",
+      "valores": {
+        "S212": "R$ 1.641.000,00",
+        "S215": "R$ 1.805.100,00"
+      }
+    },
+    {
+      "documentos": [
+        "S218",
+        "S221"
+      ],
+      "campo": "valor_global",
+      "valores": {
+        "S218": "R$ 2.089.000,00",
+        "S221": "R$ 2.193.450,00"
+      }
+    },
+    {
+      "documentos": [
+        "S229",
+        "S232"
+      ],
+      "campo": "valor_global",
+      "valores": {
+        "S229": "R$ 1.015.000,00",
+        "S232": "R$ 1.065.750,00"
+      }
+    },
+    {
+      "documentos": [
+        "S233",
+        "S236"
+      ],
+      "campo": "valor_global",
+      "valores": {
+        "S233": "R$ 1.477.000,00",
+        "S236": "R$ 1.550.850,00"
+      }
+    },
+    {
+      "documentos": [
+        "S239",
+        "S242"
+      ],
+      "campo": "valor_global",
+      "valores": {
+        "S239": "R$ 648.000,00",
+        "S242": "R$ 680.400,00"
+      }
+    },
+    {
+      "documentos": [
+        "S246",
+        "S249"
+      ],
+      "campo": "valor_global",
+      "valores": {
+        "S246": "R$ 465.000,00",
+        "S249": "R$ 418.500,00"
+      }
+    }
+  ]
+}

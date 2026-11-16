@@ -22,6 +22,6 @@ BACKUP/
 .env.antes_restauracao_*
 
 # SAD-GD: pesos de modelos e caches de IA ficam no projeto, fora do Git (ADR-001)
-modelos/
-ferramentas/
+/modelos/
+/ferramentas/
 data/observabilidade/

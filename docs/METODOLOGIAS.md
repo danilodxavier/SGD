@@ -34,4 +34,12 @@
 | Gestão de dependências reprodutível (camadas + constraints) — LLMOps | Ambiente | `requirements-*.txt`, `constraints.txt` | 3 |
 | Infraestrutura como código (scripts idempotentes) | Ollama, Tesseract, instalação | `scripts/sadgd/*.ps1`, `instalar.bat` | 3 |
 
-Planejadas: GitHub Flow (após o remoto), RAGAS, métricas de IR (Precision/Recall@k, MRR, nDCG).
+| CRISP-DM — entendimento e preparação de dados: corpus com proveniência (manifesto, SHA-256, licença) | Corpus público | `corpus/MANIFESTO.csv` | 4 |
+| Geração de dados sintéticos com gabarito e autoverificação (semente fixa, reprodutível) | Corpus sintético | `scripts/sadgd/gerar_corpus_sintetico.py` | 4 |
+| Validação cruzada sintético × real (leis com estrutura conhecida) para evitar métrica otimista | Chunking | `scripts/sadgd/avaliar_chunking.py` | 4 |
+| Avaliação de OCR por CER (distância de Levenshtein) | OCR | `scripts/sadgd/avaliar_ocr.py` | 4 |
+| TDD com casos reais de regressão (art. 56 da Lei 9.784; Lei 12.462) | Chunking e metadados | `tests/sadgd/test_chunking.py`, `test_metadados.py` | 4 |
+| Benchmark de configuração (fp16 × fp32 × atenção) antes de decidir | Embeddings | `docs/fases/FASE_04.md` §5 | 4 |
+| Processamento incremental idempotente com retomada (checkpoint por lote) | Indexação | `app/application/ingestao/indexador.py` | 4 |
+
+Planejadas: GitHub Flow, RAGAS, métricas de IR (Precision/Recall@k, MRR, nDCG).

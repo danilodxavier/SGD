@@ -1,0 +1,54 @@
+{
+  "documentos_avaliados": 63,
+  "limites_unidades_recall": 1.0,
+  "limites_unidades_precisao": 1.0,
+  "subdispositivos_recall": 1.0,
+  "por_formato": {
+    "docx": {
+      "docs": 28,
+      "unid_ok": 143,
+      "unid_total": 143,
+      "unid_prev": 143,
+      "sub_ok": 157,
+      "sub_total": 157,
+      "recall": 1.0
+    },
+    "pdf": {
+      "docs": 18,
+      "unid_ok": 96,
+      "unid_total": 96,
+      "unid_prev": 96,
+      "sub_ok": 105,
+      "sub_total": 105,
+      "recall": 1.0
+    },
+    "txt": {
+      "docs": 17,
+      "unid_ok": 80,
+      "unid_total": 80,
+      "unid_prev": 80,
+      "sub_ok": 77,
+      "sub_total": 77,
+      "recall": 1.0
+    }
+  },
+  "divergencias": [],
+  "leis_publicas": {
+    "publico/federal/lei/lei14133_2021.htm": {
+      "artigos_esperados": 194,
+      "artigos_encontrados": 194,
+      "faltando": [],
+      "trechos": 252,
+      "trechos_revogados": 2,
+      "maior_trecho": 2399
+    },
+    "publico/federal/lei/lei9784_1999.htm": {
+      "artigos_esperados": 70,
+      "artigos_encontrados": 70,
+      "faltando": [],
+      "trechos": 81,
+      "trechos_revogados": 0,
+      "maior_trecho": 1878
+    }
+  }
+}

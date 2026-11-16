@@ -22,6 +22,11 @@
 | 2026-11-16 | `sed` em Git Bash consome barras invertidas de caminhos Windows na substituição; editar caminhos via PowerShell/Python | Fase 3 — incidente |
 | 2026-11-16 | Um venv de desenvolvimento "sujo" esconde dependências não declaradas (`defusedxml` da v1); só o CI em ambiente limpo revelou — reproduzir o CI num venv novo antes de concluir | Fase 3 — primeiro CI no GitHub |
 | 2026-11-16 | gitleaks-action usa código 1 para falha da ferramenta (2 = segredos); a CLI em contêiner sobre o histórico completo tem semântica mais simples e independe da faixa do push | Fase 3 — CI |
+| 2026-11-16 | transformers 5 carrega pesos em paralelo (pool de threads); com Python 3.15 + torch 2.14 no Windows isso causa `access violation` — `HF_DEACTIVATE_ASYNC_LOAD=1` força carga sequencial | Fase 4 — embeddings |
+| 2026-11-16 | Em GPUs Turing sem tensor cores (GTX 16xx), float16 pode ser muito mais lento que float32 no PyTorch (3,8 × 19 trechos/s) | Fase 4 — embeddings |
+| 2026-11-16 | Portais governamentais podem recusar a assinatura TLS de clientes Python/curl e User-Agents desconhecidos; o cliente HTTP do Windows passa | Fase 4 — coleta |
+| 2026-11-16 | Processos em lote devem gravar progresso e marcar conclusão por lote: um encerramento abrupto entre "gravar documento" e "gravar vetores" deixaria dados órfãos permanentes | Fase 4 — indexador |
+| 2026-11-16 | Um processo pode bloquear a remoção de pasta no Windows só por ter o diretório como pasta corrente | Fase 4 — gerador |
 
 ## Domínio (setor público)
 
@@ -30,3 +35,6 @@
 | 2026-11-16 | Hierarquia normativa (CF > Lei > Decreto > IN > Orientação) e vigência temporal como requisito de recuperação, não só de geração | Requisito RF-14 |
 | 2026-11-16 | Lei 14.133/2021 como referência para aditivos, prorrogações e fiscalização contratual | Agente Fiscal de Contrato |
 | 2026-11-16 | LGPD: documentos públicos podem conter dados pessoais; separar corpus de avaliação de dados reais | ADR-002 |
+| 2026-11-16 | No texto compilado oficial, dispositivos revogados ou com redação substituída aparecem tachados, e a nota de revogação do ato inteiro fica logo abaixo do título — evidências documentais de vigência | Fase 4 — extrator HTML |
+| 2026-11-16 | Revogação parcial (ex.: Lei 12.462 teve artigos revogados pela 14.133) não pode ser confundida com revogação total | Fase 4 — metadados |
+| 2026-11-16 | Atos oficiais não têm proteção autoral (Lei 9.610/1998, art. 8º, IV) — podem compor corpus público versionado | Fase 4 — corpus |

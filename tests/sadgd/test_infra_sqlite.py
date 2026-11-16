@@ -12,7 +12,7 @@ from app.infrastructure.tracing.sqlite_tracer import SqliteTracer, percentis_lat
 TABELAS = {
     "documentos", "trechos", "trechos_fts", "trechos_vec", "normas", "processos", "documento_processo", "relacoes",
     "contratos", "contrato_itens", "decisoes", "decisao_fontes", "decisoes_vec", "consultas", "consulta_fontes",
-    "pareceres", "spans", "auditoria", "cache_semantico", "cache_semantico_vec", "schema_migrations",
+    "pareceres", "spans", "auditoria", "cache_semantico", "cache_semantico_vec", "schema_migrations", "indexacoes",
 }
 
 
@@ -47,8 +47,11 @@ def test_migracoes_criam_esquema_completo_e_sao_idempotentes(banco):
     nomes = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type IN ('table')")}
     assert nomes >= TABELAS
     assert migrar(conn) == []
-    assert [r[0] for r in conn.execute("SELECT versao FROM schema_migrations ORDER BY versao")] == \
-        ["001_esquema_inicial", "002_vetores"]
+    from app.infrastructure.sqlite.conexao import MIGRACOES
+
+    esperadas = sorted(p.stem for p in MIGRACOES.glob("[0-9][0-9][0-9]_*.sql"))
+    assert esperadas[:3] == ["001_esquema_inicial", "002_vetores", "003_ingestao"]
+    assert [r[0] for r in conn.execute("SELECT versao FROM schema_migrations ORDER BY versao")] == esperadas
 
 
 def test_fts_acompanha_insercao_e_remocao_em_cascata(banco):

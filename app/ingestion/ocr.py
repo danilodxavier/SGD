@@ -173,7 +173,8 @@ def get_engine(refresh=False):
     cfg = current_config()
     if not cfg["enabled"]:
         return None
-    names = ["windows", "tesseract"] if cfg["engine"] == "auto" else [cfg["engine"]]
+    # auto: Tesseract primeiro (CER 0,09% contra 0,52% do Windows OCR — avaliacao/execucoes/fase4_ocr.json, ADR-007)
+    names = ["tesseract", "windows"] if cfg["engine"] == "auto" else [cfg["engine"]]
     for name in names:
         if ENGINES[name].available(refresh)[0]:
             return ENGINES[name]

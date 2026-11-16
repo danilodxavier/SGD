@@ -19,6 +19,9 @@ _AMBIENTE_PADRAO = {
     "LANGCHAIN_TRACING_V2": "false",
     "PHOENIX_TELEMETRY_ENABLED": "false",
     "TOKENIZERS_PARALLELISM": "false",
+    # transformers 5 + torch 2.14 + Python 3.15: a carga paralela de pesos causa "access violation" no Windows
+    # (reproduzido em 2026-11-16, CPU e GPU); a carga sequencial funciona. Ver HABILIDADES.md.
+    "HF_DEACTIVATE_ASYNC_LOAD": "1",
 }
 for _chave, _valor in _AMBIENTE_PADRAO.items():
     os.environ.setdefault(_chave, str(_valor))

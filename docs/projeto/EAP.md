@@ -73,7 +73,7 @@ Decomposição orientada a entregas (PMBOK). Pacotes de trabalho no 3º nível v
 
 | Pacote | Entregável | Critério de aceite |
 |---|---|---|
-| 4.0.1 | `corpus\` + `MANIFESTO.csv` | ≥ 150 documentos (≥ 60 públicos, ≥ 90 sintéticos) com origem e hash; ≥ 10 processos com linha do tempo |
+| 4.0.1 | `corpus\` + `MANIFESTO.csv` | ≥ 150 documentos (≥ 60 públicos, ≥ 90 sintéticos) com origem e hash; ≥ 10 processos com linha do tempo — **atingido: 186 (69 + 117), 27 processos** |
 | 5.0.3 | `avaliacao\golden_set\*.jsonl` | ≥ 100 perguntas (≥ 60 F1, ≥ 20 linha do tempo, ≥ 20 F2), split 30/70 validação/teste, revisadas pelo responsável |
 | 5.0.4 | `scripts\avaliar.py` + relatório | Gera todas as métricas da seção 4 do prompt mestre em uma execução |
 | 6.0.2 | Classificador + matriz de confusão | F1-macro ≥ 0,85 |

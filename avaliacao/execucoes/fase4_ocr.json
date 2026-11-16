@@ -1,0 +1,82 @@
+{
+  "documentos": 6,
+  "motores": {
+    "windows": {
+      "disponivel": true,
+      "rotulo": "OCR do Windows",
+      "cer_global": 0.0052,
+      "segundos": 5.7,
+      "por_documento": [
+        {
+          "id": "S062",
+          "status": "COM_OCR",
+          "cer": 0.0054
+        },
+        {
+          "id": "S071",
+          "status": "COM_OCR",
+          "cer": 0.0052
+        },
+        {
+          "id": "S110",
+          "status": "COM_OCR",
+          "cer": 0.0033
+        },
+        {
+          "id": "S111",
+          "status": "COM_OCR",
+          "cer": 0.0031
+        },
+        {
+          "id": "S215",
+          "status": "COM_OCR",
+          "cer": 0.0072
+        },
+        {
+          "id": "S242",
+          "status": "COM_OCR",
+          "cer": 0.0072
+        }
+      ]
+    },
+    "tesseract": {
+      "disponivel": true,
+      "rotulo": "Tesseract OCR",
+      "cer_global": 0.0009,
+      "segundos": 5.5,
+      "por_documento": [
+        {
+          "id": "S062",
+          "status": "COM_OCR",
+          "cer": 0.0
+        },
+        {
+          "id": "S071",
+          "status": "COM_OCR",
+          "cer": 0.0
+        },
+        {
+          "id": "S110",
+          "status": "COM_OCR",
+          "cer": 0.0049
+        },
+        {
+          "id": "S111",
+          "status": "COM_OCR",
+          "cer": 0.0
+        },
+        {
+          "id": "S215",
+          "status": "COM_OCR",
+          "cer": 0.0
+        },
+        {
+          "id": "S242",
+          "status": "COM_OCR",
+          "cer": 0.0
+        }
+      ]
+    }
+  },
+  "melhor": "tesseract"
+}
