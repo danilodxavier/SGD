@@ -1,0 +1,52 @@
+id,titulo,epico,fase,prioridade,pontos,requisitos,criterio_aceite
+SAD-001,Aprovar planejamento da Fase 1,Gerenciamento,1,M,1,-,FASE_01.md aprovado pelo responsável
+SAD-002,Criar repositório GitHub privado e enviar histórico,Gerenciamento,1,M,1,RNF-14,Remoto configurado; branch main e backup/pre-reestruturacao e tag enviados
+SAD-003,Criar quadro Kanban no GitHub Projects e importar backlog,Gerenciamento,1,M,2,-,Projeto com colunas Backlog/Pronto/Em andamento/Revisão/Concluído e todas as issues deste CSV
+SAD-010,Diagramas C4 (contexto contêiner componente),Arquitetura,2,M,3,-,docs/arquitetura/C4.md com 3 níveis em Mermaid
+SAD-011,ADR framework de agentes (LangGraph x CrewAI),Arquitetura,2,M,3,RF-15..18,ADR com critérios ponderados e prova de conceito mínima
+SAD-012,ADR LLMs e roteamento (local x free tier),Arquitetura,2,M,5,RF-15;RNF-01;RNF-10,Benchmark rápido de 3+ modelos em 10 perguntas; decisão registrada
+SAD-013,ADR embeddings e reranker,Arquitetura,2,M,3,RF-05,Comparação bge-m3 x alternativas em amostra PT-BR
+SAD-014,ADR banco vetorial sem dependência obrigatória de Docker,Arquitetura,2,M,3,RF-05;RNF-02,Decisão entre sqlite-vec / LanceDB / Qdrant / Chroma
+SAD-015,ADR OCR portátil e leitura de PDF,Arquitetura,2,S,2,RF-02,Decisão Tesseract/PyMuPDF/Docling registrada
+SAD-016,ADR frontend (JS puro x Next.js local),Arquitetura,2,M,2,RF-21,Decisão registrada com impacto no padrão Gov-MT
+SAD-017,ADR observabilidade local,Arquitetura,2,S,2,RNF-11,Decisão Langfuse self-hosted x tracing próprio
+SAD-018,ADR versão do Python do novo ambiente,Arquitetura,2,M,1,RNF-02,Versão definida e compatibilidade das libs verificada
+SAD-019,Modelo de dados e grafo documental,Arquitetura,2,M,5,RF-11..14;RF-19,Diagrama ER + esquema de nós/arestas com as 8 relações
+SAD-020,Especificação e prompts versionados dos agentes,Arquitetura,2,M,5,RF-15..20,docs/agentes/ com escopo gatilho schema JSON e prompt de cada agente
+SAD-021,Matriz de rastreabilidade requisito-componente-teste,Arquitetura,2,S,2,todos,docs/projeto/RASTREABILIDADE.md
+SAD-030,Reestruturar app em Clean Architecture mantendo testes v1 verdes,Infraestrutura,3,M,8,RNF-09;RF-26,238 testes v1 verdes após a mudança
+SAD-031,Ambiente reprodutível com modelos e caches em modelos\,Infraestrutura,3,M,3,RNF-02;RNF-03,instalar.bat do zero; diagnóstico confirma caches dentro do projeto
+SAD-032,CI GitHub Actions: lint testes varredura de segredos,Infraestrutura,3,M,3,RNF-07;RNF-09,Workflow verde em PR
+SAD-033,Observabilidade: trace por consulta com tokens e latência,Infraestrutura,3,M,3,RNF-11,100% das consultas com trace consultável
+SAD-040,Coletar corpus público com manifesto,Base de conhecimento,4,M,5,RF-01,>= 60 documentos públicos com URL data hash e licença em MANIFESTO.csv
+SAD-041,Gerador de corpus sintético com linhas do tempo e gabarito,Base de conhecimento,4,M,8,RF-11..14,>= 10 processos com as 8 relações e gabarito JSON
+SAD-042,OCR Tesseract portátil,Base de conhecimento,4,M,3,RF-02,CER <= 10% no PDF escaneado de teste
+SAD-043,Chunking estrutural jurídico (artigo/parágrafo/inciso/cláusula),Base de conhecimento,4,M,8,RF-03,>= 95% de limites corretos em 20 documentos anotados
+SAD-044,Extração de metadados (tipo número órgão data vigência processo),Base de conhecimento,4,M,5,RF-04,Acurácia >= 0.90 em tipo e número
+SAD-045,Embeddings locais e índice vetorial incremental,Base de conhecimento,4,M,5,RF-05,Reindexação sem alterações processa 0 arquivos
+SAD-050,Busca híbrida BM25 + vetorial com RRF e reranking,RAG F1,5,M,5,RF-06,Recall@5 >= 0.90 na validação
+SAD-051,Geração com citação literal e recusa por ausência,RAG F1,5,M,5,RF-07;RF-08;RF-10,Citações corretas >= 0.95; ausência >= 0.95
+SAD-052,Golden set >= 100 perguntas com split validação/teste,RAG F1,5,M,8,RF-06..20,Arquivos JSONL revisados pelo responsável
+SAD-053,Suíte de métricas (Precision/Recall@k MRR nDCG faithfulness etc.),RAG F1,5,M,5,RNF-12,scripts/avaliar.py gera relatório completo
+SAD-054,Baseline v1 regras x v2 RAG em AVALIACAO.md,RAG F1,5,M,2,-,Tabela comparativa publicada
+SAD-060,Agrupamento de documentos por processo/contrato/tema,Linha do tempo,6,M,5,RF-11,Pureza >= 0.90
+SAD-061,Classificador de relações (8 classes) com matriz de confusão,Linha do tempo,6,M,8,RF-12,F1-macro >= 0.85
+SAD-062,Hierarquia normativa e vigência,Linha do tempo,6,M,5,RF-14,Norma revogada nunca usada como fundamento atual
+SAD-063,API de linha do tempo,Linha do tempo,6,M,3,RF-13,Endpoint retorna fases relações e fontes
+SAD-070,Roteador de perguntas,Multiagentes,7,M,5,RF-15,Acurácia de roteamento >= 0.90
+SAD-071,Agentes especialistas com saída JSON validada,Multiagentes,7,M,8,RF-16,100% das saídas válidas no schema
+SAD-072,Verificador de fontes anti-alucinação,Multiagentes,7,M,8,RF-17,Alucinação <= 5%
+SAD-073,Relator com consensos e divergências,Multiagentes,7,M,5,RF-18,Consensos/divergências explícitos
+SAD-074,Anonimização de dados pessoais,Multiagentes,7,M,5,RF-25,100% CPF/e-mail mascarados; recall nomes PF >= 0.90
+SAD-075,Log de auditoria de consultas,Multiagentes,7,M,3,RF-24,Registro por consulta sem texto integral
+SAD-080,Memória de decisões e recuperação de precedentes,Apoio à decisão,8,M,8,RF-19,Recall@3 >= 0.80 em precedentes
+SAD-081,Recomendação F2 com alternativas riscos base legal e confiança,Apoio à decisão,8,M,8,RF-20,6 elementos em 100% das respostas F2
+SAD-090,Chat com fontes clicáveis e pareceres por agente,MVP,9,M,8,RF-21,Teste E2E pergunta-resposta-fonte
+SAD-091,Upload de documentos,MVP,9,M,3,RF-22,Documento enviado aparece na busca
+SAD-092,Visualização da linha do tempo,MVP,9,M,5,RF-13,Tela com fases e relações clicáveis
+SAD-093,Perfis Administrador/Gestor/Consulta,MVP,9,M,3,RF-23,401/403 corretos
+SAD-100,Cache semântico e compressão de contexto,Otimização,10,S,5,RNF-05,Tokens por consulta reduzidos e medidos
+SAD-101,Avaliação final x metas,Otimização,10,M,3,todos,AVALIACAO.md com versão final
+SAD-110,Relatório técnico acadêmico,Entrega,11,M,8,-,Relatório completo revisado
+SAD-111,Roteiro e vídeo de demonstração,Entrega,11,M,3,-,Vídeo gravado com corpus acadêmico
+SAD-112,Lições aprendidas e retrospectiva final,Entrega,11,M,2,-,docs/projeto/LICOES_APRENDIDAS.md

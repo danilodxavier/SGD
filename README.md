@@ -6,9 +6,9 @@ checklists, organiza virtualmente os documentos que os atendem e gera relatório
 
 - **Manual do Usuário:** [`docs/MANUAL_DO_USUARIO.md`](docs/MANUAL_DO_USUARIO.md)
 - **Manual Técnico de Manutenção e Migração:** [`docs/MANUAL_TECNICO.md`](docs/MANUAL_TECNICO.md)
-- Especificação do agente: [`AGENTS.md`](AGENTS.md)
-- Arquitetura e decisões técnicas: [`docs/ARQUITETURA.md`](docs/ARQUITETURA.md)
-- Conformidade com a especificação (critérios, testes, limitações): [`docs/CONFORMIDADE.md`](docs/CONFORMIDADE.md)
+- Especificação do agente: [`docs/legado/AGENTS_v1.md`](docs/legado/AGENTS_v1.md) (especificação v1, substituída pelo [`CLAUDE.md`](CLAUDE.md))
+- Arquitetura e decisões técnicas: [`docs/legado/ARQUITETURA_v1.md`](docs/legado/ARQUITETURA_v1.md)
+- Conformidade com a especificação (critérios, testes, limitações): [`docs/legado/CONFORMIDADE_v1.md`](docs/legado/CONFORMIDADE_v1.md)
 
 **Sumário:** 1. Objetivo · 2. Requisitos · 3. Instalação · 4. Configuração · 5. Diretório documental ·
 6. Inicialização · 7. Acesso ao painel · 8. Indexação e OCR · 9. Perguntas e IA opcional · 10. Checklist e relatórios ·
@@ -28,7 +28,7 @@ checklists, organiza virtualmente os documentos que os atendem e gera relatório
 - **Nunca** mover, renomear, alterar ou excluir os documentos originais. Por padrão, **nada sai da máquina**.
 
 Todas as 14 fases da especificação foram implementadas. Limitações conhecidas estão em
-[`docs/CONFORMIDADE.md`](docs/CONFORMIDADE.md#limitações-conhecidas).
+[`docs/legado/CONFORMIDADE_v1.md`](docs/legado/CONFORMIDADE_v1.md#limitações-conhecidas).
 
 ## 2. Requisitos
 
@@ -297,7 +297,7 @@ Se o antivírus ou o sandbox bloquear a execução, informe a equipe de TI; não
 - **Verificação de aceitação**: confere os 21 critérios de conclusão da especificação, o encerramento pelo
   `stop.bat` e o controle de acesso (23 verificações), sem usar os dados do usuário.
 
-O mapa completo critério → implementação → teste está em [`docs/CONFORMIDADE.md`](docs/CONFORMIDADE.md).
+O mapa completo critério → implementação → teste está em [`docs/legado/CONFORMIDADE_v1.md`](docs/legado/CONFORMIDADE_v1.md).
 
 ## Segurança e privacidade
 

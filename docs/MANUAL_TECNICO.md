@@ -9,7 +9,7 @@
 | **Computador de referência** | Windows 11 Pro 64 bits, Python 3.15.0, pasta `D:\AGENTES\INTELIGENCIA_DOCUMENTAL_GESTAO_ CONTRATO` |
 
 > O uso do sistema (telas, perguntas, checklists) está no [Manual do Usuário](MANUAL_DO_USUARIO.md). Detalhes de
-> código estão em [ARQUITETURA.md](ARQUITETURA.md).
+> código estão em [legado/ARQUITETURA_v1.md](legado/ARQUITETURA_v1.md).
 
 ## Sumário
 
@@ -239,10 +239,9 @@ Versões **exatas** instaladas no computador de referência em 14/10/2026. O arq
 | `backup.bat` | Backup para a pasta `BACKUP` (mantém 30). | ❌ Nunca |
 | `usuarios.bat` | Gestão de usuários pelo terminal (recuperação de acesso). | ❌ Nunca |
 | `aceitacao.bat` | Teste de aceitação com documentos fictícios. | ❌ Nunca |
-| `AGENTS.md`, `README.md` | Especificação e visão geral. | Não recomendado |
+| `CLAUDE.md`, `README.md` | Especificação vigente (SAD-GD) e visão geral. | Não recomendado |
 
-> ⚠️ ATENÇÃO: o arquivo `READ ME — Agente de Inteligência Documental — Contratos e Checklists.md` na raiz é a
-> especificação original (cópia idêntica do `AGENTS.md`). Mantenha-o.
+> ℹ️ A especificação original v1 foi arquivada em `docs/legado/AGENTS_v1.md` (reestruturação SAD-GD, 2026-11-16).
 
 ---
 

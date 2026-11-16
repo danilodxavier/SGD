@@ -6,7 +6,7 @@
 | Fase | 0 — Auditoria |
 | Data | 2026-11-16 |
 | Executor | Claude Code (modelo `claude-opus-5-5`) |
-| Situação | **Aguardando aprovação** — nenhuma exclusão foi executada |
+| Situação | **Aprovada em 2026-11-16** — exclusões executadas (ver §9) |
 
 ---
 
@@ -180,4 +180,19 @@ Justificativa:
 
 ## 8. Aprovação
 
-- [ ] Aprovado por: ______ em ____/____/______
+- [x] Aprovado pelo responsável em 2026-11-16, com as diretrizes: **ferramentas gratuitas; VPS em segundo plano; usar a máquina local; salvar tudo em subpastas do projeto** (ADR-001).
+
+## 9. Execução pós-aprovação (evidências)
+
+| Ação | Resultado |
+|---|---|
+| D4 — commit de `llm.py` | `45dcf72 fix(llm): mensagens de erro detalhadas e filtro de modelos de embedding` |
+| Backup git | branch `backup/pre-reestruturacao` + tag anotada `v1.0.0-pre-reestruturacao` |
+| Backup do banco e `.env` | `BACKUP\pre-reestruturacao\documents.db` (SHA-256 idêntico ao original) e `env.backup` |
+| E1 | Arquivo duplicado removido (`git rm`) |
+| E2 | `AGENTS.md` → `docs/legado/AGENTS_v1.md`; também `ARQUITETURA.md` e `CONFORMIDADE.md` → `docs/legado/` (item 4.2); links do README e do Manual Técnico corrigidos |
+| E3 | 169.698 registros `REMOVIDO` expurgados (5 mantidos por serem referenciados no checklist); `VACUUM INTO` → **6,6 GB → 1,72 GB**; `integrity_check = ok`; contagens preservadas: 5.670 documentos, 229.002 trechos/FTS, 387 contratos, 28 itens, 5 matches, 2 usuários |
+| E4–E6 | `app.log.1..5`, `data/app.pid` e `.pytest_cache/` removidos |
+| Verificação | `pytest`: **238 passed**; busca FTS no banco compactado retorna resultados |
+| D1/D2 | Registradas em ADR-001 e ADR-002 |
+| D5 | Pendente (`gh` não instalado) |
