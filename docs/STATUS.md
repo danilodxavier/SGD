@@ -9,7 +9,7 @@
 | Situação da fase | Entregáveis concluídos — **aguardando aprovação do responsável** |
 | Última tarefa concluída | Ambiente IA local (torch CUDA, Ollama, Tesseract, Phoenix), camadas domain/application/infrastructure, banco único `sadgd.db`, CI, diagnóstico (`docs/fases/FASE_03.md`) |
 | Próxima tarefa exata | Após "Aprovado, siga para a Fase 4": (1) SAD-040 coletar corpus público com `corpus\MANIFESTO.csv`; (2) SAD-041 gerador do corpus sintético com gabarito; (3) SAD-043 chunking estrutural jurídico com TDD em `app/application/ingestao/`; (4) SAD-042 OCR Tesseract (CER); (5) SAD-044 metadados; (6) SAD-045 embeddings bge-m3 + `trechos_vec` incremental |
-| Bloqueios | `gh` não instalado/autenticado (SAD-002/003; CI no GitHub) |
+| Bloqueios | Somente o Kanban (SAD-003) depende do `gh` com escopo `project`. Repositório: https://github.com/danilodxavier/SGD — CI verde (run 43928089876: segredos ✅, lint/testes/cobertura ✅) |
 
 ## Histórico de fases
 
