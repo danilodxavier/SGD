@@ -25,20 +25,21 @@ jobs:
     name: Varredura de segredos
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # CLI oficial em contêiner: varre todo o histórico (independe da faixa de commits do push)
+      # e retorna código 1 somente quando encontra segredos.
+      - name: gitleaks (histórico completo)
+        run: docker run --rm -v "${{ github.workspace }}:/repo" zricethezav/gitleaks:latest git /repo --redact --verbose
 
   testes:
     name: Lint, testes e cobertura (Windows)
     runs-on: windows-latest
     timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.15"
           cache: pip

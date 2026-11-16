@@ -15,8 +15,8 @@ Escala: Probabilidade (P) e Impacto (I) de 1 (muito baixo) a 5 (muito alto). Exp
 | R09 | Docker/WSL necessários para Qdrant/Langfuse conflitam com o ambiente (CrowdStrike, políticas) | Técnico | 1 | 3 | 3 | Evitado | **Fase 3:** sqlite-vec e Phoenix funcionando sem Docker | Arquiteto |
 | R10 | Regressão do app v1 em uso pela equipe durante a reestruturação | Operacional | 2 | 4 | 8 | Mitigar | Branch/tag de backup; 238 testes v1 no CI; GitHub Flow com PRs | Agente |
 | R11 | Alucinação em recomendação F2 levando a decisão errada | Negócio | 2 | 5 | 10 | Mitigar | Verificador de fontes, confiança explícita, aviso "sugere, não decide", trilha de auditoria | Arquiteto |
-| R12 | Ausência de GitHub autenticado bloqueia Projects/CI (**materializado** na Fase 3) | Operacional | 5 | 2 | 10 | Mitigar | Backlog versionado em CSV + script `scripts\github\criar_backlog.ps1` executável após `gh auth login` | Responsável |
-| R13 | Perda de dados locais (máquina única) | Operacional | 2 | 4 | 8 | Mitigar | Remoto GitHub para código/docs; `BACKUP\` com rotina; corpus reprodutível pelo manifesto | Responsável |
+| R12 | Ausência de GitHub autenticado bloqueia Projects/CI (**parcialmente resolvido**: código e CI no GitHub desde 2026-11-16; Issues/Projects ainda dependem do `gh`) | Operacional | 3 | 2 | 6 | Mitigar | Backlog versionado em CSV + script `scripts\github\criar_backlog.ps1` executável após `gh auth login` | Responsável |
+| R13 | Perda de dados locais (máquina única) — código e docs já no GitHub | Operacional | 1 | 4 | 4 | Mitigar | Remoto GitHub para código/docs; `BACKUP\` com rotina; corpus reprodutível pelo manifesto | Responsável |
 | R14 | Escopo excessivo (11 fases, muitos agentes) | Escopo | 3 | 4 | 12 | Mitigar | Agentes acionados sob demanda; perfis extras só com justificativa; revisão de escopo a cada sprint | PO |
 
 ## Mapa de calor (exposição)

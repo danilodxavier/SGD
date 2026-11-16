@@ -20,6 +20,8 @@
 | 2026-11-16 | Nomes de variáveis de opt-out de telemetria devem ser conferidos no código-fonte da biblioteca, não presumidos | Fase 3 — ADR-009 |
 | 2026-11-16 | Em Python, `sqlite3` com `isolation_level=None` permite `BEGIN/COMMIT` explícitos para migrações DDL atômicas | Fase 3 — migrador |
 | 2026-11-16 | `sed` em Git Bash consome barras invertidas de caminhos Windows na substituição; editar caminhos via PowerShell/Python | Fase 3 — incidente |
+| 2026-11-16 | Um venv de desenvolvimento "sujo" esconde dependências não declaradas (`defusedxml` da v1); só o CI em ambiente limpo revelou — reproduzir o CI num venv novo antes de concluir | Fase 3 — primeiro CI no GitHub |
+| 2026-11-16 | gitleaks-action usa código 1 para falha da ferramenta (2 = segredos); a CLI em contêiner sobre o histórico completo tem semântica mais simples e independe da faixa do push | Fase 3 — CI |
 
 ## Domínio (setor público)
 

@@ -71,7 +71,8 @@ Itens: SAD-030 a SAD-033 (+ SAD-002/003 bloqueados pelo GitHub). Diretriz do res
 | SAD-031 — Ambiente reprodutível com modelos e caches no projeto | ✅ |
 | SAD-032 — CI: lint, testes, segredos | ⚠️ workflow pronto e validado localmente; **execução no GitHub depende do repositório remoto** |
 | SAD-033 — Observabilidade com tokens e latência por consulta | ✅ base pronta (tabela `spans` + Phoenix); instrumentação do grafo na Fase 7 |
-| SAD-002/003 — GitHub e Projects | ❌ bloqueado: `gh` não instalado |
+| SAD-002 — Repositório GitHub | ✅ https://github.com/danilodxavier/SGD (público, por decisão do responsável): `main`, `backup/pre-reestruturacao` e tag publicados |
+| SAD-003 — GitHub Projects (Kanban) | ❌ depende do `gh` com escopo `project` |
 
 ## 5. Incidentes e correções (transparência)
 
@@ -82,6 +83,7 @@ Itens: SAD-030 a SAD-033 (+ SAD-002/003 bloqueados pelo GitHub). Diretriz do res
 | RAGAS 0.3.1 incompatível com `langchain-community` | Atualizado para 0.4.4 (ADR-011) |
 | `openinference-instrumentation-langchain` sem versão para Python 3.15 | Removido; spans via `TracerPort` (ADR-009) |
 | Falha CUDA transitória na primeira carga do Ollama | Não reproduziu; retentativas no adaptador |
+| Primeiro CI no GitHub falhou: `defusedxml` (usado pela v1 em ODF/PPTX) nunca esteve no `requirements.txt`; gitleaks-action terminou com erro da ferramenta | Dependência declarada; reprodução em venv limpo (300 passed); varredura trocada pela CLI do gitleaks em contêiner sobre todo o histórico |
 
 ## 6. Uso de disco no projeto
 

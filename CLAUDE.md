@@ -50,7 +50,7 @@ Variáveis de ambiente que forçam caches para dentro do projeto (definidas em `
 - Shell principal PowerShell 5.1; `.bat` chamados com caminho completo entre aspas.
 - O caminho do projeto contém espaço (`GESTAO_ CONTRATO`): sempre usar aspas.
 - `.ps1` para PS 5.1 precisam de UTF-8 com BOM.
-- `gh` CLI ainda não instalado (pendência D5).
+- Repositório remoto: **https://github.com/danilodxavier/SGD** (público, decisão do responsável em 2026-11-16). Push via Git Credential Manager; `gh` CLI ainda não instalado (necessário para Issues/Projects).
 - Nunca editar caminhos Windows com `sed` (as barras invertidas são consumidas); usar PowerShell `[IO.File]` ou Python.
 - Ollama do projeto: `scripts\sadgd\ollama.ps1 -Acao iniciar|parar|status`; Tesseract: `scripts\sadgd\tesseract.ps1`.
 
