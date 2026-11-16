@@ -78,9 +78,14 @@ def _request(url, payload=None, timeout=30):
     except urllib.error.HTTPError as exc:
         body = exc.read().decode("utf-8", "replace")[:300]
         log.warning("Servidor de IA respondeu %s: %s", exc.code, body)
+        detail = _error_detail(body)
+        if "no models loaded" in detail.lower():
+            raise LLMError("Nenhum modelo está carregado no LM Studio. Carregue um modelo de conversa "
+                           "(aba Developer ou comando 'lms load') e tente novamente.") from exc
         if exc.code == 404:
             raise LLMError("Modelo ou endereço não encontrado no servidor de IA.") from exc
-        raise LLMError(f"O servidor de IA respondeu com erro {exc.code}.") from exc
+        suffix = f": {detail}" if detail else "."
+        raise LLMError(f"O servidor de IA respondeu com erro {exc.code}{suffix}") from exc
     except (urllib.error.URLError, TimeoutError, OSError) as exc:
         raise LLMError("Não foi possível conectar ao servidor de IA local. Verifique se o Ollama/LM Studio "
                        "está em execução.") from exc
@@ -88,14 +93,32 @@ def _request(url, payload=None, timeout=30):
         raise LLMError("Resposta inválida do servidor de IA.") from exc
 
 
+def _error_detail(body):
+    """Mensagem de erro do servidor (formato OpenAI/LM Studio/Ollama), curta e sem quebras de linha."""
+    try:
+        err = json.loads(body).get("error")
+        text = err.get("message", "") if isinstance(err, dict) else str(err or "")
+    except (ValueError, AttributeError):
+        text = ""
+    return " ".join(text.split())[:200]
+
+
+def is_embedding_model(model_id):
+    """Modelos de embedding (ex.: nomic-embed-text) não geram texto e não servem para responder perguntas."""
+    return "embed" in (model_id or "").lower()
+
+
 def list_models(base_url):
     data = _request(f"{base_url.rstrip('/')}/models", timeout=10)
-    return sorted(m.get("id", "") for m in data.get("data", []) if m.get("id"))
+    return sorted(m["id"] for m in data.get("data", []) if m.get("id") and not is_embedding_model(m["id"]))
 
 
 def chat(base_url, model, messages, timeout=None, max_tokens=700):
     if not model:
         raise LLMError("Nenhum modelo de IA selecionado. Escolha o modelo em Configurações.")
+    if is_embedding_model(model):
+        raise LLMError(f"O modelo “{model}” é de embedding e não redige respostas. "
+                       "Selecione um modelo de conversa (instruct/chat) em Configurações.")
     if not is_local(base_url):
         masked = []
         for m in messages:
@@ -120,8 +143,13 @@ def status():
     try:
         out["models"] = list_models(cfg["base_url"])
         out["reachable"] = True
-        if not cfg["model"]:
+        if not out["models"]:
+            out["message"] = ("Servidor encontrado, mas sem modelo de conversa disponível. "
+                              "Baixe um modelo instruct/chat no LM Studio ou Ollama.")
+        elif not cfg["model"]:
             out["message"] = "Servidor encontrado. Selecione um modelo."
+        elif is_embedding_model(cfg["model"]):
+            out["message"] = f"O modelo “{cfg['model']}” é de embedding e não redige respostas. Selecione outro."
         elif cfg["model"] not in out["models"]:
             out["message"] = f"O modelo “{cfg['model']}” não está instalado no servidor."
         else:
