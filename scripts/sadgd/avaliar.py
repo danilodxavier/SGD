@@ -38,11 +38,11 @@ def carregar_golden(conjunto):
     return itens
 
 
-def _jsonl_existente(caminho):
+def _jsonl_existente(caminho, chave="id"):
     if not caminho.exists():
         return {}
     with caminho.open(encoding="utf-8") as f:
-        return {r["id"]: r for r in map(json.loads, f) if r}
+        return {r[chave]: r for r in map(json.loads, f) if r}
 
 
 def recuperador_v2(modo):

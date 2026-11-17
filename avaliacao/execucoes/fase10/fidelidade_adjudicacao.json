@@ -1,0 +1,29 @@
+{
+  "metodo": "Revisão das discordâncias juiz × rótulo por construção nas respostas ORIGINAIS, feita pelo agente de desenvolvimento (claude-opus-5-5) comparando cada frase com o texto integral dos trechos citados. Pendente de confirmação humana (ver FASE_10).",
+  "rotulos": {
+    "V038-linha_do_tempo|original": {
+      "fiel": false,
+      "motivo": "'ainda está vigente, pois foi revogado' contradiz o trecho T8604 (revogação)"
+    },
+    "V047-linha_do_tempo|original": {
+      "fiel": false,
+      "motivo": "afirma revogação da IN 01/2022, ausente dos trechos citados"
+    },
+    "V049-linha_do_tempo|original": {
+      "fiel": false,
+      "motivo": "afirma que o Decreto 7.892/2013 continua vigente; o trecho citado trata da transição para o Decreto 11.462/2023"
+    },
+    "V001-F1_complexa|original": {
+      "fiel": true,
+      "motivo": "reajuste IPCA 3,85% a partir do 13º mês consta literalmente no T8306 (erro do juiz)"
+    },
+    "V003-F1_complexa|original": {
+      "fiel": true,
+      "motivo": "reajuste IPCA 4,12% a partir do 13º mês consta literalmente no T8375 (erro do juiz)"
+    },
+    "V041-linha_do_tempo|original": {
+      "fiel": true,
+      "motivo": "revogação da Portaria 063/2021 consta literalmente no T8497 (erro do juiz)"
+    }
+  }
+}

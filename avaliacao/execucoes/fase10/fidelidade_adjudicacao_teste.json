@@ -1,0 +1,107 @@
+{
+  "metodo": "Todas as respostas do TESTE reprovadas pelo juiz foram revistas pelo agente de desenvolvimento (claude-opus-5-5), frase a frase, contra o texto INTEGRAL dos trechos citados. Respostas aprovadas pelo juiz não foram revistas (falsos negativos estimados pela sensibilidade da calibração). Pendente de confirmação humana.",
+  "rotulos": {
+    "T003-F1_complexa": {
+      "frases_infieis": [],
+      "motivo": "todas as frases reprovadas constam literalmente nos trechos citados (erro do juiz)"
+    },
+    "T004-F1_complexa": {
+      "frases_infieis": [],
+      "motivo": "todas as frases reprovadas constam literalmente nos trechos citados (erro do juiz)"
+    },
+    "T008-F1_complexa": {
+      "frases_infieis": [],
+      "motivo": "todas as frases reprovadas constam literalmente nos trechos citados (erro do juiz)"
+    },
+    "T012-F1_complexa": {
+      "frases_infieis": [],
+      "motivo": "todas as frases reprovadas constam literalmente nos trechos citados (erro do juiz)"
+    },
+    "T013-F1_complexa": {
+      "frases_infieis": [],
+      "motivo": "todas as frases reprovadas constam literalmente nos trechos citados (erro do juiz)"
+    },
+    "T014-F1_complexa": {
+      "frases_infieis": [],
+      "motivo": "todas as frases reprovadas constam literalmente nos trechos citados (erro do juiz)"
+    },
+    "T031-F1_simples": {
+      "frases_infieis": [
+        2
+      ],
+      "motivo": "atribui à Constituição princípios do Decreto 9.203 (T4727)"
+    },
+    "T047-F1_simples": {
+      "frases_infieis": [
+        1
+      ],
+      "motivo": "cita o art. 1º; o conteúdo é do art. 11 (T6314)"
+    },
+    "T048-F1_simples": {
+      "frases_infieis": [],
+      "motivo": "todas as frases reprovadas constam literalmente nos trechos citados (erro do juiz)"
+    },
+    "T088-linha_do_tempo": {
+      "frases_infieis": [],
+      "motivo": "todas as frases reprovadas constam literalmente nos trechos citados (erro do juiz)"
+    },
+    "T096-linha_do_tempo": {
+      "frases_infieis": [],
+      "motivo": "todas as frases reprovadas constam literalmente nos trechos citados (erro do juiz)"
+    },
+    "T103-linha_do_tempo": {
+      "frases_infieis": [],
+      "motivo": "todas as frases reprovadas constam literalmente nos trechos citados (erro do juiz)"
+    },
+    "T104-linha_do_tempo": {
+      "frases_infieis": [
+        1
+      ],
+      "motivo": "'por 60 dias'; o documento diz 'por até 60 dias' e a retomada ocorreu em 55"
+    },
+    "T105-linha_do_tempo": {
+      "frases_infieis": [],
+      "motivo": "todas as frases reprovadas constam literalmente nos trechos citados (erro do juiz)"
+    },
+    "T106-linha_do_tempo": {
+      "frases_infieis": [],
+      "motivo": "todas as frases reprovadas constam literalmente nos trechos citados (erro do juiz)"
+    },
+    "T108-linha_do_tempo": {
+      "frases_infieis": [
+        1
+      ],
+      "motivo": "'a partir do termo aditivo' não consta; a pergunta pedia a data final"
+    },
+    "T110-linha_do_tempo": {
+      "frases_infieis": [],
+      "motivo": "todas as frases reprovadas constam literalmente nos trechos citados (erro do juiz)"
+    },
+    "T113-linha_do_tempo": {
+      "frases_infieis": [
+        1
+      ],
+      "motivo": "'por inexecução parcial' não consta no trecho citado (T8447)"
+    },
+    "T114-linha_do_tempo": {
+      "frases_infieis": [],
+      "motivo": "todas as frases reprovadas constam literalmente nos trechos citados (erro do juiz)"
+    },
+    "T116-linha_do_tempo": {
+      "frases_infieis": [],
+      "motivo": "todas as frases reprovadas constam literalmente nos trechos citados (erro do juiz)"
+    },
+    "T118-linha_do_tempo": {
+      "frases_infieis": [],
+      "motivo": "todas as frases reprovadas constam literalmente nos trechos citados (erro do juiz)"
+    },
+    "T010-F1_complexa": {
+      "frases_infieis": [],
+      "motivo": "todas as frases reprovadas constam literalmente nos trechos citados (erro do juiz)"
+    },
+    "T117-linha_do_tempo": {
+      "frases_infieis": [],
+      "motivo": "todas as frases reprovadas constam literalmente nos trechos citados (erro do juiz)"
+    }
+  }
+}
