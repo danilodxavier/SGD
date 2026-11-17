@@ -21,7 +21,7 @@ O SAD-GD lê e responde perguntas sobre contratos, leis, decretos, instruções 
 | Precedentes (Recall@3) | ≥ 0,80 | **1,00** |
 | Custo por consulta | gratuito | **R$ 0** (tudo local) |
 
-Números de base: 186 documentos, 5.691 trechos vetorizados, 96 normas, 311 testes automatizados, cobertura de 96% nas camadas de domínio e aplicação, 27 commits, 13 ADRs.
+Números de base: 186 documentos, 5.691 trechos vetorizados, 96 normas, 316 testes automatizados + 4 E2E no navegador, cobertura de 96% nas camadas de domínio e aplicação (Fase 10), mais de 35 commits, 13 ADRs.
 
 ---
 

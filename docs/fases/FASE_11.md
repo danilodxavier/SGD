@@ -2,15 +2,15 @@
 
 | Campo | Valor |
 |---|---|
-| Período | 2026-11-17 – |
+| Período | 2026-11-17 |
 | Executor | Claude Code (`claude-opus-5-5`) |
-| Situação | Em andamento |
+| Situação | ⏳ **Aguardando aprovação** |
 
 ## 1. Escopo
 
 Relatório técnico, documentação final (README, manuais do usuário e técnico), roteiro de apresentação/demonstração, lições aprendidas e a avaliação da F2 no Gemini (decisão da Fase 10, `FASE_10.md` §6).
 
-## 2. Entregas até aqui
+## 2. Entregas
 
 | Item | Entregável | Arquivos | Situação |
 |---|---|---|---|
@@ -23,7 +23,7 @@ Relatório técnico, documentação final (README, manuais do usuário e técnic
 | Manuais do usuário e técnico | Reescritos para o SAD-GD; os da v1 movidos para `docs/legado/*_v1.md` | `docs/MANUAL_DO_USUARIO.md`, `docs/MANUAL_TECNICO.md` | ✅ |
 | README final | Visão, resultados × metas, arquitetura, como rodar e avaliar, corpus, documentação (conteúdo v1 removido) | `README.md` | ✅ |
 | Roteiro de demonstração ao vivo | 8 cenas com perguntas **validadas ao vivo** no banco real (resultados e tempos), preparação, plano B e perguntas prováveis da banca | `docs/DEMONSTRACAO.md` | ✅ |
-| Lições aprendidas | — | `docs/projeto/LICOES_APRENDIDAS.md` | Pendente |
+| Lições aprendidas | 22 lições (avaliação, arquitetura, testes, governança) com evidência e prática adotada | `docs/projeto/LICOES_APRENDIDAS.md` | ✅ |
 
 ## 3. F2 no Gemini — resultados (2026-11-17)
 
@@ -48,3 +48,30 @@ Evidências: `avaliacao/execucoes/fase11/f2_sadgd-qwen2.5-7b__f2_gemini.jsonl`, 
 
 **Impacto nas métricas:** nenhum — todas as avaliações (Fases 5–11) usam a mesma recuperação e o mesmo orquestrador, montados pelos scripts. **Impacto no produto:** a tela Perguntar falhava com o pipeline real desde a Fase 7; corrigido.
 
+## 5. Critérios de aceite (EAP 11.0)
+
+| Entregável (EAP) | Critério | Resultado |
+|---|---|---|
+| 11.0.1 Relatório técnico | Cobre problema, metodologia, arquitetura, avaliação × metas e limitações, com evidência para cada número | ✅ `docs/RELATORIO_TECNICO.md` |
+| 11.0.2 Documentação final | README e manuais descrevem o SAD-GD (não a v1); links válidos | ✅ |
+| 11.0.3 Roteiro de demonstração | Perguntas executadas ao vivo com resultado conhecido; plano B | ✅ `docs/DEMONSTRACAO.md` |
+| 11.0.4 Lições aprendidas | Consolidadas das retrospectivas, com evidência | ✅ 22 lições |
+| Decisão da Fase 10 | F2 no Gemini avaliada e comparada com a Fase 8 | ✅ p95 100 s; relator 1,00 |
+
+Testes: **316 passando + 4 E2E** no Edge, ruff limpo.
+
+## 6. Pendências (fora do escopo desta fase ou dependentes do responsável)
+
+1. Confirmação humana das adjudicações de faithfulness (`avaliacao/execucoes/fase10/fidelidade_adjudicacao*.json`).
+2. Kanban no GitHub Projects (SAD-003) — depende da instalação do `gh` e de `gh auth login` pelo responsável.
+3. Ensaio da demonstração pelo responsável (`docs/DEMONSTRACAO.md` §1); o vídeo já está em `data/video/`.
+
+## 7. Retrospectiva
+
+- **Bem:** validar o roteiro de demonstração **ao vivo** encontrou um defeito que nenhum teste pegava (a API real nunca montava o orquestrador corretamente); diagnosticar o relator do Gemini pela observação bruta mostrou que era formato do prompt, não qualidade do modelo.
+- **A melhorar:** desde a Fase 7, a montagem real do pipeline da API ficou sem teste porque todos os testes usavam dublês — a fumaça ao vivo deveria ter sido feita na Fase 9.
+- **Ação:** encerramento do projeto; manter o teste da montagem real e a fumaça ao vivo como passo obrigatório de qualquer entrega futura (L13).
+
+## 8. Aprovação
+
+- [ ] Aguardando aprovação do responsável.

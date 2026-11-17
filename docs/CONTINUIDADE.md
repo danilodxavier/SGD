@@ -15,7 +15,7 @@
 cd "D:\AGENTES\INTELIGENCIA_DOCUMENTAL_GESTAO_ CONTRATO"
 .\instalar.bat                     # cria .venv, instala dependências, cria .env e roda diagnóstico
 .\.venv\Scripts\python.exe scripts\sadgd\preparar_bge_m3.py   # modelo de embeddings (uma vez)
-.\.venv\Scripts\python.exe -m pytest -q   # testes (315 + 4 E2E)
+.\.venv\Scripts\python.exe -m pytest -q   # testes (316 + 4 E2E)
 .\start.bat                        # painel em http://127.0.0.1:8000
 ```
 

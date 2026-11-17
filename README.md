@@ -95,7 +95,7 @@ No primeiro acesso, a tela pede a criação do administrador. Perguntas de exemp
 ## Como avaliar
 
 ```powershell
-.\.venv\Scripts\python.exe -m pytest -q                         # 315 testes + 4 E2E no Edge
+.\.venv\Scripts\python.exe -m pytest -q                         # 316 testes + 4 E2E no Edge
 .\.venv\Scripts\python.exe scripts\sadgd\avaliar.py recuperacao  # P@k, R@k, MRR, nDCG
 .\.venv\Scripts\python.exe scripts\sadgd\avaliar_respostas.py --sistema v2 --modelo sadgd-qwen2.5-7b --conjunto teste --verificador --max-minutos 8.5
 .\.venv\Scripts\python.exe scripts\sadgd\avaliar_f2.py --rotulo meu_teste --max-minutos 4   # repetir até [OK]; --resumo

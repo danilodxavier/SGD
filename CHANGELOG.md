@@ -26,6 +26,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 - Relatório de auditoria `docs/fases/FASE_00.md`.
 
 ### Alterado
+- Documentação final da Fase 11: `docs/RELATORIO_TECNICO.md`, manuais do usuário e técnico reescritos para o SAD-GD (os da v1 em `docs/legado/*_v1.md`), README final, `docs/DEMONSTRACAO.md` e `docs/projeto/LICOES_APRENDIDAS.md`.
 - Relator F2: `consensos` explicitamente como lista de frases e reparo de forma de `{tema, posicoes}` para frase (schema do relator no Gemini 0,333 → 1,00).
 - Produto renomeado para SAD-GD 2.0.0.dev0 na interface; painel, "Atualizar índice" e OCR passam a usar o indexador do SAD-GD; telas v1 (Perguntas, Documentos, Checklist, Relatórios) saem do menu; indexador com modo parcial; `.gitignore` restringe `corpus/` ao público/sintético.
 - Grafo: documento não normativo que cita ato normativo passa a `fundamenta` (pureza do agrupamento 0,932 → 0,966); instruções dos especialistas exigem `pros`/`contras` como listas.
@@ -35,6 +36,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 - `instalar.bat`, `start.bat`, `stop.bat` e diagnóstico adaptados ao SAD-GD; IA da v1 passa a usar o Ollama do projeto; caches de IA forçados para dentro do projeto e telemetria de terceiros desativada.
 - `app/services/llm.py`: mensagens de erro detalhadas do servidor de IA e filtro de modelos de embedding.
 - Especificação v1 (`AGENTS.md`), `ARQUITETURA.md` e `CONFORMIDADE.md` movidos para `docs/legado/`.
+
+### Corrigido
+- `POST /api/sadgd/perguntar`: a montagem real do orquestrador passava `ResultadoRecuperacao` ao grafo em vez da lista de trechos (falhava desde a Fase 7; métricas não afetadas); teste de regressão da montagem real.
 
 ### Removido
 - Código v1 sem uso (aprovado na Fase 10; tag `backup/pre-limpeza-v1`): pacotes `checklist`, `contracts`, `retrieval`, `indexing`; serviços e rotas de perguntas, documentos, checklist, relatórios, busca e IA v1; telas v1; `scripts/indexar.py`, `scripts/aceitacao.py`, `aceitacao.bat`; 165 testes exclusivos da v1. Tabelas v1 do banco preservadas (decisão pendente).
