@@ -4,7 +4,7 @@
 |---|---|
 | Período | 2026-11-17 |
 | Executor | Claude Code (`claude-opus-5-5`) |
-| Situação | **Aguardando aprovação** |
+| Situação | ✅ **Aprovada** em 2026-11-17 |
 
 ## 1. Entregas
 
@@ -80,4 +80,4 @@ Fumaça sobre o banco real (somente leitura): painel com 186 documentos / 5.691 
 
 ## 9. Aprovação
 
-- [ ] Aprovado por: ______ em ____/____/______
+- [x] Aprovado pelo responsável em 2026-11-17 ("Aprovado siga para fase 10"); exclusão do código v1 aprovada com backup; identidade Governo de MT/SEMA mantida

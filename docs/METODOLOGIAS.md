@@ -70,5 +70,10 @@
 | Defesa em profundidade para arquivos: confinamento à raiz, CSP sandbox, nosniff, validação de upload | Segurança | `app/interfaces/api/acervo.py` | 9 |
 | Controle de acesso baseado em papéis (RBAC: Administrador, Gestor, Consulta) | Segurança | `app/api/deps.py` | 9 |
 | Processamento assíncrono em segundo plano com estado observável (indexação) | Upload | `app/infrastructure/servico_indexacao.py` | 9 |
+| LLM-como-juiz de outra família, calibrado com corrupções controladas (rótulos por construção), κ de Cohen e adjudicação das discordâncias | Faithfulness | `app/application/avaliacao/fidelidade.py` | 10 |
+| Correção de prevalência por erro de medição (estimador de Rogan–Gladen) | Faithfulness | `scripts/sadgd/avaliar_fidelidade.py` | 10 |
+| Experimentos controlados (mesmos itens de validação) com análise além das métricas agregadas | Latência da F2 | `docs/fases/FASE_10.md` §3 | 10 |
+| Cache semântico com guarda de identificadores e invalidação por versão do acervo; limiar calibrado por margem de segurança | Otimização de tokens | `app/application/cache_semantico.py` | 10 |
+| Refatoração com rede de segurança: tag de backup, mapa de dependências, adaptação (não remoção) dos testes de segurança | Limpeza v1 | commit `38d761d` | 10 |
 
-Planejadas: GitHub Flow, RAGAS com juiz calibrado (κ de Cohen).
+Planejadas: GitHub Flow.

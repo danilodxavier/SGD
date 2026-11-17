@@ -16,6 +16,7 @@
 | 2026-11-16 | Corpus acadêmico público/sintético para avaliação e demonstração; dados reais só locais, com LLM local | `docs/adr/ADR-002-corpus-academico.md` |
 | 2026-11-16 | Fase 1 aprovada; documentos, trechos e contratos do banco v1 **excluídos** (nova versão usará novos documentos); raiz documental = `corpus\` | `docs/fases/FASE_01.md` §7 |
 | 2026-11-16 | Fase 2 aprovada: ADR-003 a ADR-013 **aceitos**; autorização para **substituir o que for necessário do projeto antigo** para entregar o novo projeto na íntegra | `docs/fases/FASE_02.md` §8 |
+| 2026-11-17 | Fase 9 aprovada (exclusão do código v1 aprovada com backup; identidade MT/SEMA mantida); Fase 10 entregue (cache semântico, faithfulness 0,964 adjudicada, F2 limitada pelo hardware) | `docs/fases/FASE_10.md` |
 | 2026-11-17 | Fase 8 aprovada; Fase 9 entregue (MVP: Perguntar/Acervo/Linha do tempo/Decisões/Painel, perfil Gestor, upload com indexação no servidor, E2E no Edge) | `docs/fases/FASE_09.md` |
 | 2026-11-17 | Fase 7 aprovada; Fase 8 entregue (memória de decisões R@3 1,00; F2 com 6 elementos RF-20 em 100%; grafo: contrato que cita lei = fundamenta) | `docs/fases/FASE_08.md` |
 | 2026-11-16 | Fase 6 aprovada; Fase 7 entregue (roteador, verificador, especialistas, relator, LangGraph, LGPD, auditoria, API; v2.2 alucinação 0%; F2 p50 250 s) | `docs/fases/FASE_07.md` |
@@ -67,6 +68,8 @@ Variáveis de ambiente que forçam caches para dentro do projeto (definidas em `
 - Avaliações longas com LLM (F2 ≈ 4–6 min/item) só em primeiro plano, em ciclos `--max-minutos 4` (o segundo plano é encerrado por falta de memória).
 - Dentro de `corpus/` só `publico/`, `sintetico/` e os manifestos vão ao Git; `corpus/enviados/` (uploads) pode ter dados reais.
 - CI: falhas de teste viram anotações públicas (`/check-runs/{id}/annotations`). A API pública do GitHub tem limite de 60 req/h sem login: consultar o CI com intervalos ≥ 40 s.
+- Antes de apagar dados, contar as linhas: as tabelas v1 tinham dados apesar de terem sido esvaziadas na Fase 1.
+- Juiz LLM local (Llama 3.1 8B) tem muitos falsos alarmes em respostas com datas/cabeçalhos longos: nunca publicar a métrica do juiz sem calibração e adjudicação.
 - Testes E2E usam o Microsoft Edge do sistema via Playwright (`channel="msedge"`) — não baixar navegadores.
 - Ollama do projeto: `scripts\sadgd\ollama.ps1 -Acao iniciar|parar|status`; Tesseract: `scripts\sadgd\tesseract.ps1`.
 

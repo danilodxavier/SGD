@@ -5,6 +5,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 ## [Não lançado] — Reestruturação SAD-GD
 
 ### Adicionado
+- Fase 10: cache semântico calibrado (identificadores + versão do acervo + cosseno ≥ 0,93) com auditoria; faithfulness com LLM-juiz de outra família, calibração por corrupções controladas, κ de Cohen, Rogan–Gladen e adjudicação; experimentos de latência da F2; scripts `avaliar_fidelidade.py`, `calibrar_cache.py`, `medir_cache.py`; orquestrador com LLM separado para o relator.
 - Fase 9 (MVP): telas Perguntar (F1/F2 com fontes, pareceres, precedentes e RF-20), Acervo (upload e indexação no servidor), Linha do tempo (fases e evidências), Decisões e Painel do SAD-GD; perfil Gestor; API do acervo (painel, documentos, arquivo com CSP sandbox, trecho, busca, upload, indexação); serviço de indexação em segundo plano; caso de uso `construir_grafo`; migração 005; testes E2E no Edge com Playwright; 11 novos testes.
 - Fase 8 (apoio à decisão): memória de decisões (domínio, migração 004 com FTS5, repositório, busca híbrida com rerank e limiar calibrado), memória sintética de 30 decisões e 50 perguntas de precedente, recomendação F2 com os 6 elementos de RF-20 (precedentes e base legal determinísticos, hierarquia e vigência), relator v2 (prompt e schema), API `/api/sadgd/decisoes` e `/api/sadgd/precedentes`, scripts `gerar_memoria_decisoes.py`, `importar_decisoes.py`, `avaliar_precedentes.py`; 17 novos testes.
 - Fase 7 (multiagentes): roteador por regras, verificador de fontes determinístico (integrado ao ResponderF1), especialistas com JSON validado e reparo de forma, relator F2, orquestrador LangGraph com fan-out paralelo, anonimização LGPD reversível e política de envio a provedores remotos, auditoria de consultas (hash da pergunta), resumo da linha do tempo para a F2, API `POST /api/sadgd/perguntar`, scripts `avaliar_roteador.py`, `avaliar_anonimizacao.py`, `avaliar_f2.py` e flag `--verificador` em `avaliar_respostas.py`; Qwen 2.5 3B avaliado.
@@ -34,6 +35,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 - Especificação v1 (`AGENTS.md`), `ARQUITETURA.md` e `CONFORMIDADE.md` movidos para `docs/legado/`.
 
 ### Removido
+- Código v1 sem uso (aprovado na Fase 10; tag `backup/pre-limpeza-v1`): pacotes `checklist`, `contracts`, `retrieval`, `indexing`; serviços e rotas de perguntas, documentos, checklist, relatórios, busca e IA v1; telas v1; `scripts/indexar.py`, `scripts/aceitacao.py`, `aceitacao.bat`; 165 testes exclusivos da v1. Tabelas v1 do banco preservadas (decisão pendente).
 - Cópia duplicada da especificação (`READ ME — Agente de Inteligência Documental — Contratos e Checklists.md`).
 - Fora do Git: 169.698 registros `REMOVIDO` do banco (compactado de 6,6 GB para 1,7 GB; original em `BACKUP\pre-reestruturacao\`), logs rotacionados antigos, `data/app.pid` e `.pytest_cache/`.
 - Fora do Git (a pedido do responsável): todos os documentos, trechos, contratos e itens do banco v1 (1,72 GB → 0,11 MB); raiz documental passa a ser `corpus\`.

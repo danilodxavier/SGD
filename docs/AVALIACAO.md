@@ -36,6 +36,24 @@ Resultados por versão sobre o golden set (`avaliacao\golden_set\`, a partir da 
 | Reindexação sem mudanças | 0 processados | 0 (186 inalterados, 0,0 s) | `fase4_indexacao.json` |
 | Vazão de embeddings (bge-m3, GTX 1660 SUPER) | — | 19 trechos/s (fp32) | `FASE_04.md` §5 |
 
+## Avaliação final (Fase 10) — métricas × metas, conjunto de TESTE
+
+| Métrica | Meta | Resultado | Situação |
+|---|---|---|---|
+| Recall@5 | ≥ 0,90 | 0,965 | ✅ |
+| Faithfulness | ≥ 0,90 | 0,964 (adjudicada; juiz bruto 0,795) | ✅ |
+| Alucinação | ≤ 5% | 0,0% numérica; 5,4% por frase (adjudicada) | ⚠️ marginal |
+| F1 relações | ≥ 0,85 | 1,00 sintético (sobreajuste); 10/10 públicas | ✅ ressalva |
+| Classificação de tipo documental | ≥ 0,85 | 1,00 | ✅ |
+| Roteamento | ≥ 0,90 | 0,935 | ✅ |
+| Precedentes R@3 | ≥ 0,80 | 1,00 | ✅ |
+| RF-20 (6 elementos) | 100% | 100% | ✅ |
+| Latência F1 / F2 / cache (p50) | — | 14,6 s / 329 s / 5 ms | ⚠️ F2 (hardware) |
+| Tokens F1 / F2 (entrada/saída) | medir | 2.457/107 · 18.872/2.538 | ✅ |
+| Custo | R$ 0 | R$ 0 | ✅ |
+
+Juiz de faithfulness (Llama 3.1 8B) calibrado na validação: sensibilidade 0,82, especificidade 0,90, κ 0,71 (adjudicado). Detalhes em `docs/fases/FASE_10.md` §4 e `avaliacao/execucoes/fase10_fidelidade.json`.
+
 ## Tabela comparativa por versão
 
 | Versão | Data | Descrição | P@5 | R@5 | MRR | nDCG@10 | Faithfulness | Alucinação | Citações corretas | F1 relações | p50/p95 F1 | Tokens/consulta |
@@ -118,3 +136,6 @@ Alucinação numérica recalculada com normalização de datas e citações de a
 | 2026-11-17 | fase8_precedentes | precedentes (15/35) | Memória de decisões híbrida + limiar calibrado na validação | R@3 0,929 / 1,00 |
 | 2026-11-17 | fase8 (F2) | validação + teste (21) | Precedentes no contexto, relator v2, RF-20 | 6 elementos 100%; schema bruto 0 → 0,789; p50 329 s |
 | 2026-11-17 | fase9 (E2E) | navegador | MVP completo | 4/4 E2E; 465 testes |
+| 2026-11-17 | fase10 (F2) | validação (6) | Especialistas 3B / orçamento 1.300 | 3B: 2,5× mais rápido, 7% pareceres com conteúdo (rejeitado); orçamento: −8% latência, recall pior (rejeitado) |
+| 2026-11-17 | fase10_cache | golden set | Limiar do cache semântico | maior par diferente 0,883 → limiar 0,93 |
+| 2026-11-17 | fase10_fidelidade | validação (calibração) + teste | LLM-juiz Llama 3.1 8B | κ 0,71; faithfulness 0,964 adjudicada; alucinação 5,4% |
