@@ -4,7 +4,7 @@
 |---|---|
 | Período | 2026-11-17 |
 | Executor | Claude Code (`claude-opus-5-5`) |
-| Situação | **Aguardando aprovação** |
+| Situação | ✅ **Aprovada** em 2026-11-17 |
 
 ## 1. Entregas
 
@@ -95,4 +95,4 @@ No golden set, o par de perguntas **diferentes** mais parecido com os mesmos ide
 
 ## 9. Aprovação
 
-- [ ] Aprovado por: ______ em ____/____/______
+- [x] Aprovado pelo responsável em 2026-11-17 ("1 apagar; 2 provedor gemini. Após está aprovado seguir para fase 11"): tabelas v1 removidas (migração 006, com backup); provedor Gemini implementado para a F2 do corpus acadêmico (commit `1b469c4`), avaliação pendente da chave no `.env`

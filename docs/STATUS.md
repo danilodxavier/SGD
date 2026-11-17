@@ -5,11 +5,11 @@
 | Campo | Valor |
 |---|---|
 | Atualizado em | 2026-11-17 |
-| Fase atual | **Fase 10 — Otimização e avaliação final** |
-| Situação da fase | Entregáveis concluídos — **aguardando aprovação do responsável** (e 2 decisões: tabelas v1 com dados; provedor em nuvem para F2 — `FASE_10.md` §6) |
-| Última tarefa concluída | Limpeza v1 (tag `backup/pre-limpeza-v1`), cache semântico calibrado, faithfulness com LLM-juiz (0,964 adjudicada), experimentos de latência da F2, tabela final métricas × metas (`docs/fases/FASE_10.md`) |
-| Próxima tarefa exata | Após "Aprovado, siga para a Fase 11": (1) relatório técnico acadêmico (`docs/RELATORIO_TECNICO.md`); (2) reescrever `MANUAL_DO_USUARIO.md` e `MANUAL_TECNICO.md` para o SAD-GD; (3) README final; (4) roteiro de apresentação/demonstração; (5) lições aprendidas (PMBOK); (6) revisão final de todos os .md |
-| Bloqueios | Kanban (SAD-003) depende do `gh`. RAM livre da máquina baixa (1–2 GB): indexações com `--max-minutos 7.5`; avaliações F2 só em primeiro plano com `--max-minutos 4` |
+| Fase atual | **Fase 11 — Entrega acadêmica** |
+| Situação da fase | Em andamento |
+| Última tarefa concluída | Fase 10 aprovada; tabelas v1 removidas (migração 006); provedor Gemini para a F2 implementado e testado (`1b469c4`) |
+| Próxima tarefa exata | (1) Quando o responsável preencher `GEMINI_API_KEY` no `.env`: `python scripts/sadgd/avaliar_f2.py --rotulo fase11 --provedor-f2 gemini --max-minutos 4` (21 itens) e comparar com a Fase 8; (2) relatório técnico `docs/RELATORIO_TECNICO.md`; (3) manuais do usuário e técnico do SAD-GD; (4) README final; (5) roteiro de demonstração; (6) lições aprendidas |
+| Bloqueios | Avaliação da F2 no Gemini depende da chave no `.env` (o responsável preenche; nunca no chat). Kanban (SAD-003) depende do `gh` |
 
 ## Histórico de fases
 
@@ -25,7 +25,8 @@
 | 7 — Sistema multiagentes | ✅ Aprovada em 2026-11-16 | `docs/fases/FASE_07.md` |
 | 8 — Apoio à decisão (F2) | ✅ Aprovada em 2026-11-17 | `docs/fases/FASE_08.md` |
 | 9 — MVP completo | ✅ Aprovada em 2026-11-17 | `docs/fases/FASE_09.md` |
-| 10 — Otimização e avaliação final | Aguardando aprovação | `docs/fases/FASE_10.md` |
+| 10 — Otimização e avaliação final | ✅ Aprovada em 2026-11-17 | `docs/fases/FASE_10.md` |
+| 11 — Entrega acadêmica | Em andamento | `docs/fases/FASE_11.md` |
 
 ## Fatos-chave para retomada
 

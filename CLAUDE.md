@@ -16,6 +16,7 @@
 | 2026-11-16 | Corpus acadêmico público/sintético para avaliação e demonstração; dados reais só locais, com LLM local | `docs/adr/ADR-002-corpus-academico.md` |
 | 2026-11-16 | Fase 1 aprovada; documentos, trechos e contratos do banco v1 **excluídos** (nova versão usará novos documentos); raiz documental = `corpus\` | `docs/fases/FASE_01.md` §7 |
 | 2026-11-16 | Fase 2 aprovada: ADR-003 a ADR-013 **aceitos**; autorização para **substituir o que for necessário do projeto antigo** para entregar o novo projeto na íntegra | `docs/fases/FASE_02.md` §8 |
+| 2026-11-17 | Fase 10 aprovada: tabelas v1 apagadas (migração 006, backup); **F2 no Gemini (plano gratuito)** só com contexto 100% acadêmico, anonimizado, AI_ALLOW_REMOTE=true e chave no `.env`; reserva local | `docs/fases/FASE_10.md` §6 |
 | 2026-11-17 | Fase 9 aprovada (exclusão do código v1 aprovada com backup; identidade MT/SEMA mantida); Fase 10 entregue (cache semântico, faithfulness 0,964 adjudicada, F2 limitada pelo hardware) | `docs/fases/FASE_10.md` |
 | 2026-11-17 | Fase 8 aprovada; Fase 9 entregue (MVP: Perguntar/Acervo/Linha do tempo/Decisões/Painel, perfil Gestor, upload com indexação no servidor, E2E no Edge) | `docs/fases/FASE_09.md` |
 | 2026-11-17 | Fase 7 aprovada; Fase 8 entregue (memória de decisões R@3 1,00; F2 com 6 elementos RF-20 em 100%; grafo: contrato que cita lei = fundamenta) | `docs/fases/FASE_08.md` |
