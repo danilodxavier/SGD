@@ -8,6 +8,7 @@ from pathlib import Path
 
 from app.application.agentes.verificador import suporte, verificar
 from app.application.avaliacao.metricas_resposta import numeros_nao_suportados
+from app.application.decisoes.recomendacao import completar
 from app.application.respostas.f1 import carregar_prompt, montar_contexto
 from app.domain.politicas import AVISO_DECISAO
 
@@ -17,18 +18,19 @@ ORDEM_PARECER = ("Responda SOMENTE com um objeto JSON com as chaves nesta ordem:
                  "[\"T<id>\"], \"raciocinio\"}), \"fundamentacao_legal\" (lista de {\"norma\", \"dispositivo\", "
                  "\"trecho\": \"T<id>\", \"vigente\": true|false}), \"riscos\" (lista de {\"descricao\", "
                  "\"probabilidade\": baixa|media|alta, \"impacto\": baixo|medio|alto, \"mitigacao\"}), "
-                 "\"alternativas\" (lista de {\"descricao\", \"pros\", \"contras\"}), \"recomendacao\", \"lacunas\", "
+                 "\"alternativas\" (lista de {\"descricao\", \"pros\": [\"...\"], \"contras\": [\"...\"]}), "
+                 "\"recomendacao\", \"lacunas\", "
                  "\"conflitos\" (lista de {\"descricao\", \"trechos\"}), \"confianca\" (0 a 1). Seja conciso: no "
                  "máximo 4 afirmações, 3 fundamentos, 3 riscos, 2 alternativas e 3 lacunas, cada texto com uma frase.")
-ORDEM_RELATOR = ("Modo F2. Responda SOMENTE com um objeto JSON com as chaves nesta ordem: \"resposta\" (síntese "
-                 "com citações [T<id>]), \"consensos\", \"divergencias\" (lista de {\"tema\", \"posicoes\": "
-                 "[{\"agente\", "
-                 "\"posicao\"}]}), \"alternativas\" (lista de {\"descricao\", \"pros\", \"contras\"}), \"riscos\" "
-                 "(lista de {\"descricao\", \"probabilidade\", \"impacto\", \"mitigacao\"}), \"base_legal\", "
-                 "\"precedentes\", \"lacunas\", \"fontes\" (lista de \"T<id>\"), \"classificacao\" "
-                 "(inferencia|conflito|"
-                 "ausencia), \"confianca\" (0 a 1), \"aviso\". Seja conciso: \"resposta\" até 900 caracteres e no "
-                 "máximo 3 itens por lista, cada um com uma frase.")
+ORDEM_RELATOR = ("Modo F2. Responda SOMENTE com um objeto JSON com as chaves nesta ordem: \"resposta\" "
+                 "(síntese com citações [T<id>] e, se houver, [P<id>] dos precedentes), \"recomendacao\" (1 a 2 "
+                 "frases), \"consensos\", \"divergencias\" (lista de {\"tema\", \"posicoes\": [{\"agente\", "
+                 "\"posicao\"}]}), \"alternativas\" (lista de {\"descricao\", \"pros\": [\"...\"], "
+                 "\"contras\": [\"...\"]}), \"riscos\" (lista de {\"descricao\", \"probabilidade\": "
+                 "baixa|media|alta, \"impacto\": baixo|medio|alto, \"mitigacao\"}), \"lacunas\", \"fontes\" "
+                 "(lista de \"T<id>\"), \"classificacao\" (inferencia|conflito|ausencia), \"confianca\" (0 a 1). "
+                 "Seja conciso: \"resposta\" até 900 caracteres e no máximo 3 itens por lista, cada um com uma "
+                 "frase.")
 NIVEIS_PROB = {"baixa", "media", "alta"}
 SEM_ACENTO = str.maketrans("áâãéêíóôõú", "aaaeeiooou")
 NIVEIS_IMP = {"baixo", "medio", "alto"}
@@ -192,10 +194,10 @@ class RespostaF2:
     observacoes: list = field(default_factory=list)
 
 
-def relatar_f2(llm, pergunta, trechos, pareceres, contexto_extra="") -> RespostaF2:
+def relatar_f2(llm, pergunta, trechos, pareceres, contexto_extra="", precedentes=()) -> RespostaF2:
     validos = [_compactar(p) for p in pareceres if p.dados.get("parecer")]
     mensagens = [
-        {"role": "system", "content": carregar_prompt("relator") + "\n\n" + ORDEM_RELATOR},
+        {"role": "system", "content": carregar_prompt("relator", versao=2) + "\n\n" + ORDEM_RELATOR},
         {"role": "user", "content": f"PERGUNTA: {pergunta}\n\n{contexto_extra}\n\nPARECERES VERIFICADOS:\n"
                                     f"{json.dumps(validos, ensure_ascii=False)}\n\n"
                                     f"TRECHOS:\n{montar_contexto(trechos)}"},
@@ -217,7 +219,7 @@ def relatar_f2(llm, pergunta, trechos, pareceres, contexto_extra="") -> Resposta
         d["confianca"] = max(0.0, min(1.0, float(d.get("confianca", 0))))
     except (TypeError, ValueError):
         d["confianca"] = 0.0
-    for chave in ("consensos", "divergencias", "alternativas", "riscos", "base_legal", "precedentes", "lacunas"):
+    for chave in ("consensos", "divergencias", "alternativas", "riscos", "lacunas"):
         d[chave] = d.get(chave) if isinstance(d.get(chave), list) else []
     for risco in d["riscos"]:  # reparo de forma: "médio"/"Alta" → "medio"/"alta"
         if isinstance(risco, dict):
@@ -225,6 +227,13 @@ def relatar_f2(llm, pergunta, trechos, pareceres, contexto_extra="") -> Resposta
                 if isinstance(risco.get(campo), str):
                     risco[campo] = risco[campo].strip().lower().translate(SEM_ACENTO)
     d["resposta"] = str(d.get("resposta") or "")
+    d["recomendacao"] = str(d.get("recomendacao") or "").strip() or "Ver síntese; os pareceres não convergiram " \
+        "para uma medida única."
+    for alt in d["alternativas"]:  # reparo de forma: prós/contras em texto → lista
+        if isinstance(alt, dict):
+            for campo in ("pros", "contras"):
+                if isinstance(alt.get(campo), str):
+                    alt[campo] = [alt[campo]] if alt[campo].strip() else []
     obs = ["relator_sem_json_valido"] if r is None else (["relator_nova_tentativa"] if tentativas > 1 else [])
     v = verificar(d["resposta"], fontes, pergunta)
     if not v.aprovada:  # remove frases sem suporte da síntese
@@ -233,8 +242,10 @@ def relatar_f2(llm, pergunta, trechos, pareceres, contexto_extra="") -> Resposta
         d["resposta"] = " ".join(restantes)
         d["confianca"] = min(d["confianca"], 0.6)
         obs.append("verificador_frases_removidas_no_relator")
-    erros = _validar_schema({k: d[k] for k in _schema("relator.v1.json")["properties"] if k in d},
-                            _schema("relator.v1.json"))
+    origem = completar(d, trechos, pareceres, precedentes, frases_removidas=not v.aprovada)
+    obs += [f"rf20_{campo}_{o}" for campo, o in origem.items() if o != "modelo" and campo != "aviso"]
+    erros = _validar_schema({k: d[k] for k in _schema("relator.v2.json")["properties"] if k in d},
+                            _schema("relator.v2.json"))
     return RespostaF2(d["resposta"] + f"\n\n{AVISO_DECISAO}", d, fontes, pareceres, not erros and r is not None, v,
                       r.tokens_entrada if r else 0, r.tokens_saida if r else 0, r.latencia_ms if r else 0,
                       obs + ([f"relator_schema: {erros[0]}"] if erros else []))

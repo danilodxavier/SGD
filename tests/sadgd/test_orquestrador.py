@@ -119,3 +119,32 @@ def test_falha_persistente_nao_derruba_o_grafo():
     final = estado["resposta"]
     assert not final.valido and "relator_sem_json_valido" in final.observacoes
     assert final.resposta.endswith(AVISO_DECISAO) and final.dados["confianca"] == 0.0
+
+
+class LLMQueRegistra(LLMRoteiro):
+    def __init__(self):
+        super().__init__()
+        self.prompts_usuario = []
+
+    def chat(self, mensagens, **kw):
+        with self._trava:
+            self.prompts_usuario.append(mensagens[-1]["content"])
+        return super().chat(mensagens, **kw)
+
+
+def test_f2_recebe_precedentes_da_memoria_e_entrega_os_seis_elementos():
+    from app.application.decisoes.recomendacao import elementos_rf20
+    from app.domain.decisoes import Decisao, Precedente
+
+    prec = Precedente(Decisao(titulo="DECISÃO DA GESTÃO DG-011/2025 — Prorrogação do Contrato nº 044/2023",
+                              decisao="Prorrogar por 12 meses.", data="2025-07-30", id=2, codigo="DG-011/2025",
+                              resultado="Execução regular.", avaliacao_resultado="positivo"), 0.97, "P2")
+    llm = LLMQueRegistra()
+    orq = Orquestrador(lambda pergunta, k: TRECHOS, ResponderF1(llm, verificador=verificar), llm,
+                       linha_do_tempo=lambda docs: "", precedentes=lambda pergunta, docs: [prec])
+    estado = orq.executar("Devo prorrogar novamente o Contrato nº 044/2023 de vigilância?")
+    assert all("[P2]" in p for p in llm.prompts_usuario)  # especialistas e relator veem o precedente
+    final = estado["resposta"]
+    assert final.valido  # schema relator.v2
+    assert [p["codigo"] for p in final.dados["precedentes"]] == ["DG-011/2025"]
+    assert set(elementos_rf20(final.dados).values()) <= {"presente", "declarado"}

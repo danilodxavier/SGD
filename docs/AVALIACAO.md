@@ -64,6 +64,17 @@ Alucinação numérica recalculada com normalização de datas e citações de a
 |---|---|---|---|---|---|---|---|
 | 1,00 | 0,942 / 0,790 | 0,00 / 1,00 | 1,00 | 1,00 / 1,00 / 1,00 | 0,746 | 250 s / 348 s | 17.353 / 2.514 |
 
+### Fase 8 — precedentes e F2 com RF-20 (`avaliacao/execucoes/fase8*`)
+
+| Avaliação | Validação | Teste |
+|---|---|---|
+| Precedentes R@3 — denso / híbrido+rerank / **+limiar (adotado)** | 1,00 / 1,00 / 0,929 | 1,00 / 1,00 / **1,00** |
+| Falso precedente (sem precedente que recebe algum), com limiar | 0/1 | 1/4 |
+
+| F2 (21) | RF-20 presentes ou declarados | RF-20 com conteúdo | Schema pareceres bruto / reparado | Recall docs | Precedente pertinente (top-1, manual) | p50 / p95 |
+|---|---|---|---|---|---|---|
+| Fase 8 | **1,00** | 0,714 | 0,789 / 1,00 | 0,794 | 13/21 | 329 s / 387 s |
+
 ### Roteador e anonimização (Fase 7)
 
 | Avaliação | Validação | Teste |
@@ -94,3 +105,6 @@ Alucinação numérica recalculada com normalização de datas e citações de a
 | 2026-11-16 | fase7_roteador | validação + teste | Roteador por regras | 3 rotas 0,925 / 0,935 |
 | 2026-11-16 | fase7 | **teste** | v2.2: verificador de fontes no F1 | alucinação num. 0,0%; exatidão 0,843 |
 | 2026-11-16 | fase7 (F2) | validação + teste (21) | Orquestrador multiagentes ponta a ponta | 0 erros; schema 1,00 após reparo; p50 250 s |
+| 2026-11-17 | fase8_relacoes | sintético + público | Contrato que cita lei = fundamenta | pureza 0,932 → 0,966; relações inalteradas |
+| 2026-11-17 | fase8_precedentes | precedentes (15/35) | Memória de decisões híbrida + limiar calibrado na validação | R@3 0,929 / 1,00 |
+| 2026-11-17 | fase8 (F2) | validação + teste (21) | Precedentes no contexto, relator v2, RF-20 | 6 elementos 100%; schema bruto 0 → 0,789; p50 329 s |

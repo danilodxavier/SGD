@@ -13,7 +13,8 @@ Todos os prompts começam com o bloco comum `_regras_comuns.v1.md` (mesmo prefix
 | Roteador | orquestração | Classifica a pergunta (F1 simples, F1 complexa, F2), define buscas, filtros e agentes | `roteador.v1.json` | `roteador.v1.md` |
 | Analista de Linha do Tempo | orquestração | Cronologia, fases e relações entre documentos (8 classes) | `linha_do_tempo.v1.json` | `analista_linha_do_tempo.v1.md` |
 | Verificador de Fontes | orquestração | Confere se cada afirmação tem trecho de suporte; rejeita o resto | `verificador.v1.json` | `verificador_fontes.v1.md` |
-| Relator / Sintetizador | orquestração | Consolida pareceres (consensos/divergências), redige a resposta final | `relator.v1.json` | `relator.v1.md` |
+| Relator / Sintetizador | orquestração | Consolida pareceres (consensos/divergências), redige a resposta final (v1: F1) | `relator.v1.json` | `relator.v1.md` |
+| Relator F2 (Fase 8) | orquestração | Recomendação F2 com os 6 elementos de RF-20; base legal e precedentes montados pelo sistema | `relator.v2.json` | `relator.v2.md` |
 | Procurador do Estado | especialista | Legalidade, constitucionalidade, competência, riscos jurídicos ao ente | `parecer_especialista.v1.json` | `procurador_estado.v1.md` |
 | Advogado | especialista | Interpretação contratual, direitos/obrigações, rescisão, litígio | idem | `advogado.v1.md` |
 | Controlador-Geral do Estado | especialista | Conformidade, controle interno, improbidade, TCE/TCU/CGU | idem | `controlador_geral.v1.md` |

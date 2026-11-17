@@ -33,6 +33,28 @@ def _fabrica_sem_vetores():
     return conectar(settings.database_path, vetores=False)
 
 
+def _modelos_recuperacao():
+    """bge-m3 + reranker, carregados uma única vez e compartilhados por trechos e decisões."""
+    from app.infrastructure.modelos.embeddings import BgeM3Embedder
+    from app.infrastructure.modelos.reranker import BgeReranker
+
+    if "modelos" not in _componentes:
+        dispositivo = os.environ.get("SADGD_DISPOSITIVO_RECUPERACAO", "cpu")
+        _componentes["modelos"] = (BgeM3Embedder(dispositivo=dispositivo, liberar_gpu=dispositivo != "cpu"),
+                                   BgeReranker(dispositivo=dispositivo))
+    return _componentes["modelos"]
+
+
+def memoria_decisoes():
+    from app.application.decisoes.memoria import MemoriaDecisoes
+    from app.infrastructure.sqlite.repositorio_decisoes import RepositorioDecisoesSqlite
+
+    if "memoria" not in _componentes:
+        embedder, reranker = _modelos_recuperacao()
+        _componentes["memoria"] = MemoriaDecisoes(RepositorioDecisoesSqlite(_fabrica), embedder, reranker)
+    return _componentes["memoria"]
+
+
 def construir_orquestrador(tracer=None):
     """Monta o pipeline real (recuperação híbrida + rerank, ResponderF1 verificado, especialistas no Ollama)."""
     from app.application.agentes.orquestrador import Orquestrador
@@ -40,23 +62,21 @@ def construir_orquestrador(tracer=None):
     from app.application.recuperacao.hibrida import RecuperadorHibrido
     from app.application.respostas.f1 import ResponderF1
     from app.infrastructure.llm.openai_compativel import OpenAICompativelAdapter
-    from app.infrastructure.modelos.embeddings import BgeM3Embedder
-    from app.infrastructure.modelos.reranker import BgeReranker
     from app.infrastructure.sqlite.busca import BuscaLexicalSqlite, RepositorioTrechosSqlite
     from app.infrastructure.sqlite.repositorio_grafo import RepositorioGrafoSqlite
     from app.infrastructure.sqlite.vetores import SqliteVecStore
 
-    dispositivo = os.environ.get("SADGD_DISPOSITIVO_RECUPERACAO", "cpu")
     if "recuperador" not in _componentes:
-        embedder = BgeM3Embedder(dispositivo=dispositivo, liberar_gpu=dispositivo != "cpu")
+        embedder, reranker = _modelos_recuperacao()
         _componentes["recuperador"] = RecuperadorHibrido(
             BuscaLexicalSqlite(_fabrica), RepositorioTrechosSqlite(_fabrica), embedder, SqliteVecStore(_fabrica),
-            BgeReranker(dispositivo=dispositivo))
-    rec = _componentes["recuperador"]
+            reranker)
+    rec, memoria = _componentes["recuperador"], memoria_decisoes()
     llm = OpenAICompativelAdapter("ollama", settings.ollama_url + "/v1", settings.llm_modelo_padrao, timeout=300)
     grafo = RepositorioGrafoSqlite(_fabrica_sem_vetores)
     return Orquestrador(lambda p, k: rec.recuperar(p, k=k), ResponderF1(llm, conflitos=grafo, verificador=verificar),
-                        llm, linha_do_tempo=grafo.resumo, tracer=tracer)
+                        llm, linha_do_tempo=grafo.resumo,
+                        precedentes=lambda p, docs: memoria.precedentes(p, documento_ids=docs), tracer=tracer)
 
 
 def _fonte(t):
@@ -72,7 +92,10 @@ def serializar(estado):
             "tokens": {"entrada": r.tokens_entrada, "saida": r.tokens_saida},
             "tempos_ms": dict(estado.get("tempos", [])), "aviso": AVISO_DECISAO}
     if decisao.rota == "F2":
+        from app.application.decisoes.recomendacao import elementos_rf20
+
         base.update(confianca=r.dados.get("confianca"), recomendacao=r.dados, valido=r.valido,
+                    elementos_rf20=elementos_rf20(r.dados),
                     pareceres=[{"agente": p.agente, "valido": p.valido_reparado, "parecer": p.dados}
                                for p in r.pareceres])
     else:

@@ -1,8 +1,9 @@
 """Orquestrador multiagentes em LangGraph (ADR-003, RF-15 a RF-18).
 
   START → rotear → recuperar ─┬─ F1_simples / F1_complexa → responder_f1 (conflitos do grafo + verificador) → END
-                              └─ F2 → contexto_f2 (linha do tempo) → [especialista × N, em paralelo via Send]
-                                    → relator (consensos, divergências, alternativas, riscos; verificado) → END
+                              └─ F2 → contexto_f2 (linha do tempo + precedentes da memória de decisões)
+                                    → [especialista × N, em paralelo via Send]
+                                    → relator (6 elementos de RF-20; verificado) → END
 
 Somente os especialistas escolhidos pelo roteador são acionados (nunca todos). Cada nó gera um span (TracerPort).
 """
@@ -22,6 +23,7 @@ class Estado(TypedDict, total=False):
     decisao: Any
     trechos: list
     contexto_extra: str
+    precedentes: list
     agente: str
     pareceres: Annotated[list, operator.add]
     resposta: Any
@@ -29,12 +31,13 @@ class Estado(TypedDict, total=False):
 
 
 class Orquestrador:
-    def __init__(self, recuperar, responder_f1, llm_especialistas, *, linha_do_tempo=None, tracer=None,
-                 checkpointer=None, k=8):
+    def __init__(self, recuperar, responder_f1, llm_especialistas, *, linha_do_tempo=None, precedentes=None,
+                 tracer=None, checkpointer=None, k=8):
         """recuperar(pergunta, k) -> list[TrechoRecuperado]; responder_f1: ResponderF1;
-        linha_do_tempo(documento_ids) -> str (resumo para F2)."""
+        linha_do_tempo(documento_ids) -> str (resumo para F2);
+        precedentes(pergunta, documento_ids) -> list[Precedente] (memória de decisões, RF-19)."""
         self._recuperar, self._f1, self._llm = recuperar, responder_f1, llm_especialistas
-        self._tl, self._tracer, self._k = linha_do_tempo, tracer, k
+        self._tl, self._prec, self._tracer, self._k = linha_do_tempo, precedentes, tracer, k
         g = StateGraph(Estado)
         g.add_node("rotear", self._no(self._rotear))
         g.add_node("recuperar", self._no(self._recuperar_no))
@@ -78,8 +81,13 @@ class Orquestrador:
         return {"resposta": self._f1.responder(s["pergunta"], s["trechos"][:6])}
 
     def _contexto_f2(self, s):
-        resumo = self._tl({t.documento_id for t in s["trechos"]}) if self._tl else ""
-        return {"contexto_extra": resumo}
+        documentos = {t.documento_id for t in s["trechos"]}
+        resumo = self._tl(documentos) if self._tl else ""
+        precedentes = self._prec(s["pergunta"], documentos) if self._prec else []
+        if precedentes:
+            resumo += ("\n\nPRECEDENTES DA GESTÃO (decisões anteriores semelhantes; informam, não vinculam):\n"
+                       + "\n\n".join(p.como_contexto() for p in precedentes))
+        return {"contexto_extra": resumo.strip(), "precedentes": precedentes}
 
     def _distribuir(self, s):
         agentes = s["decisao"].agentes
@@ -93,7 +101,7 @@ class Orquestrador:
 
     def _relator(self, s):
         return {"resposta": relatar_f2(self._llm, s["pergunta"], s["trechos"], s.get("pareceres", []),
-                                       s.get("contexto_extra", ""))}
+                                       s.get("contexto_extra", ""), s.get("precedentes", []))}
 
     def executar(self, pergunta, thread_id=None):
         config = {"configurable": {"thread_id": thread_id}} if thread_id else None

@@ -16,6 +16,7 @@
 | 2026-11-16 | Corpus acadêmico público/sintético para avaliação e demonstração; dados reais só locais, com LLM local | `docs/adr/ADR-002-corpus-academico.md` |
 | 2026-11-16 | Fase 1 aprovada; documentos, trechos e contratos do banco v1 **excluídos** (nova versão usará novos documentos); raiz documental = `corpus\` | `docs/fases/FASE_01.md` §7 |
 | 2026-11-16 | Fase 2 aprovada: ADR-003 a ADR-013 **aceitos**; autorização para **substituir o que for necessário do projeto antigo** para entregar o novo projeto na íntegra | `docs/fases/FASE_02.md` §8 |
+| 2026-11-17 | Fase 7 aprovada; Fase 8 entregue (memória de decisões R@3 1,00; F2 com 6 elementos RF-20 em 100%; grafo: contrato que cita lei = fundamenta) | `docs/fases/FASE_08.md` |
 | 2026-11-16 | Fase 6 aprovada; Fase 7 entregue (roteador, verificador, especialistas, relator, LangGraph, LGPD, auditoria, API; v2.2 alucinação 0%; F2 p50 250 s) | `docs/fases/FASE_07.md` |
 | 2026-11-16 | Fase 5 aprovada; Fase 6 entregue (grafo documental, contradições, vigência; v2.1: exatidão 0,843, conflito 1,00) | `docs/fases/FASE_06.md` |
 | 2026-11-16 | Fase 4 aprovada; Fase 5 entregue (R@5 0,965; v2 exatidão 0,795 × v1 0,217; Qwen 2.5 7B escolhido) | `docs/fases/FASE_05.md` |

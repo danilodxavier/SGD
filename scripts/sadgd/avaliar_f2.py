@@ -5,7 +5,10 @@ especialistas escolhidos → relator, com o LLM local do Ollama. Métricas por i
 (precisão/recall vs agentes_esperados), validade de schema dos pareceres (bruto e após reparo), validade do relator,
 recall de documentos citados vs fontes esperadas, presença de alternativas/riscos/aviso, confiança, latência e tokens.
 
-Uso: python scripts/sadgd/avaliar_f2.py [--rotulo fase7] [--modelo M] [--max-minutos 8.5] [--resumo]
+Fase 8: precedentes da memória de decisões no contexto (bge-m3 + reranker na CPU, para não disputar a GPU com o
+LLM) e presença dos 6 elementos de RF-20 (alternativas, riscos, base legal, precedentes, confiança, aviso).
+
+Uso: python scripts/sadgd/avaliar_f2.py [--rotulo fase8] [--modelo M] [--max-minutos 4] [--sem-precedentes] [--resumo]
 """
 import argparse
 import json
@@ -28,7 +31,7 @@ def media(vals):
     return round(sum(vals) / len(vals), 4) if vals else None
 
 
-def construir(modelo, rotulo):
+def construir(modelo, rotulo, precedentes=True):
     from app.application.agentes.orquestrador import Orquestrador
     from app.application.agentes.verificador import verificar
     from app.application.respostas.f1 import ResponderF1
@@ -46,8 +49,20 @@ def construir(modelo, rotulo):
 
     llm = OpenAICompativelAdapter("ollama", settings.ollama_url + "/v1", modelo, timeout=300)
     grafo = RepositorioGrafoSqlite(lambda: conectar(settings.database_path, vetores=False))
+    buscar_precedentes = None
+    if precedentes:
+        from app.application.decisoes.memoria import MemoriaDecisoes
+        from app.infrastructure.modelos.embeddings import BgeM3Embedder
+        from app.infrastructure.modelos.reranker import BgeReranker
+        from app.infrastructure.sqlite.repositorio_decisoes import RepositorioDecisoesSqlite
+
+        memoria = MemoriaDecisoes(RepositorioDecisoesSqlite(lambda: conectar(settings.database_path)),
+                                  BgeM3Embedder(dispositivo="cpu", liberar_gpu=False), BgeReranker(dispositivo="cpu"))
+
+        def buscar_precedentes(pergunta, documentos):
+            return memoria.precedentes(pergunta, documento_ids=documentos)
     return Orquestrador(recuperar, ResponderF1(llm, conflitos=grafo, verificador=verificar), llm,
-                        linha_do_tempo=grafo.resumo, k=K)
+                        linha_do_tempo=grafo.resumo, precedentes=buscar_precedentes, k=K)
 
 
 def metricas(it, estado, ms):
@@ -58,6 +73,9 @@ def metricas(it, estado, ms):
     pareceres = estado.get("pareceres") or []
     f2 = d.rota == "F2"
     dados = r.dados if f2 else {}
+    from app.application.decisoes.recomendacao import elementos_rf20
+
+    elementos = elementos_rf20(dados) if f2 else {}
     return {
         "id": it["id"], "conjunto": "validacao" if it["id"][0] == "V" else "teste", "rota": d.rota,
         "agentes": d.agentes, "agentes_esperados": sorted(esperados),
@@ -73,21 +91,25 @@ def metricas(it, estado, ms):
         "precisao_documentos": len(docs_citados & docs_esperados) / len(docs_citados) if docs_citados else None,
         "fontes": len(r.fontes), "tem_alternativas": bool(dados.get("alternativas")),
         "tem_riscos": bool(dados.get("riscos")), "tem_aviso": dados.get("aviso") is not None,
-        "confianca": dados.get("confianca"), "ms": ms,
+        "confianca": dados.get("confianca"), "ms": ms, "elementos_rf20": elementos,
+        "precedentes": [p.get("codigo") for p in dados.get("precedentes", [])],
+        "base_legal": len(dados.get("base_legal", [])),
+        "normas_no_historico": len(dados.get("normas_no_historico", [])),
+        "alertas": dados.get("alertas", []),
         "tokens_entrada": r.tokens_entrada + sum(p.tokens_entrada for p in pareceres),
         "tokens_saida": r.tokens_saida + sum(p.tokens_saida for p in pareceres),
         "tempos": dict(estado.get("tempos", [])), "resposta": r.resposta, "recomendacao": dados,
     }
 
 
-def avaliar(modelo, rotulo, limite_s):
+def avaliar(modelo, rotulo, limite_s, precedentes=True):
     arquivo = EXECUCOES / rotulo / f"f2_{modelo.replace(':', '_')}.jsonl"
     feitos = _jsonl_existente(arquivo)
     itens = [i for i in carregar_golden("todos") if i["tipo"] == "F2" and i["id"] not in feitos]
     if not itens:
         print(f"[OK] F2: nada pendente ({len(feitos)} itens)")
         return 0
-    orq = construir(modelo, rotulo)
+    orq = construir(modelo, rotulo, precedentes)
     inicio = time.perf_counter()
     with arquivo.open("a", encoding="utf-8", newline="\n") as f:
         for n, it in enumerate(itens, start=1):
@@ -131,6 +153,15 @@ def resumo(rotulo):
             "com_riscos": media([r["tem_riscos"] for r in f2]),
             "com_aviso": media([r["tem_aviso"] for r in f2]),
             "confianca_media": media([r["confianca"] for r in f2]),
+            "rf20_completo": media([all(v in ("presente", "declarado") for v in r.get("elementos_rf20", {}).values())
+                                    and len(r.get("elementos_rf20", {})) == 6 for r in f2]),
+            "rf20_todos_preenchidos": media([all(v == "presente" for v in r.get("elementos_rf20", {}).values())
+                                             and len(r.get("elementos_rf20", {})) == 6 for r in f2]),
+            "rf20_por_elemento": {e: media([r.get("elementos_rf20", {}).get(e) == "presente" for r in f2])
+                                  for e in ("alternativas", "riscos", "base_legal", "precedentes", "confianca",
+                                            "aviso")},
+            "com_precedentes": media([bool(r.get("precedentes")) for r in f2]),
+            "base_legal_media": media([r.get("base_legal") for r in f2]),
             "latencia_ms": {"p50": percentil([r["ms"] for r in ok], 50), "p95": percentil([r["ms"] for r in ok], 95)},
             "tokens_medios": {"entrada": media([r["tokens_entrada"] for r in ok]),
                               "saida": media([r["tokens_saida"] for r in ok])},
@@ -144,13 +175,14 @@ def resumo(rotulo):
 def main():
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     p.add_argument("--modelo", default=settings.llm_modelo_padrao)
-    p.add_argument("--rotulo", default="fase7")
+    p.add_argument("--rotulo", default="fase8")
     p.add_argument("--max-minutos", type=float, default=None)
     p.add_argument("--resumo", action="store_true")
+    p.add_argument("--sem-precedentes", action="store_true")
     a = p.parse_args()
     if a.resumo:
         return resumo(a.rotulo)
-    return avaliar(a.modelo, a.rotulo, a.max_minutos * 60 if a.max_minutos else None)
+    return avaliar(a.modelo, a.rotulo, a.max_minutos * 60 if a.max_minutos else None, not a.sem_precedentes)
 
 
 if __name__ == "__main__":

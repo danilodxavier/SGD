@@ -1,0 +1,601 @@
+{
+  "sintetico": {
+    "f1_macro_8_classes": 1.0,
+    "por_classe": {
+      "continuacao": {
+        "precisao": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "suporte": 17
+      },
+      "aditivo": {
+        "precisao": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "suporte": 16
+      },
+      "alteracao": {
+        "precisao": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "suporte": 18
+      },
+      "revogacao": {
+        "precisao": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "suporte": 7
+      },
+      "substituicao": {
+        "precisao": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "suporte": 8
+      },
+      "ruptura": {
+        "precisao": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "suporte": 12
+      },
+      "contradicao": {
+        "precisao": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "suporte": 10
+      },
+      "retomada": {
+        "precisao": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "suporte": 7
+      },
+      "regulamenta": {
+        "precisao": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "suporte": 2
+      },
+      "fundamenta": {
+        "precisao": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "suporte": 6
+      }
+    },
+    "pares_ouro": 103,
+    "pares_previstos": 103,
+    "matriz_confusao": {
+      "continuacao": {
+        "continuacao": 17,
+        "aditivo": 0,
+        "alteracao": 0,
+        "revogacao": 0,
+        "substituicao": 0,
+        "ruptura": 0,
+        "contradicao": 0,
+        "retomada": 0,
+        "regulamenta": 0,
+        "fundamenta": 0,
+        "nenhuma": 0
+      },
+      "aditivo": {
+        "continuacao": 0,
+        "aditivo": 16,
+        "alteracao": 0,
+        "revogacao": 0,
+        "substituicao": 0,
+        "ruptura": 0,
+        "contradicao": 0,
+        "retomada": 0,
+        "regulamenta": 0,
+        "fundamenta": 0,
+        "nenhuma": 0
+      },
+      "alteracao": {
+        "continuacao": 0,
+        "aditivo": 0,
+        "alteracao": 18,
+        "revogacao": 0,
+        "substituicao": 0,
+        "ruptura": 0,
+        "contradicao": 0,
+        "retomada": 0,
+        "regulamenta": 0,
+        "fundamenta": 0,
+        "nenhuma": 0
+      },
+      "revogacao": {
+        "continuacao": 0,
+        "aditivo": 0,
+        "alteracao": 0,
+        "revogacao": 7,
+        "substituicao": 0,
+        "ruptura": 0,
+        "contradicao": 0,
+        "retomada": 0,
+        "regulamenta": 0,
+        "fundamenta": 0,
+        "nenhuma": 0
+      },
+      "substituicao": {
+        "continuacao": 0,
+        "aditivo": 0,
+        "alteracao": 0,
+        "revogacao": 0,
+        "substituicao": 8,
+        "ruptura": 0,
+        "contradicao": 0,
+        "retomada": 0,
+        "regulamenta": 0,
+        "fundamenta": 0,
+        "nenhuma": 0
+      },
+      "ruptura": {
+        "continuacao": 0,
+        "aditivo": 0,
+        "alteracao": 0,
+        "revogacao": 0,
+        "substituicao": 0,
+        "ruptura": 12,
+        "contradicao": 0,
+        "retomada": 0,
+        "regulamenta": 0,
+        "fundamenta": 0,
+        "nenhuma": 0
+      },
+      "contradicao": {
+        "continuacao": 0,
+        "aditivo": 0,
+        "alteracao": 0,
+        "revogacao": 0,
+        "substituicao": 0,
+        "ruptura": 0,
+        "contradicao": 10,
+        "retomada": 0,
+        "regulamenta": 0,
+        "fundamenta": 0,
+        "nenhuma": 0
+      },
+      "retomada": {
+        "continuacao": 0,
+        "aditivo": 0,
+        "alteracao": 0,
+        "revogacao": 0,
+        "substituicao": 0,
+        "ruptura": 0,
+        "contradicao": 0,
+        "retomada": 7,
+        "regulamenta": 0,
+        "fundamenta": 0,
+        "nenhuma": 0
+      },
+      "regulamenta": {
+        "continuacao": 0,
+        "aditivo": 0,
+        "alteracao": 0,
+        "revogacao": 0,
+        "substituicao": 0,
+        "ruptura": 0,
+        "contradicao": 0,
+        "retomada": 0,
+        "regulamenta": 2,
+        "fundamenta": 0,
+        "nenhuma": 0
+      },
+      "fundamenta": {
+        "continuacao": 0,
+        "aditivo": 0,
+        "alteracao": 0,
+        "revogacao": 0,
+        "substituicao": 0,
+        "ruptura": 0,
+        "contradicao": 0,
+        "retomada": 0,
+        "regulamenta": 0,
+        "fundamenta": 6,
+        "nenhuma": 0
+      },
+      "nenhuma": {
+        "continuacao": 0,
+        "aditivo": 0,
+        "alteracao": 0,
+        "revogacao": 0,
+        "substituicao": 0,
+        "ruptura": 0,
+        "contradicao": 0,
+        "retomada": 0,
+        "regulamenta": 0,
+        "fundamenta": 0,
+        "nenhuma": 0
+      }
+    },
+    "erros": []
+  },
+  "agrupamento": {
+    "pureza": 0.9658,
+    "pureza_inversa": 0.9829,
+    "grupos_com_sinteticos": 26,
+    "processos_ouro": 27
+  },
+  "publico": {
+    "relacoes_oficiais_conhecidas": 10,
+    "recuperadas": 10,
+    "verificacao": [
+      {
+        "origem": "lei8666_1993.htm",
+        "destino": "lei14133_2021.htm",
+        "esperado": "revogacao",
+        "previsto": "revogacao"
+      },
+      {
+        "origem": "lei10520_2002.htm",
+        "destino": "lei14133_2021.htm",
+        "esperado": "revogacao",
+        "previsto": "revogacao"
+      },
+      {
+        "origem": "d7892_2013.htm",
+        "destino": "d11462_2023.htm",
+        "esperado": "revogacao",
+        "previsto": "revogacao"
+      },
+      {
+        "origem": "d8420_2015.htm",
+        "destino": "d11129_2022.htm",
+        "esperado": "revogacao",
+        "previsto": "revogacao"
+      },
+      {
+        "origem": "d2271_1997.htm",
+        "destino": "d9507_2018.htm",
+        "esperado": "revogacao",
+        "previsto": "revogacao"
+      },
+      {
+        "origem": "d11317_2022.htm",
+        "destino": "d11871_2023.htm",
+        "esperado": "revogacao",
+        "previsto": "revogacao"
+      },
+      {
+        "origem": "d11871_2023.htm",
+        "destino": "d12343_2024.htm",
+        "esperado": "revogacao",
+        "previsto": "revogacao"
+      },
+      {
+        "origem": "d6170_2007.htm",
+        "destino": "d11531_2023.htm",
+        "esperado": "revogacao",
+        "previsto": "revogacao"
+      },
+      {
+        "origem": "lei8429_1992.htm",
+        "destino": "lei14230_2021.htm",
+        "esperado": "alteracao",
+        "previsto": "alteracao"
+      },
+      {
+        "origem": "del4657_1942.htm",
+        "destino": "lei13655_2018.htm",
+        "esperado": "alteracao",
+        "previsto": "alteracao"
+      }
+    ],
+    "relacoes_fortes_previstas": [
+      {
+        "origem": "lei14133_2021.htm",
+        "destino": "d10426_2020.htm",
+        "tipo": "substituicao",
+        "parcial": true,
+        "justificativa": "marcador 'substituicao' antes da referência (revogação parcial)",
+        "evidencia": "§ 4º O limite estabelecido no inciso I do § 3º poderá ser anualmente revisto pela Secretaria de Gestão da Secretaria Especial de Desburocratização, Gestão e Gov"
+      },
+      {
+        "origem": "d6170_2007.htm",
+        "destino": "d10426_2020.htm",
+        "tipo": "alteracao",
+        "parcial": false,
+        "justificativa": "'passa a vigorar' após a referência",
+        "evidencia": "Art. 31. [REVOGADO] O Decreto nº 6.170, de 2007, passa a vigorar com as seguintes alterações: (Revogado pelo Decreto nº 11.531, de 2023) Vigência / “Art. 1º Este "
+      },
+      {
+        "origem": "d10426_2020.htm",
+        "destino": "d11531_2023.htm",
+        "tipo": "revogacao",
+        "parcial": true,
+        "justificativa": "nota de compilação 'revogacao' no ato afetado (revogação parcial)",
+        "evidencia": "Art. 31. [REVOGADO] O Decreto nº 6.170, de 2007, passa a vigorar com as seguintes alterações: (Revogado pelo Decreto nº 11.531, de 2023) Vigência / “Art. 1º Este "
+      },
+      {
+        "origem": "lei14133_2021.htm",
+        "destino": "d10947_2022.htm",
+        "tipo": "regulamenta",
+        "parcial": true,
+        "justificativa": "marcador 'regulamenta' antes da referência (revogação parcial)",
+        "evidencia": "Presidência da República / Secretaria-Geral / Subchefia para Assuntos Jurídicos / DECRETO Nº 10.947, DE 25 DE JANEIRO DE 2022 / Regulamenta o inciso VII do caput do art"
+      },
+      {
+        "origem": "lei12846_2013.htm",
+        "destino": "d11129_2022.htm",
+        "tipo": "regulamenta",
+        "parcial": false,
+        "justificativa": "marcador 'regulamenta' antes da referência",
+        "evidencia": "Presidência da República / Secretaria-Geral / Subchefia para Assuntos Jurídicos / DECRETO Nº 11.129, DE 11 DE JULHO DE 2022 / Vigência / Regulamenta a Lei nº 12.846, de 1"
+      },
+      {
+        "origem": "d8420_2015.htm",
+        "destino": "d11129_2022.htm",
+        "tipo": "revogacao",
+        "parcial": false,
+        "justificativa": "marcador 'revogacao' antes da referência",
+        "evidencia": "Art. 70. Fica revogado o Decreto nº 8.420, de 18 de março de 2015. / "
+      },
+      {
+        "origem": "lei14133_2021.htm",
+        "destino": "d11246_2022.htm",
+        "tipo": "regulamenta",
+        "parcial": true,
+        "justificativa": "marcador 'regulamenta' antes da referência (revogação parcial)",
+        "evidencia": "Presidência da República / Secretaria-Geral / Subchefia para Assuntos Jurídicos / DECRETO Nº 11.246, DE 27 DE OUTUBRO DE 2022 / Vigência / Regulamenta o disposto no § 3º "
+      },
+      {
+        "origem": "d11317_2022.htm",
+        "destino": "d11871_2023.htm",
+        "tipo": "revogacao",
+        "parcial": false,
+        "justificativa": "nota de compilação 'revogacao' no ato afetado",
+        "evidencia": "Presidência da República / Secretaria-Geral / Subchefia para Assuntos Jurídicos / DECRETO Nº 11.317, DE 29 DE DEZEMBRO DE 2022 / Vigência / (Revogado pelo Decreto nº 11.8"
+      },
+      {
+        "origem": "lei14133_2021.htm",
+        "destino": "d11430_2023.htm",
+        "tipo": "regulamenta",
+        "parcial": false,
+        "justificativa": "marcador 'regulamenta' antes da referência",
+        "evidencia": "Presidência da República / Casa Civil / Secretaria Especial para Assuntos Jurídicos / DECRETO Nº 11.430, DE 8 DE MARÇO DE 2023 / Vigência / Regulamenta a Lei nº 14.133, d"
+      },
+      {
+        "origem": "lei14133_2021.htm",
+        "destino": "d11462_2023.htm",
+        "tipo": "regulamenta",
+        "parcial": true,
+        "justificativa": "marcador 'regulamenta' antes da referência (revogação parcial)",
+        "evidencia": "Presidência da República / Casa Civil / Secretaria Especial para Assuntos Jurídicos / DECRETO Nº 11.462, DE 31 DE MARÇO DE 2023 / Vigência / Regulamenta os art. 82 a art."
+      },
+      {
+        "origem": "d7892_2013.htm",
+        "destino": "d11462_2023.htm",
+        "tipo": "revogacao",
+        "parcial": false,
+        "justificativa": "nota de compilação 'revogacao' no ato afetado",
+        "evidencia": "Presidência da República / Casa Civil / Subchefia para Assuntos Jurídicos / DECRETO Nº 7.892, DE 23 DE JANEIRO DE 2013 / Vigência / (Revogado pelo Decreto nº 11.462, de 2"
+      },
+      {
+        "origem": "d6170_2007.htm",
+        "destino": "d11531_2023.htm",
+        "tipo": "revogacao",
+        "parcial": false,
+        "justificativa": "nota de compilação 'revogacao' no ato afetado",
+        "evidencia": "Presidência da República / Casa Civil / Subchefia para Assuntos Jurídicos / DECRETO Nº 6.170, DE 25 DE JULHO DE 2007. / Vigência / (Vide Portaria Interministerial nº 507,"
+      },
+      {
+        "origem": "d11871_2023.htm",
+        "destino": "d12343_2024.htm",
+        "tipo": "revogacao",
+        "parcial": false,
+        "justificativa": "nota de compilação 'revogacao' no ato afetado",
+        "evidencia": "Presidência da República / Casa Civil / Secretaria Especial para Assuntos Jurídicos / DECRETO Nº 11.871, DE 29 DE DEZEMBRO DE 2023 / Vigência / (Revogado pelo Decreto nº "
+      },
+      {
+        "origem": "lei14133_2021.htm",
+        "destino": "d11878_2024.htm",
+        "tipo": "regulamenta",
+        "parcial": true,
+        "justificativa": "marcador 'regulamenta' antes da referência (revogação parcial)",
+        "evidencia": "Presidência da República / Casa Civil / Secretaria Especial para Assuntos Jurídicos / DECRETO Nº 11.878, DE 9 DE JANEIRO DE 2024 / Regulamenta o art. 79 da Lei nº 14.13"
+      },
+      {
+        "origem": "lei14133_2021.htm",
+        "destino": "d11890_2024.htm",
+        "tipo": "regulamenta",
+        "parcial": true,
+        "justificativa": "marcador 'regulamenta' antes da referência (revogação parcial)",
+        "evidencia": "Presidência da República / Casa Civil / Secretaria Especial para Assuntos Jurídicos / DECRETO Nº 11.890, DE 22 DE JANEIRO DE 2024 / Regulamenta o art. 26 da Lei nº 14.1"
+      },
+      {
+        "origem": "d2271_1997.htm",
+        "destino": "d9507_2018.htm",
+        "tipo": "revogacao",
+        "parcial": false,
+        "justificativa": "nota de compilação 'revogacao' no ato afetado",
+        "evidencia": "Presidência da República / Subchefia para Assuntos Jurídicos / DECRETO No 2.271, DE 7 DE JULHO DE 1997. / (Revogado pelo Decreto nº 9.507, de 2018 (Vigência)) / Texto p"
+      },
+      {
+        "origem": "d93872_1986.htm",
+        "destino": "d6170_2007.htm",
+        "tipo": "revogacao",
+        "parcial": true,
+        "justificativa": "marcador 'revogacao' antes da referência (revogação parcial)",
+        "evidencia": "Art. 20. [REVOGADO] Ficam revogados os arts. 48 a 57 do Decreto nº 93.872, de 23 de dezembro de 1986, e o Decreto nº 97.916, de 6 de julho de 1989. (Vigência) / ["
+      },
+      {
+        "origem": "lei12527_2011.htm",
+        "destino": "d7724_2012.htm",
+        "tipo": "regulamenta",
+        "parcial": false,
+        "justificativa": "marcador 'regulamenta' antes da referência",
+        "evidencia": "Presidência da República / Casa Civil / Subchefia para Assuntos Jurídicos / DECRETO Nº 7.724, DE 16 DE MAIO DE 2012 / Vigência / Regulamenta a Lei nº 12.527, de 18 de nov"
+      },
+      {
+        "origem": "lei8666_1993.htm",
+        "destino": "d7892_2013.htm",
+        "tipo": "regulamenta",
+        "parcial": true,
+        "justificativa": "marcador 'regulamenta' antes da referência (revogação parcial)",
+        "evidencia": "Presidência da República / Casa Civil / Subchefia para Assuntos Jurídicos / DECRETO Nº 7.892, DE 23 DE JANEIRO DE 2013 / Vigência / (Revogado pelo Decreto nº 11.462, de 2"
+      },
+      {
+        "origem": "lei12846_2013.htm",
+        "destino": "d8420_2015.htm",
+        "tipo": "regulamenta",
+        "parcial": false,
+        "justificativa": "marcador 'regulamenta' antes da referência",
+        "evidencia": "Presidência da República / Secretaria-Geral / Subchefia para Assuntos Jurídicos / DECRETO Nº 8.420, DE 18 DE MARÇO DE 2015 / (Revogado pelo Decreto nº 11.129, de 2022) "
+      },
+      {
+        "origem": "del4657_1942.htm",
+        "destino": "lei13655_2018.htm",
+        "tipo": "alteracao",
+        "parcial": true,
+        "justificativa": "nota de compilação 'alteracao' no ato afetado (revogação parcial)",
+        "evidencia": "Art. 20. Nas esferas administrativa, controladora e judicial, não se decidirá com base em valores jurídicos abstratos sem que sejam consideradas as consequência"
+      },
+      {
+        "origem": "lei10520_2002.htm",
+        "destino": "lei14133_2021.htm",
+        "tipo": "revogacao",
+        "parcial": false,
+        "justificativa": "nota de compilação 'revogacao' no ato afetado",
+        "evidencia": "Presidência da República / Casa Civil / Subchefia para Assuntos Jurídicos / LEI No 10.520, DE 17 DE JULHO DE 2002. / Mensagem de veto / Conversão da MPv nº 2.182-18, de 2"
+      },
+      {
+        "origem": "lei8666_1993.htm",
+        "destino": "lei11079_2004.htm",
+        "tipo": "alteracao",
+        "parcial": true,
+        "justificativa": "'passa a vigorar' após a referência (revogação parcial)",
+        "evidencia": "Art. 26. O inciso I do § 1º do art. 56 da Lei nº 8.666, de 21 de junho de 1993, passa a vigorar com a seguinte redação: / \"Art. 56 ..............................."
+      },
+      {
+        "origem": "lei11079_2004.htm",
+        "destino": "lei14133_2021.htm",
+        "tipo": "alteracao",
+        "parcial": true,
+        "justificativa": "nota de compilação 'alteracao' no ato afetado (revogação parcial)",
+        "evidencia": "Art. 10. A contratação de parceria público-privada será precedida de licitação na modalidade concorrência ou diálogo competitivo, estando a abertura do processo"
+      },
+      {
+        "origem": "lei8666_1993.htm",
+        "destino": "lei11445_2007.htm",
+        "tipo": "alteracao",
+        "parcial": false,
+        "justificativa": "marcador 'alteracao' antes da referência",
+        "evidencia": "Presidência da República / Casa Civil / Subchefia para Assuntos Jurídicos / LEI Nº 11.445, DE 5 DE JANEIRO DE 2007. / Texto compilado / Mensagem de Veto / Regulamento / Estab"
+      },
+      {
+        "origem": "lei8987_1995.htm",
+        "destino": "lei11445_2007.htm",
+        "tipo": "alteracao",
+        "parcial": false,
+        "justificativa": "marcador 'alteracao' antes da referência",
+        "evidencia": "Presidência da República / Casa Civil / Subchefia para Assuntos Jurídicos / LEI Nº 11.445, DE 5 DE JANEIRO DE 2007. / Texto compilado / Mensagem de Veto / Regulamento / Estab"
+      },
+      {
+        "origem": "lei9605_1998.htm",
+        "destino": "lei12305_2010.htm",
+        "tipo": "alteracao",
+        "parcial": false,
+        "justificativa": "marcador 'alteracao' antes da referência",
+        "evidencia": "Presidência da República / Casa Civil / Subchefia para Assuntos Jurídicos / LEI Nº 12.305, DE 2 DE AGOSTO DE 2010. / Regulamento / Regulamento / Institui a Política Naciona"
+      },
+      {
+        "origem": "lei12462_2011.htm",
+        "destino": "lei14133_2021.htm",
+        "tipo": "revogacao",
+        "parcial": true,
+        "justificativa": "nota de compilação 'revogacao' no ato afetado (revogação parcial)",
+        "evidencia": "Art. 1º [REVOGADO] É instituído o Regime Diferenciado de Contratações Públicas (RDC), aplicável exclusivamente às licitações e contratos necessários à realizaçã"
+      },
+      {
+        "origem": "lei8112_1990.htm",
+        "destino": "lei12527_2011.htm",
+        "tipo": "alteracao",
+        "parcial": false,
+        "justificativa": "marcador 'alteracao' antes da referência",
+        "evidencia": "Presidência da República / Casa Civil / Subchefia para Assuntos Jurídicos / LEI Nº 12.527, DE 18 DE NOVEMBRO DE 2011. / Mensagem de veto / Vigência / Regulamento / Regula o a"
+      },
+      {
+        "origem": "lei12527_2011.htm",
+        "destino": "lei14129_2021.htm",
+        "tipo": "alteracao",
+        "parcial": true,
+        "justificativa": "nota de compilação 'alteracao' no ato afetado (revogação parcial)",
+        "evidencia": "Art. 12. O serviço de busca e de fornecimento de informação é gratuito. (Redação dada pela Lei nº 14.129, de 2021) (Vigência) / § 1º O órgão ou a entidade poderá "
+      },
+      {
+        "origem": "lei6938_1981.htm",
+        "destino": "lei12651_2012.htm",
+        "tipo": "alteracao",
+        "parcial": true,
+        "justificativa": "'passa a vigorar' após a referência (revogação parcial)",
+        "evidencia": "Art. 78. O art. 9º-A da Lei nº 6.938, de 31 de agosto de 1981, passa a vigorar com a seguinte redação: / “Art. 9º-A. O proprietário ou possuidor de imóvel, pessoa"
+      },
+      {
+        "origem": "lei8429_1992.htm",
+        "destino": "lei13019_2014.htm",
+        "tipo": "alteracao",
+        "parcial": true,
+        "justificativa": "'passa a vigorar' após a referência (revogação parcial)",
+        "evidencia": "Art. 77. O art. 10 da Lei nº 8.429, de 2 de junho de 1992, passa a vigorar com as seguintes alterações: (Vigência) (Vigência) (Vigência) (Vigência) (Vigência) / “"
+      },
+      {
+        "origem": "lei13460_2017.htm",
+        "destino": "lei14129_2021.htm",
+        "tipo": "alteracao",
+        "parcial": true,
+        "justificativa": "nota de compilação 'alteracao' no ato afetado (revogação parcial)",
+        "evidencia": "Art. 7º Os órgãos e entidades abrangidos por esta Lei divulgarão Carta de Serviços ao Usuário. / § 1º A Carta de Serviços ao Usuário tem por objetivo informar o u"
+      },
+      {
+        "origem": "lei13979_2020.htm",
+        "destino": "lei14065_2020.htm",
+        "tipo": "alteracao",
+        "parcial": true,
+        "justificativa": "nota de compilação 'alteracao' no ato afetado (revogação parcial)",
+        "evidencia": "Art. 4º É dispensável a licitação para aquisição ou contratação de bens, serviços, inclusive de engenharia, e insumos destinados ao enfrentamento da emergência "
+      },
+      {
+        "origem": "lei14133_2021.htm",
+        "destino": "lei14770_2023.htm",
+        "tipo": "alteracao",
+        "parcial": true,
+        "justificativa": "nota de compilação 'alteracao' no ato afetado (revogação parcial)",
+        "evidencia": "Art. 86. O órgão ou entidade gerenciadora deverá, na fase preparatória do processo licitatório, para fins de registro de preços, realizar procedimento público d"
+      },
+      {
+        "origem": "lei8987_1995.htm",
+        "destino": "lei14133_2021.htm",
+        "tipo": "alteracao",
+        "parcial": true,
+        "justificativa": "'passa a vigorar' após a referência (revogação parcial)",
+        "evidencia": "Art. 179. Os incisos II e III do caput do art. 2º da Lei nº 8.987, de 13 de fevereiro de 1995, passam a vigorar com a seguinte redação: / “Art. 2º ..............."
+      },
+      {
+        "origem": "lei8666_1993.htm",
+        "destino": "lei14133_2021.htm",
+        "tipo": "revogacao",
+        "parcial": false,
+        "justificativa": "nota de compilação 'revogacao' no ato afetado",
+        "evidencia": "Presidência da República / Casa Civil / Subchefia para Assuntos Jurídicos / LEI Nº 8.666, DE 21 DE JUNHO DE 1993 / Mensagem de veto / (Vide Decreto nº 99.658, de 1990) / (V"
+      },
+      {
+        "origem": "lei8429_1992.htm",
+        "destino": "lei14230_2021.htm",
+        "tipo": "alteracao",
+        "parcial": false,
+        "justificativa": "marcador 'alteracao' antes da referência",
+        "evidencia": "Presidência da República / Secretaria-Geral / Subchefia para Assuntos Jurídicos / LEI Nº 14.230, DE 25 DE OUTUBRO DE 2021 / Altera a Lei nº 8.429, de 2 de junho de 1992"
+      },
+      {
+        "origem": "lei6938_1981.htm",
+        "destino": "lcp140_2011.htm",
+        "tipo": "alteracao",
+        "parcial": true,
+        "justificativa": "nota de compilação 'alteracao' no ato afetado (revogação parcial)",
+        "evidencia": "Art. 10. A construção, instalação, ampliação e funcionamento de estabelecimentos e atividades utilizadores de recursos ambientais, efetiva ou potencialmente pol"
+      }
+    ]
+  }
+}

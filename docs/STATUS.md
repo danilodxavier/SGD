@@ -4,11 +4,11 @@
 
 | Campo | Valor |
 |---|---|
-| Atualizado em | 2026-11-16 |
-| Fase atual | **Fase 7 — Sistema multiagentes** |
+| Atualizado em | 2026-11-17 |
+| Fase atual | **Fase 8 — Apoio à decisão (F2) e memória de decisões** |
 | Situação da fase | Entregáveis concluídos — **aguardando aprovação do responsável** |
-| Última tarefa concluída | Roteador, verificador de fontes, especialistas, relator, orquestrador LangGraph, anonimização LGPD, auditoria, API `POST /api/sadgd/perguntar`; v2.2 (F1) e F2 avaliadas (`docs/fases/FASE_07.md`) |
-| Próxima tarefa exata | Após "Aprovado, siga para a Fase 8": (1) SAD-080 memória de decisões — registrar decisões da gestão e resultados (tabela `decisoes`) e recuperá-las como precedentes no contexto da F2; (2) SAD-081 recomendação F2 com alternativas, riscos, confiança e base legal vigente; (3) API de registro de decisões; (4) avaliar com as 21 perguntas F2 em ciclos de 4 min em primeiro plano |
+| Última tarefa concluída | Memória de decisões (30 decisões + 50 perguntas de precedente; R@3 1,00 no teste), recomendação F2 com os 6 elementos de RF-20 (100% presentes ou declarados), relator v2, API de decisões, correção do agrupamento do grafo (pureza 0,966) (`docs/fases/FASE_08.md`) |
+| Próxima tarefa exata | Após "Aprovado, siga para a Fase 9": MVP — (1) SAD-090 chat com fontes clicáveis, pareceres por agente, precedentes e elementos RF-20; (2) upload de documentos com indexação (RF-22); (3) linha do tempo visual (RF-13); (4) perfil Gestor (RF-23) para registrar decisões; (5) testes E2E. Reaproveitar o frontend da v1 em `frontend\` |
 | Bloqueios | Kanban (SAD-003) depende do `gh`. RAM livre da máquina baixa (1–2 GB): indexações com `--max-minutos 7.5`; avaliações F2 só em primeiro plano com `--max-minutos 4` |
 
 ## Histórico de fases
@@ -22,7 +22,8 @@
 | 4 — Ingestão e base de conhecimento | ✅ Aprovada em 2026-11-16 | `docs/fases/FASE_04.md` |
 | 5 — RAG, golden set e baseline | ✅ Aprovada em 2026-11-16 | `docs/fases/FASE_05.md` |
 | 6 — Linha do tempo e relações | ✅ Aprovada em 2026-11-16 | `docs/fases/FASE_06.md` |
-| 7 — Sistema multiagentes | Aguardando aprovação | `docs/fases/FASE_07.md` |
+| 7 — Sistema multiagentes | ✅ Aprovada em 2026-11-16 | `docs/fases/FASE_07.md` |
+| 8 — Apoio à decisão (F2) | Aguardando aprovação | `docs/fases/FASE_08.md` |
 
 ## Fatos-chave para retomada
 
@@ -37,3 +38,4 @@
 - Embeddings em **float32** (fp16 é 5× mais lento nesta GPU); `HF_DEACTIVATE_ASYNC_LOAD=1` é obrigatório (crash nativo sem ele).
 - Multiagentes: `app/application/agentes/` (roteador, verificador, especialistas, orquestrador, politica_llm); API `POST /api/sadgd/perguntar`. Avaliações: `avaliar_roteador.py`, `avaliar_anonimizacao.py`, `avaliar_respostas.py --verificador --rotulo fase7`, `avaliar_f2.py [--resumo]` → `avaliacao\execucoes\fase7\`.
 - Qwen 2.5 3B (`qwen2.5:3b-instruct-q4_K_M`) instalado: exatidão 0,462 na validação; candidato a especialista rápido na Fase 10.
+- Memória de decisões: `scripts\sadgd\gerar_memoria_decisoes.py` → `importar_decisoes.py` (rodar após `construir_grafo.py`; idempotente). Avaliações: `avaliar_precedentes.py`, `avaliar_f2.py --rotulo fase8` (ciclos `--max-minutos 4` em primeiro plano). API: `/api/sadgd/decisoes`, `/api/sadgd/precedentes`.

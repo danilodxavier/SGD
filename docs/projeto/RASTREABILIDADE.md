@@ -22,8 +22,8 @@ Atualizada a cada fase. Componentes seguem a estrutura de ADR-013. "Teste/métri
 | RF-16 | `parecer_especialista.v1.json` | 8 especialistas | validade JSON 100% (`tests/test_agentes_specs.py` + contrato) | 7 |
 | RF-17 | ADR-003 | `verificador_fontes.v1` + checagem lexical | alucinação ≤ 5% | 7 |
 | RF-18 | `relator.v1.json` | relator | presença de consensos/divergências | 7 |
-| RF-19 | MODELO_DE_DADOS (`DECISAO`) | memória de decisões | Recall@3 de precedentes ≥ 0,80 | 8 |
-| RF-20 | `relator.v1.md` | relator F2 | 6 elementos + aviso em 100% | 8 |
+| RF-19 | MODELO_DE_DADOS (`DECISAO`), migração 004 | `application/decisoes/memoria.py`, API `/api/sadgd/decisoes` | Recall@3 de precedentes ≥ 0,80 → **1,00** (teste) | 8 |
+| RF-20 | `relator.v2.md`, `relator.v2.json` | `application/decisoes/recomendacao.py` | 6 elementos + aviso em 100% → **100%** (presentes ou declarados) | 8 |
 | RF-21–23 | ADR-008, v1 auth | interface + API | E2E, 401/403 | 9 |
 | RF-24 | ADR-009, MODELO_DE_DADOS (`CONSULTA`, `AUDITORIA`) | API | teste de auditoria | 7–9 |
 | RF-25 | ADR-004 §2 | `application/anonimizador` | 100% CPF/e-mail; recall nomes ≥ 0,90 | 7 |

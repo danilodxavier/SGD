@@ -62,5 +62,9 @@
 | Degradação graciosa: nova tentativa com orçamento maior em saída cortada; falha de um agente não derruba o grafo | Especialistas e relator | `especialistas.py` (`_chat_json`) | 7 |
 | Privacy by design (LGPD): pseudonimização reversível antes de provedores remotos, política por origem do corpus, auditoria só com hash da pergunta | Segurança | `anonimizacao.py`, `politica_llm.py`, `auditoria.py` | 7 |
 | Dublês de teste (LLM falso por papel, orquestrador falso na API) para testar o grafo sem GPU | Testes | `tests/sadgd/test_orquestrador.py`, `test_api_perguntar.py` | 7 |
+| Raciocínio baseado em casos (CBR): memória de decisões com resultado avaliado como precedente | Apoio à decisão | `app/application/decisoes/memoria.py` | 8 |
+| Calibração de limiar com regra fixada antes de ver o teste (validação apenas) | Precedentes | `docs/fases/FASE_08.md` §3.1 | 8 |
+| Separação LLM × regras: o que é verificável (precedentes, base legal, hierarquia, vigência) sai do LLM e vira regra determinística | Recomendação F2 | `app/application/decisoes/recomendacao.py` | 8 |
+| Versionamento de prompt e schema (relator v1 para F1, v2 para F2) com teste de consistência do catálogo | Agentes | `prompts/relator.v2.md`, `tests/test_agentes_specs.py` | 8 |
 
 Planejadas: GitHub Flow, RAGAS com juiz calibrado (κ de Cohen).

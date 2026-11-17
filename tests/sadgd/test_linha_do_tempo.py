@@ -175,3 +175,17 @@ def test_revogacao_total_atualiza_vigencia_mas_parcial_nao():
                                         "47-A da Lei nº 12.462, de 4 de agosto de 2011.")])
     assert set(revogacoes_por_relacao(total)) == {30}
     assert revogacoes_por_relacao(parcial) == {}
+
+
+def test_contrato_que_cita_lei_e_fundamentacao_e_nao_une_processos():
+    # caso real da Fase 8: contratos citando a Lei 14.133 caíam no mesmo processo de todas as normas
+    lei = doc(1, "lei", "14.133/2021", "2021-04-01", "LEI Nº 14.133, DE 1º DE ABRIL DE 2021\nLicitações e contratos.")
+    ti = doc(2, "contrato", "031/2023", "2023-02-01", "CONTRATO Nº 031/2023\nRegido pela Lei nº 14.133, de 1º de "
+             "abril de 2021. Poderá ser rescindido conforme a Lei nº 14.133, de 1º de abril de 2021.")
+    limpeza = doc(3, "contrato", "012/2023", "2023-03-01", "CONTRATO Nº 012/2023\nAplica-se a Lei nº 14.133, de 1º "
+                  "de abril de 2021.")
+    relacoes = classificar_relacoes([lei, ti, limpeza])
+    r = rotulos(relacoes)
+    assert r[(1, 2)] == "fundamenta" and r[(1, 3)] == "fundamenta"  # nem ruptura, nem continuação
+    grupos = agrupar([lei, ti, limpeza], relacoes)
+    assert not any({2, 3} <= set(g.documentos) for g in grupos)

@@ -1,0 +1,293 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Recomendação F2 do relator (RF-20): seis elementos obrigatórios",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "resposta",
+    "recomendacao",
+    "classificacao",
+    "confianca",
+    "alternativas",
+    "riscos",
+    "base_legal",
+    "precedentes",
+    "lacunas",
+    "fontes",
+    "aviso"
+  ],
+  "properties": {
+    "resposta": {
+      "type": "string"
+    },
+    "classificacao": {
+      "enum": [
+        "fato",
+        "inferencia",
+        "conflito",
+        "ausencia"
+      ]
+    },
+    "confianca": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "consensos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "divergencias": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tema",
+          "posicoes"
+        ],
+        "properties": {
+          "tema": {
+            "type": "string"
+          },
+          "posicoes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "agente",
+                "posicao"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "agente": {
+                  "type": "string"
+                },
+                "posicao": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "alternativas": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "descricao",
+          "pros",
+          "contras"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "descricao": {
+            "type": "string"
+          },
+          "pros": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "contras": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "riscos": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "descricao",
+                "probabilidade",
+                "impacto"
+              ],
+              "properties": {
+                "descricao": {
+                  "type": "string"
+                },
+                "probabilidade": {
+                  "enum": [
+                    "baixa",
+                    "media",
+                    "alta"
+                  ]
+                },
+                "impacto": {
+                  "enum": [
+                    "baixo",
+                    "medio",
+                    "alto"
+                  ]
+                },
+                "mitigacao": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "riscos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "descricao",
+          "probabilidade",
+          "impacto"
+        ],
+        "properties": {
+          "descricao": {
+            "type": "string"
+          },
+          "probabilidade": {
+            "enum": [
+              "baixa",
+              "media",
+              "alta"
+            ]
+          },
+          "impacto": {
+            "enum": [
+              "baixo",
+              "medio",
+              "alto"
+            ]
+          },
+          "mitigacao": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "base_legal": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "norma",
+          "trecho",
+          "vigente",
+          "nivel"
+        ],
+        "properties": {
+          "norma": {
+            "type": "string"
+          },
+          "dispositivo": {
+            "type": "string"
+          },
+          "trecho": {
+            "type": "string",
+            "pattern": "^T[0-9]+$"
+          },
+          "vigente": {
+            "const": true
+          },
+          "nivel": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 6
+          }
+        }
+      }
+    },
+    "precedentes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "titulo",
+          "data",
+          "decisao",
+          "avaliacao_resultado",
+          "licao"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^P[0-9]+$"
+          },
+          "codigo": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "titulo": {
+            "type": "string"
+          },
+          "data": {
+            "type": "string"
+          },
+          "decisao": {
+            "type": "string"
+          },
+          "resultado": {
+            "type": "string"
+          },
+          "avaliacao_resultado": {
+            "enum": [
+              "positivo",
+              "negativo",
+              "neutro",
+              "pendente"
+            ]
+          },
+          "licao": {
+            "type": "string"
+          },
+          "pontuacao": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "lacunas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "fontes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^T[0-9]+$"
+      }
+    },
+    "aviso": {
+      "const": "O sistema sugere; a decisão cabe à gestão."
+    },
+    "recomendacao": {
+      "type": "string",
+      "minLength": 1
+    },
+    "normas_no_historico": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "alertas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

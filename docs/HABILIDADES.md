@@ -52,4 +52,7 @@
 | 2026-11-16 | Saída JSON cortada por `max_tokens` é a principal falha dos especialistas locais; pedir concisão com limites por lista e repetir com orçamento maior resolve sem schema estrito | Fase 7 |
 | 2026-11-16 | Em GPU de 6 GB, o paralelismo do `Send` do LangGraph não reduz latência: o Ollama serializa as gerações; o custo da F2 cresce linearmente com o número de especialistas | Fase 7 |
 | 2026-11-16 | Signatários de atos oficiais (ministros, presidentes) são pessoas físicas: a anonimização os mascara para envio remoto, mas o texto local permanece íntegro (atos públicos) | Fase 7 |
+| 2026-11-17 | Precedente administrativo informa, não vincula: decisão anterior com resultado negativo é sinal de alerta, e decisão com resultado pendente ainda não ensina nada | Fase 8 |
+| 2026-11-17 | Contrato, aditivo e relatório não revogam nem alteram lei: quando citam uma norma, invocam sua base legal (relação de fundamentação) | Fase 8 — grafo |
+| 2026-11-17 | Reranker cross-encoder dá notas mal calibradas entre perguntas (verdadeiros com 0,001): limiar absoluto só com calibração e com custo explícito de falsos precedentes | Fase 8 |
 | 2026-11-16 | Atos oficiais não têm proteção autoral (Lei 9.610/1998, art. 8º, IV) — podem compor corpus público versionado | Fase 4 — corpus |

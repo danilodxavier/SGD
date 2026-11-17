@@ -91,6 +91,10 @@ def _marcador_antes(texto_norm, posicao):
 def _classificar(destino, origem, texto, ref):
     if destino.tipo == "aditivo" and origem.tipo == "contrato":
         return "aditivo", 0.95, "termo aditivo do contrato"
+    if origem.tipo in NORMATIVOS and destino.tipo not in NORMATIVOS:
+        # contrato/aditivo/relatório não revoga nem altera lei: citar a norma é invocar sua base legal
+        # (sem esta regra, "rescindido nos termos da Lei 14.133" virava ruptura e unia contratos às normas)
+        return "fundamenta", 0.8, "documento não normativo cita ato normativo"
     norm = _sem_acento(texto)
     if APOS_REFERENCIA.search(norm[ref.fim:]):
         return "alteracao", 0.9, "'passa a vigorar' após a referência"

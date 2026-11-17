@@ -56,12 +56,12 @@ VERSAO_INSTRUCAO = 2
 
 
 @cache
-def carregar_prompt(nome: str, versao: int = 1) -> str:
+def carregar_prompt(nome: str, versao: int = 1, versao_regras: int = 1) -> str:
     def corpo(arquivo):
         texto = (PROMPTS / arquivo).read_text(encoding="utf-8")
         return texto.split("---", 2)[2].strip() if texto.startswith("---") else texto.strip()
 
-    return corpo(f"_regras_comuns.v{versao}.md") + "\n\n" + corpo(f"{nome}.v{versao}.md")
+    return corpo(f"_regras_comuns.v{versao_regras}.md") + "\n\n" + corpo(f"{nome}.v{versao}.md")
 
 
 @cache
