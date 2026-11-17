@@ -49,6 +49,7 @@ Resultados por versão sobre o golden set (`avaliacao\golden_set\`, a partir da 
 | Precedentes R@3 | ≥ 0,80 | 1,00 | ✅ |
 | RF-20 (6 elementos) | 100% | 100% | ✅ |
 | Latência F1 / F2 / cache (p50) | — | 14,6 s / 329 s / 5 ms | ⚠️ F2 (hardware) |
+| Latência F2 p95 — Gemini, corpus acadêmico (Fase 11) | ≤ 120 s | **99,6 s** (p50 29,9 s) | ✅ (opcional, nuvem) |
 | Tokens F1 / F2 (entrada/saída) | medir | 2.457/107 · 18.872/2.538 | ✅ |
 | Custo | R$ 0 | R$ 0 | ✅ |
 
@@ -92,6 +93,19 @@ Alucinação numérica recalculada com normalização de datas e citações de a
 | F2 (21) | RF-20 presentes ou declarados | RF-20 com conteúdo | Schema pareceres bruto / reparado | Recall docs | Precedente pertinente (top-1, manual) | p50 / p95 |
 |---|---|---|---|---|---|---|
 | Fase 8 | **1,00** | 0,714 | 0,789 / 1,00 | 0,794 | 13/21 | 329 s / 387 s |
+
+### Fase 11 — F2 no Gemini, plano gratuito (`avaliacao/execucoes/fase11/f2_resumo.json`)
+
+Mesmas 21 perguntas F2; especialistas e relator em `gemini-3.5-flash-lite` (contexto 100% acadêmico e anonimizado, `AI_ALLOW_REMOTE=true`), roteador, recuperação, verificador e RF-20 inalterados; falha remota cai no Qwen 2.5 7B local.
+
+| Execução | Schema pareceres bruto / reparado | Schema relator | RF-20 presentes / com conteúdo | Recall docs | Precisão docs | Base legal (média) | p50 / p95 | Tokens (entr./saída) | Itens com falha remota |
+|---|---|---|---|---|---|---|---|---|---|
+| Fase 8 (Qwen local) | 0,789 / 1,00 | 1,00 | 1,00 / 0,714 | 0,794 | 0,444 | 1,81 | 329 s / 387 s | 18.872 / 2.538 | — |
+| v0 (4 itens, reserva sem repetição) | 0,778 / 1,00 | 0,50 | 1,00 / 0,75 | 0,708 | 0,558 | 2,50 | 98 s / 273 s | 16.679 / 2.293 | 3/4 |
+| v1 (21; `consensos` como objeto) | 0,692 / 1,00 | 0,333 | 1,00 / 0,714 | 0,841 | 0,573 | 1,71 | 91 s / 213 s | 18.083 / 2.693 | 15/21 (503) |
+| **v2 (21; reparo de `consensos`)** | 0,731 / 1,00 | **1,00** | **1,00** / 0,714 | **0,865** | 0,554 | 1,43 | **30 s / 100 s** | 17.978 / 2.759 | 5/21 (503/429) |
+
+Leitura: a F2 em nuvem **atinge a meta de p95 ≤ 120 s** (3,9× mais rápida no p95) com qualidade igual ou maior nos critérios estruturais e de recuperação. A queda do relator na v1 era de **forma**, não de conteúdo: o prompt citava `"consensos"` sem formato ao lado de `divergencias` em `{tema, posicoes}` e o Gemini repetia esse formato; correção = instrução explícita + reparo determinístico que preserva o conteúdo (teste de regressão em `test_orquestrador.py`). Ressalvas: a latência em nuvem varia com a demanda (503 "high demand") e a cota por minuto do plano gratuito (429); a menor média de base legal citada pelo modelo é coberta pelo complemento determinístico do RF-20. **Somente corpus acadêmico** — dados reais continuam no LLM local (ADR-002).
 
 ### Fase 9 — MVP (testes de aceitação)
 
@@ -139,3 +153,5 @@ Alucinação numérica recalculada com normalização de datas e citações de a
 | 2026-11-17 | fase10 (F2) | validação (6) | Especialistas 3B / orçamento 1.300 | 3B: 2,5× mais rápido, 7% pareceres com conteúdo (rejeitado); orçamento: −8% latência, recall pior (rejeitado) |
 | 2026-11-17 | fase10_cache | golden set | Limiar do cache semântico | maior par diferente 0,883 → limiar 0,93 |
 | 2026-11-17 | fase10_fidelidade | validação (calibração) + teste | LLM-juiz Llama 3.1 8B | κ 0,71; faithfulness 0,964 adjudicada; alucinação 5,4% |
+| 2026-11-17 | fase11 (F2 Gemini v1) | validação + teste (21) | Especialistas e relator no Gemini 3.5 Flash-Lite | schema relator 0,333 (`consensos` em objeto); p95 213 s |
+| 2026-11-17 | fase11 (F2 Gemini v2) | validação + teste (21) | + reparo/instrução de `consensos` | schema relator 1,00; recall docs 0,865; p50/p95 30 s / 100 s |

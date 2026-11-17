@@ -5,6 +5,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 ## [Não lançado] — Reestruturação SAD-GD
 
 ### Adicionado
+- Fase 11: provedor Gemini (plano gratuito) para a F2 do corpus acadêmico, com reserva local e nova tentativa no próprio provedor quando o JSON vem cortado; avaliação da F2 no Gemini (p95 100 s, meta ≤ 120 s atendida); relatório de atividades e ferramentas; vídeo de apresentação com narração local (`scripts/video/`).
 - Fase 10: cache semântico calibrado (identificadores + versão do acervo + cosseno ≥ 0,93) com auditoria; faithfulness com LLM-juiz de outra família, calibração por corrupções controladas, κ de Cohen, Rogan–Gladen e adjudicação; experimentos de latência da F2; scripts `avaliar_fidelidade.py`, `calibrar_cache.py`, `medir_cache.py`; orquestrador com LLM separado para o relator.
 - Fase 9 (MVP): telas Perguntar (F1/F2 com fontes, pareceres, precedentes e RF-20), Acervo (upload e indexação no servidor), Linha do tempo (fases e evidências), Decisões e Painel do SAD-GD; perfil Gestor; API do acervo (painel, documentos, arquivo com CSP sandbox, trecho, busca, upload, indexação); serviço de indexação em segundo plano; caso de uso `construir_grafo`; migração 005; testes E2E no Edge com Playwright; 11 novos testes.
 - Fase 8 (apoio à decisão): memória de decisões (domínio, migração 004 com FTS5, repositório, busca híbrida com rerank e limiar calibrado), memória sintética de 30 decisões e 50 perguntas de precedente, recomendação F2 com os 6 elementos de RF-20 (precedentes e base legal determinísticos, hierarquia e vigência), relator v2 (prompt e schema), API `/api/sadgd/decisoes` e `/api/sadgd/precedentes`, scripts `gerar_memoria_decisoes.py`, `importar_decisoes.py`, `avaliar_precedentes.py`; 17 novos testes.
@@ -25,6 +26,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 - Relatório de auditoria `docs/fases/FASE_00.md`.
 
 ### Alterado
+- Relator F2: `consensos` explicitamente como lista de frases e reparo de forma de `{tema, posicoes}` para frase (schema do relator no Gemini 0,333 → 1,00).
 - Produto renomeado para SAD-GD 2.0.0.dev0 na interface; painel, "Atualizar índice" e OCR passam a usar o indexador do SAD-GD; telas v1 (Perguntas, Documentos, Checklist, Relatórios) saem do menu; indexador com modo parcial; `.gitignore` restringe `corpus/` ao público/sintético.
 - Grafo: documento não normativo que cita ato normativo passa a `fundamenta` (pureza do agrupamento 0,932 → 0,966); instruções dos especialistas exigem `pros`/`contras` como listas.
 - Gabarito sintético revisado (99 → 103 relações) via `gerar_corpus_sintetico.py --somente-gabarito`; métrica de alucinação numérica normaliza datas por extenso e citações de atos.

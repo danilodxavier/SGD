@@ -7,6 +7,7 @@ Registro obrigatório (regra 6). Inclui desenvolvimento e produção. Custo em R
 | Modelo | Provedor | Versão / ID | Finalidade | Fase(s) | Custo | Justificativa |
 |---|---|---|---|---|---|---|
 | Claude Opus 5.5 | Anthropic (via Claude Code) | `claude-opus-5-5` | Agente de engenharia: auditoria, planejamento, arquitetura, código, testes e documentação | 0– | Assinatura do responsável (não é custo do sistema) | Ferramenta de desenvolvimento escolhida pelo responsável |
+| Microsoft Daniel (voz neural pt-BR) | Microsoft (nativo do Windows, OneCore/SAPI) | `MSTTS_V110_ptBR_DanielM` | Narração do vídeo de apresentação (Fase 11) | 11 | R$ 0 | Local, sem envio de dados; `scripts/video/gerar_video.py` |
 
 ## Produção / execução do sistema
 
@@ -20,6 +21,8 @@ Registro obrigatório (regra 6). Inclui desenvolvimento e produção. Custo em R
 | Llama 3.1 8B Instruct Q4_K_M | Ollama (registro oficial, `modelos\ollama`) | `llama3.1:8b-instruct-q4_K_M` | Concorrente no benchmark F1; **juiz de faithfulness** (outra família) | 5, 10 | R$ 0 | Exatidão 0,718 × 0,846 do Qwen; como juiz: κ 0,71, sensibilidade 0,82, especificidade 0,90 (validação), mas 18 falsos alarmes em 23 reprovações no teste | **Em uso como juiz de avaliação** (não na resposta ao usuário) |
 | BAAI/bge-m3 (MIT) | Local (`modelos\bge-m3`, safetensors convertido do repositório oficial) | snapshot 5617a9f6 | Embeddings densos 1024 dims, float32 na GPU | 4– | R$ 0 | ADR-005; 19 trechos/s na GTX 1660 SUPER | **Em uso**: 5.691 vetores |
 | Qwen 2.5 3B Instruct Q4_K_M | Ollama (registro oficial, `modelos\ollama`) | `qwen2.5:3b-instruct-q4_K_M` | Terceiro modelo do benchmark F1; candidato a roteador e a especialista rápido | 7 | R$ 0 | Download autorizado em 2026-11-16. Validação F1: exatidão **0,462** (× 0,846 do 7B), p50 6,8 s (× 14 s). Roteador por regras atingiu 0,92–0,94 sem LLM → 3B dispensado no roteamento | Avaliado; **rejeitado também como especialista** na Fase 10 (2,5× mais rápido, mas 13/14 pareceres sem conteúdo) |
+
+| Gemini 3.5 Flash-Lite | Google AI Studio (plano gratuito, API compatível com OpenAI) | `gemini-3.5-flash-lite` | Especialistas e relator da **F2 somente com corpus acadêmico anonimizado** (opcional: `SADGD_LLM_F2=gemini`, `AI_ALLOW_REMOTE=true`, chave no `.env`); reserva automática no Qwen local | 11 | R$ 0 (cota gratuita) | ADR-002/004/011; F2 p50/p95 30 s / 100 s × 329 s / 387 s local, schema relator 1,00, recall docs 0,865 (`docs/AVALIACAO.md`, Fase 11) | **Em uso opcional** (desligado por padrão) |
 
 ## Planejados (ADRs aceitos na Fase 2)
 

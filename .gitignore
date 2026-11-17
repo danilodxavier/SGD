@@ -33,3 +33,4 @@ data/observabilidade/
 !/corpus/sintetico/
 !/corpus/*.csv
 !/corpus/*.md
+data/video/

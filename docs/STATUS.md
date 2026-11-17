@@ -7,9 +7,9 @@
 | Atualizado em | 2026-11-17 |
 | Fase atual | **Fase 11 — Entrega acadêmica** |
 | Situação da fase | Em andamento |
-| Última tarefa concluída | Fase 10 aprovada; tabelas v1 removidas (migração 006); provedor Gemini para a F2 implementado e testado (`1b469c4`) |
-| Próxima tarefa exata | (1) Quando o responsável preencher `GEMINI_API_KEY` no `.env`: `python scripts/sadgd/avaliar_f2.py --rotulo fase11 --provedor-f2 gemini --max-minutos 4` (21 itens) e comparar com a Fase 8; (2) relatório técnico `docs/RELATORIO_TECNICO.md`; (3) manuais do usuário e técnico do SAD-GD; (4) README final; (5) roteiro de demonstração; (6) lições aprendidas |
-| Bloqueios | Avaliação da F2 no Gemini depende da chave no `.env` (o responsável preenche; nunca no chat). Kanban (SAD-003) depende do `gh` |
+| Última tarefa concluída | **Avaliação da F2 no Gemini** (21 itens): v2 com reparo de `consensos` → schema relator 1,00, recall docs 0,865, p50/p95 30 s / 100 s (meta ≤ 120 s ✅) × 329 s / 387 s local; v1 registrada (relator 0,333). Ver `docs/fases/FASE_11.md` §3 e `docs/AVALIACAO.md`. Antes: relatório de atividades e ferramentas; vídeo de apresentação |
+| Próxima tarefa exata | (1) relatório técnico `docs/RELATORIO_TECNICO.md`; (2) manuais do usuário e técnico; (3) README final; (4) roteiro de demonstração `docs/DEMONSTRACAO.md` (vídeo já gerado: `scripts/video/gerar_video.py`); (5) lições aprendidas; (6) pedir aprovação da Fase 11 |
+| Bloqueios | Nenhum para a Fase 11. Kanban (SAD-003) depende do `gh` |
 
 ## Histórico de fases
 

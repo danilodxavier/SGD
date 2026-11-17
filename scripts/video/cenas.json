@@ -1,0 +1,76 @@
+{
+  "titulo": "SAD-GD — Apoio à decisão e gestão documental para a SEMA-MT",
+  "voz": "Daniel",
+  "velocidade": 2,
+  "pronuncia": {
+    "SAD-GD": "Sad Gê Dê",
+    "SEMA-MT": "Sema, Mato Grosso",
+    "SEMA": "Sema",
+    "LGPD": "L G P D",
+    "MCP": "M C P",
+    "LangGraph": "Lang Gráfi",
+    "Qwen": "Quén",
+    "bge-m3": "B G E M 3",
+    "Markdown": "Márk dáun",
+    "skills": "isquíls",
+    "Claude Code": "Clód Côde"
+  },
+  "cenas": [
+    {
+      "id": "abertura",
+      "titulo": "SAD-GD",
+      "subtitulo": "Sistema de Apoio à Tomada de Decisão e Gestão Documental",
+      "itens": ["Secretaria de Estado de Meio Ambiente — SEMA-MT", "Curso de Engenharia de IA · Atividade avaliativa"],
+      "fala": "Olá, turma! Hoje eu vou apresentar o SAD-GD, o Sistema de Apoio à Tomada de Decisão e Gestão Documental, criado para a SEMA de Mato Grosso. Imagine ter, em segundos, a resposta exata sobre um contrato, uma lei ou um aditivo, com a fonte na mão. É isso que eu vou mostrar para vocês."
+    },
+    {
+      "id": "problema",
+      "titulo": "O problema",
+      "itens": ["Contratos, leis, decretos, INs, pareceres e processos espalhados", "Normas mudam, são revogadas e se contradizem", "Horas para achar a cláusula certa", "Risco de decidir com base em norma revogada"],
+      "fala": "Na gestão pública, toda decisão depende de documentos: contratos, leis, decretos, instruções normativas, pareceres e processos. Eles estão espalhados, mudam com o tempo e, às vezes, se contradizem. Procurar a cláusula certa pode levar horas. E uma norma revogada pode levar a uma decisão errada."
+    },
+    {
+      "id": "f1",
+      "titulo": "F1 — Resposta rápida e confiável",
+      "itens": ["Pergunta em linguagem natural", "Resposta com documento, página e trecho literal", "Verificador de fontes remove o que não tem prova", "Sem evidência: \"Não localizei essa informação\""],
+      "fala": "O SAD-GD lê toda a base documental e responde qualquer pergunta citando o documento, a página e o trecho literal. Um agente verificador confere cada frase contra a fonte. E, se a informação não existe, ele diz com honestidade: não localizei nos documentos. Aqui, nada é inventado."
+    },
+    {
+      "id": "f2",
+      "titulo": "F2 — Apoio à decisão com multiagentes",
+      "itens": ["Procurador do Estado · Advogado · Controlador-Geral", "Fiscal de Contrato · Gestor Público · Analista Administrativo", "Relator: consensos, divergências, alternativas e riscos", "Nível de confiança — o sistema sugere, a gestão decide"],
+      "fala": "Para as decisões complexas, entra em cena uma equipe de agentes de inteligência artificial: Procurador do Estado, Advogado, Controlador-Geral, Fiscal de Contrato, Gestor Público e Analista Administrativo. Cada um emite o seu parecer, e um relator consolida consensos, divergências, alternativas, riscos e o nível de confiança. Lembrem sempre: o sistema sugere; a gestão decide."
+    },
+    {
+      "id": "linha",
+      "titulo": "Linha do tempo e memória de decisões",
+      "itens": ["Aditivo, alteração, suspensão, retomada, revogação, contradição", "Hierarquia: Constituição > Lei > Decreto > IN > Orientação", "Norma revogada não fundamenta decisão atual", "Decisões anteriores viram precedentes"],
+      "fala": "O sistema também reconstrói a linha do tempo de cada processo: aditivos, suspensões, retomadas, revogações e contradições, respeitando a hierarquia das normas e a vigência. E ele guarda as decisões anteriores da gestão, para usar como precedentes nas próximas."
+    },
+    {
+      "id": "ferramentas",
+      "titulo": "Como construímos",
+      "itens": ["GitHub: versionamento, CI, testes e varredura de segredos", "Markdown: 13 ADRs, fases, manuais e continuidade", "Claude Code: agente de engenharia com skills, plugins e MCP", "LangGraph + Qwen, bge-m3 e Tesseract, 100% locais e gratuitos"],
+      "fala": "E como isso foi construído? Com engenharia de IA de verdade. GitHub com integração contínua, testes automáticos e varredura de segredos. Documentação completa em Markdown, com decisões de arquitetura registradas. Claude Code como agente de engenharia, usando skills, plugins e conectores MCP. E um sistema multiagentes com LangGraph, rodando modelos abertos e gratuitos, como Qwen, bge-m3 e Tesseract, direto na máquina local."
+    },
+    {
+      "id": "resultados",
+      "titulo": "Resultados comprovados",
+      "metricas": [["0,965", "Recall@5 da busca"], ["0,964", "Fidelidade às fontes"], ["0%", "Alucinação numérica"], ["1,00", "Acurácia do tipo documental"], ["311", "Testes automatizados"], ["R$ 0", "Custo por consulta"]],
+      "fala": "E os números comprovam. Recall de noventa e seis vírgula cinco por cento na busca. Fidelidade às fontes de noventa e seis vírgula quatro por cento. Zero alucinação numérica. Classificação de documentos com acurácia de cem por cento. Trezentos e onze testes automatizados. E o custo por consulta? Zero real."
+    },
+    {
+      "id": "valor",
+      "titulo": "O valor para a SEMA-MT",
+      "itens": ["Decisões mais rápidas, seguras e fundamentadas", "Dados protegidos: LGPD, perfis de acesso e auditoria", "Conhecimento institucional preservado", "Servidor com menos tempo procurando e mais tempo decidindo"],
+      "fala": "Para a SEMA, isso significa decisões mais rápidas, seguras e fundamentadas, com dados protegidos pela LGPD, acesso por perfil e trilha de auditoria. O conhecimento da instituição fica preservado. E, para o servidor, significa menos tempo procurando e mais tempo decidindo."
+    },
+    {
+      "id": "fechamento",
+      "titulo": "Pergunte. Confira a fonte. Decida.",
+      "subtitulo": "SAD-GD pronto para demonstração",
+      "itens": ["github.com/danilodxavier/SGD"],
+      "fala": "O SAD-GD está pronto para demonstração. Faça a sua pergunta, confira a fonte e decida com confiança. Muito obrigado, e até a próxima aula!"
+    }
+  ]
+}
