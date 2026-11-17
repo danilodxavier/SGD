@@ -66,62 +66,6 @@ function statusBadge(code, label) {
   return `<span class="badge ${STATUS_CLASS[code] ?? ""}">${esc(label || code)}</span>`;
 }
 
-/* ---------- abertura de documentos ---------- */
-function fileUrl(id, page) {
-  return `/api/documents/${id}/file${page ? `#page=${page}` : ""}`;
-}
-
-async function openInWindows(id) {
-  try {
-    await API.post(`/api/documents/${id}/open`);
-    toast("Documento aberto no programa padrão do Windows.");
-  } catch (e) { toast(e.message, true); }
-}
-
-/* ---------- downloads ---------- */
-const EXPORT_FORMATS = ["pdf", "docx", "xlsx", "csv", "json"];
-
-function exportButtons(baseUrl, formats = EXPORT_FORMATS) {
-  const sep = baseUrl.includes("?") ? "&" : "?";
-  return formats.map((f) =>
-    `<button class="btn small" type="button" data-download="${esc(`${baseUrl}${sep}format=${f}`)}">${f.toUpperCase()}</button>`).join("");
-}
-
-async function downloadFile(url, button) {
-  if (button) button.disabled = true;
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      const data = await response.json().catch(() => ({}));
-      throw new Error(data.detail || `Erro ${response.status}`);
-    }
-    const disposition = response.headers.get("Content-Disposition") || "";
-    const name = (disposition.match(/filename="?([^";]+)"?/) || [])[1] || "relatorio";
-    const blobUrl = URL.createObjectURL(await response.blob());
-    const a = document.createElement("a");
-    a.href = blobUrl;
-    a.download = name;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
-    toast(`Relatório gerado: ${name}`);
-    if (typeof refreshReportFiles === "function") refreshReportFiles();
-  } catch (e) {
-    toast(e.message, true);
-  } finally {
-    if (button) button.disabled = false;
-  }
-}
-
-document.addEventListener("click", (ev) => {
-  const btn = ev.target.closest("[data-download]");
-  if (btn) {
-    ev.preventDefault();
-    downloadFile(btn.dataset.download, btn);
-  }
-});
-
 /* ---------- navegação ---------- */
 const views = {};
 
@@ -352,56 +296,7 @@ $("#ocr-retry").addEventListener("click", async () => {
   } catch (e) { toast(e.message, true); }
 });
 
-/* ---------- IA (LLM local) ---------- */
-function fillModels(models, selected) {
-  const list = [...new Set([...(selected ? [selected] : []), ...models])];
-  $("#ai-model").innerHTML = `<option value="">—</option>` + list.map((m) =>
-    `<option value="${esc(m)}">${esc(m)}</option>`).join("");
-  $("#ai-model").value = selected || "";
-}
-
-function renderAi(st) {
-  $("#ai-provider").value = st.provider;
-  $("#ai-url").value = st.base_url;
-  fillModels(st.models || [], st.model);
-  const level = st.provider === "local" ? "ok" : (st.reachable && st.models.includes(st.model) ? "ok" : "warn");
-  const label = st.provider === "local" ? "LOCAL" : (level === "ok" ? "PRONTO" : "ATENÇÃO");
-  $("#ai-status").innerHTML = `<li><span class="badge ${level}">${label}</span>
-    <span class="check-name">${esc(st.providers[st.provider])}</span><span class="muted">${esc(st.message)}</span></li>`;
-}
-
-async function loadAi() {
-  try { renderAi(await API.get("/api/ai")); } catch (e) { toast(e.message, true); }
-}
-
-$("#ai-list").addEventListener("click", async () => {
-  try {
-    const { models } = await API.get(`/api/ai/models?base_url=${encodeURIComponent($("#ai-url").value.trim())}`);
-    fillModels(models, $("#ai-model").value);
-    toast(models.length ? `${models.length} modelo(s) encontrado(s).` : "Nenhum modelo instalado no servidor.");
-  } catch (e) { toast(e.message, true); }
-});
-
-$("#ai-save").addEventListener("click", async () => {
-  try {
-    const st = await API.post("/api/ai", {
-      provider: $("#ai-provider").value, base_url: $("#ai-url").value.trim(), model: $("#ai-model").value,
-    });
-    renderAi(st);
-    toast("Mecanismo de respostas salvo.");
-  } catch (e) { toast(e.message, true); }
-});
-
-$("#ai-test").addEventListener("click", async (ev) => {
-  ev.target.disabled = true;
-  try {
-    const r = await API.post("/api/ai/test");
-    toast(`IA respondeu em ${r.seconds}s (${r.model}): “${r.reply}”`);
-  } catch (e) { toast(e.message, true); }
-  ev.target.disabled = false;
-});
-
-views.configuracoes = () => { loadConfig(); loadOcr(); loadAi(); };
+views.configuracoes = () => { loadConfig(); loadOcr(); };
 
 /* ---------- inicialização ---------- */
 /* ---------- acesso: configuração inicial, login, troca de senha ---------- */

@@ -15,7 +15,7 @@
       <ul class="a11y-shortcuts">
         <li><a href="#conteudo" accesskey="1" data-atalho="conteudo">Ir para o conteúdo <span class="a11y-key">1</span></a></li>
         <li><a href="#menu" accesskey="2" data-atalho="menu">Ir para o menu <span class="a11y-key">2</span></a></li>
-        <li><a href="#ask-input" accesskey="3" data-atalho="busca">Ir para a busca <span class="a11y-key">3</span></a></li>
+        <li><a href="#sg-pergunta" accesskey="3" data-atalho="busca">Ir para a busca <span class="a11y-key">3</span></a></li>
         <li><a href="#rodape" accesskey="4" data-atalho="rodape">Ir para o rodapé <span class="a11y-key">4</span></a></li>
       </ul>
       <ul class="a11y-tools">
@@ -254,154 +254,6 @@
       </div>
     </section>
 
-    <!-- PERGUNTAS -->
-    <section class="view" id="view-perguntas">
-      <header class="view-header">
-        <div>
-          <h1>Perguntas</h1>
-          <p class="muted">As respostas usam exclusivamente os documentos do diretório configurado.</p>
-        </div>
-      </header>
-      <form class="ask-form" id="ask-form">
-        <input type="text" id="ask-input" placeholder="Digite sua pergunta..." autocomplete="off" maxlength="1000">
-        <button class="btn primary" type="submit">Pesquisar</button>
-      </form>
-      <div class="chips" id="ask-examples"></div>
-      <div id="ask-result"></div>
-    </section>
-
-    <!-- DOCUMENTOS -->
-    <section class="view" id="view-documentos">
-      <header class="view-header">
-        <div>
-          <h1>Documentos</h1>
-          <p class="muted" id="docs-count"></p>
-        </div>
-        <div class="row">
-          <button class="btn" id="docs-duplicates">Verificar duplicidades</button>
-          <button class="btn" data-download="/api/reports/inventario?format=xlsx">Exportar inventário (XLSX)</button>
-        </div>
-      </header>
-      <div class="filters">
-        <input type="search" id="docs-q" placeholder="Filtrar por nome, pasta ou nº do contrato">
-        <select id="docs-status">
-          <option value="">Todos os status</option>
-          <option value="COM_TEXTO">Documento com texto</option>
-          <option value="ESCANEADO">Documento escaneado</option>
-          <option value="SEM_TEXTO">Sem texto extraível</option>
-          <option value="CORROMPIDO">Corrompido / protegido</option>
-          <option value="NAO_SUPORTADO">Formato não suportado</option>
-          <option value="REMOVIDO">Removido do diretório</option>
-        </select>
-        <select id="docs-type">
-          <option value="">Todos os tipos</option>
-          <option value="CONTRATO">Contrato</option>
-          <option value="ADITIVO">Termo Aditivo</option>
-          <option value="APOSTILAMENTO">Apostilamento</option>
-          <option value="PORTARIA">Portaria</option>
-          <option value="NOTIFICACAO">Notificação</option>
-          <option value="CERTIDAO">Certidão / Regularidade</option>
-          <option value="FATURA">Fatura / Nota Fiscal</option>
-          <option value="RELATORIO">Relatório</option>
-          <option value="EDITAL">Edital</option>
-          <option value="TERMO_REFERENCIA">Termo de Referência</option>
-          <option value="PLANILHA">Planilha</option>
-          <option value="OUTRO">Outro</option>
-        </select>
-      </div>
-      <div id="docs-duplicates-result"></div>
-      <div class="table-wrap">
-        <table class="table" id="docs-table">
-          <thead>
-            <tr><th>Documento</th><th>Tipo</th><th>Status</th><th>Contrato</th><th>Tamanho</th><th>Modificado</th><th></th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- CHECKLIST -->
-    <section class="view" id="view-checklist">
-      <header class="view-header">
-        <div>
-          <h1>Checklist</h1>
-          <p class="muted">Relaciona cada requisito aos documentos do diretório. Os arquivos originais não são alterados.</p>
-        </div>
-        <div class="row">
-          <select id="ck-select"><option value="">Novo checklist</option></select>
-          <button class="btn" id="ck-delete" disabled>Excluir</button>
-        </div>
-      </header>
-
-      <div class="panel">
-        <div class="ck-form">
-          <label>Nome
-            <input type="text" id="ck-name" maxlength="200" placeholder="Ex.: Prorrogação — Contrato 034/2022">
-          </label>
-          <label>Contrato (opcional)
-            <input type="text" id="ck-contract" maxlength="30" placeholder="034/2022">
-          </label>
-        </div>
-        <p class="note hidden" id="ck-owner-note"></p>
-        <label class="block-label">Requisitos — um por linha
-          <textarea id="ck-text" rows="10" placeholder="DOCUMENTOS CONTRATUAIS
-1. Contrato assinado (obrigatório)
-2. Termo aditivo de prorrogação
-DOCUMENTOS DE REGULARIDADE
-3. Certidão de regularidade do FGTS
-4. Certidão negativa de débitos trabalhistas"></textarea>
-        </label>
-        <p class="muted small">Aceita listas numeradas ou com marcadores. Linhas em maiúsculas ou terminadas em “:” viram
-          grupos. Informe o contrato para restringir a busca aos documentos dele (e às certidões com o CNPJ da contratada).</p>
-        <div class="row">
-          <label class="btn" for="ck-file">Carregar de arquivo…</label>
-          <input type="file" id="ck-file" class="hidden" accept=".txt,.md,.csv,.doc,.docx,.rtf,.odt,.xls,.xlsx,.ods,.pdf">
-          <span class="spacer"></span>
-          <button class="btn" id="ck-save">Salvar</button>
-          <button class="btn primary" id="ck-run">Salvar e executar</button>
-        </div>
-      </div>
-
-      <div id="ck-results" class="hidden">
-        <div class="panel">
-          <div class="ck-results-head">
-            <div>
-              <h2 id="ck-title"></h2>
-              <p class="muted small" id="ck-run-info"></p>
-            </div>
-            <div class="row">
-              <select id="ck-filter"><option value="">Todos os status</option></select>
-              <span class="muted small">Exportar:</span>
-              <span class="export-buttons" id="ck-export"></span>
-            </div>
-          </div>
-          <div class="chips" id="ck-summary"></div>
-          <div id="ck-items"></div>
-        </div>
-        <div class="panel">
-          <h2>Organização virtual dos documentos</h2>
-          <p class="muted small">Agrupamento lógico para atendimento do checklist — nenhum arquivo foi copiado ou movido.</p>
-          <div id="ck-organization"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- RELATÓRIOS -->
-    <section class="view" id="view-relatorios">
-      <header class="view-header">
-        <div>
-          <h1>Relatórios</h1>
-          <p class="muted">Gerados a partir do índice local. Uma cópia de cada relatório fica em <code>data
-eports</code>.</p>
-        </div>
-      </header>
-      <div class="report-grid" id="rep-cards"></div>
-      <div class="panel">
-        <h2>Relatórios gerados</h2>
-        <div id="rep-files"></div>
-      </div>
-    </section>
-
     <!-- USUÁRIOS -->
     <section class="view" id="view-usuarios">
       <header class="view-header">
@@ -490,32 +342,10 @@ eports</code>.</p>
         <pre class="logs hidden" id="ocr-test-result"></pre>
       </div>
       <div class="panel">
-        <h2>Mecanismo de respostas (IA opcional)</h2>
-        <p class="muted">Com um LLM local (Ollama ou LM Studio), a IA redige as respostas a partir dos trechos dos
-          documentos. Toda data, valor, CNPJ e número citado é conferido nos trechos; se algo não constar, a resposta
-          da IA é descartada e vale a do mecanismo local. Nada é enviado para fora desta máquina.</p>
-        <div class="ai-form">
-          <label>Mecanismo
-            <select id="ai-provider">
-              <option value="local">Local — somente documentos (sem IA)</option>
-              <option value="llm_local">LLM local (Ollama / LM Studio)</option>
-            </select>
-          </label>
-          <label>Endereço do servidor
-            <input type="text" id="ai-url" placeholder="http://127.0.0.1:11434/v1">
-          </label>
-          <label>Modelo
-            <select id="ai-model"><option value="">—</option></select>
-          </label>
-        </div>
-        <div class="row">
-          <button class="btn" id="ai-list" type="button">Listar modelos</button>
-          <button class="btn primary" id="ai-save" type="button">Salvar</button>
-          <button class="btn" id="ai-test" type="button">Testar conexão</button>
-        </div>
-        <p class="muted small">Endereços: Ollama <code>http://127.0.0.1:11434/v1</code> · LM Studio
-          <code>http://127.0.0.1:1234/v1</code>. Endereços externos são bloqueados (LOCAL ONLY).</p>
-        <ul class="checks" id="ai-status"></ul>
+        <h2>Modelos de IA (locais)</h2>
+        <p class="muted">LLM, embeddings e reranker rodam neste computador (Ollama portátil e modelos em
+          <code>modelos\</code>); a configuração fica no arquivo <code>.env</code> (ver <code>docs/MODELOS_IA.md</code>).
+          Documentos de origem real nunca são enviados a provedores externos.</p>
       </div>
       <div class="panel">
         <h2>Sistema</h2>

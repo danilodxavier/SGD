@@ -1,6 +1,8 @@
 """SAD-053 — Suíte de avaliação (ADR-011), em estágios com cache para caber na memória da máquina.
 
-  recuperacao : top-10 de cada sistema para cada pergunta (v1, bm25, denso, hibrido, hibrido_rerank)
+  recuperacao : top-10 de cada sistema para cada pergunta (bm25, denso, hibrido, hibrido_rerank)
+  (baseline v1: código removido na Fase 10; resultados em avaliacao/execucoes/fase5 e fase6;
+   reprodutível pela tag git backup/pre-limpeza-v1)
   resposta    : respostas do v1 (regras) e do v2 (RAG com LLM local) — ver scripts/sadgd/avaliar_respostas.py
   relatorio   : métricas agregadas por sistema e por tipo → avaliacao/execucoes/<rotulo>/relatorio.json
 
@@ -23,7 +25,7 @@ from app.core.config import settings  # noqa: E402
 
 GOLDEN = RAIZ / "avaliacao" / "golden_set"
 EXECUCOES = RAIZ / "avaliacao" / "execucoes"
-SISTEMAS = ["v1", "bm25", "denso", "hibrido", "hibrido_rerank"]
+SISTEMAS = ["bm25", "denso", "hibrido", "hibrido_rerank"]  # v1: ver a docstring
 K = 10
 
 
@@ -41,19 +43,6 @@ def _jsonl_existente(caminho):
         return {}
     with caminho.open(encoding="utf-8") as f:
         return {r["id"]: r for r in map(json.loads, f) if r}
-
-
-def recuperador_v1():
-    from app.core.database import get_conn
-    from app.retrieval.search import search
-
-    def buscar(pergunta):
-        with get_conn() as conn:
-            ids = {r["id"]: r["relative_path"] for r in conn.execute("SELECT id, relative_path FROM documents")}
-            linhas = search(conn, pergunta, limit=K)
-        return [{"arquivo": (ids.get(r["document_id"]) or "").replace("\\", "/"), "dispositivo": None,
-                 "texto": r["text"], "subdispositivos": []} for r in linhas]
-    return buscar
 
 
 def recuperador_v2(modo):
@@ -96,7 +85,7 @@ def estagio_recuperacao(rotulo, sistemas, conjunto, limite_s):
         if not pendentes:
             print(f"[OK] {sistema}: {len(feitos)} perguntas já avaliadas")
             continue
-        buscar = recuperador_v1() if sistema == "v1" else recuperador_v2(sistema)
+        buscar = recuperador_v2(sistema)
         with arquivo.open("a", encoding="utf-8", newline="\n") as f:
             for it in pendentes:
                 if limite_s and time.perf_counter() - inicio > limite_s:

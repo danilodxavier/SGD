@@ -6,13 +6,9 @@ from PIL import Image
 
 from app.core.config import settings
 from app.core.database import get_conn
-from app.indexing.indexer import run_index
 from app.ingestion import extractor, ocr
 from app.ingestion.images import sample_image
-from app.services import checklist
-from app.services.questions import MSG_OCR, answer_question
 from tests.sample_docs import PORTARIA_DIGITALIZADA
-from tests.test_checklist import CHECKLIST
 from tests.helpers import logged_client
 
 HEADERS = {"X-Requested-With": "AgenteDocumental"}
@@ -105,42 +101,6 @@ def test_originais_preservados(docs_dir, db):
 
 # ---------- indexação e uso das evidências ----------
 
-def test_ativar_ocr_reprocessa_somente_digitalizados(indexed, fake):
-    with get_conn() as conn:
-        status = conn.execute("SELECT status FROM documents WHERE filename LIKE 'Portaria%'").fetchone()[0]
-    assert status == extractor.STATUS_ESCANEADO
-
-    result = run_index()  # mesmos arquivos; agora com OCR disponível
-    assert result["ocr"] == 1
-    assert result["unchanged"] == 9  # portaria e imagem sem texto foram reprocessadas
-    with get_conn() as conn:
-        row = conn.execute("SELECT status, ocr, ocr_pages, contract_ref FROM documents "
-                           "WHERE filename LIKE 'Portaria%'").fetchone()
-    assert (row["status"], row["ocr"], row["ocr_pages"], row["contract_ref"]) == ("COM_OCR", "fake", 1, "034/2022")
-
-    again = run_index()  # OCR já aplicado: nada a reprocessar
-    assert again["unchanged"] == 11 and again["ocr"] == 0
-
-
-def test_checklist_com_portaria_lida_por_ocr(indexed, fake):
-    run_index()
-    c = checklist.create("OCR", CHECKLIST, "034/2022")
-    items = {i["position"]: i for i in checklist.run(c["checklist"]["id"], today=date(2026, 10, 14))["items"]}
-    portaria = items[6]
-    assert portaria["status"] == "ATENDIDO"
-    assert portaria["confidence"] == "media"
-    assert "OCR" in portaria["justification"]
-    assert portaria["evidences"][0]["filename"] == "Portaria_Fiscal_digitalizada.pdf"
-
-
-def test_resposta_avisa_fonte_ocr(indexed, fake):
-    run_index()
-    res = answer_question("Quem é o fiscal do contrato 034/2022?")
-    assert any(s["ocr"] for s in res["sources"])
-    assert MSG_OCR in res["warnings"]
-    assert res["confidence"] != "alta"
-
-
 # ---------- configuração e API ----------
 
 def test_configuracao_pelo_painel(db):
@@ -152,14 +112,13 @@ def test_configuracao_pelo_painel(db):
     assert ocr.current_config() == {"enabled": True, "engine": "tesseract"}
 
 
-def test_api_ocr(indexed):
+def test_api_ocr(db):
     with logged_client() as client:
         st = client.get("/api/ocr").json()
         assert {e["name"] for e in st["engines"]} == {"windows", "tesseract"}
         r = client.post("/api/ocr", json={"enabled": True, "engine": "auto"}, headers=HEADERS)
         assert r.status_code == 200 and r.json()["enabled"] is True
         assert client.post("/api/ocr", json={"enabled": True, "engine": "xyz"}, headers=HEADERS).status_code == 400
-        assert client.post("/api/index", json={"retry_ocr": True}, headers=HEADERS).status_code in (200, 409)
 
 
 # ---------- mecanismo real (somente se disponível nesta máquina) ----------

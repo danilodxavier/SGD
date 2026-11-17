@@ -56,8 +56,8 @@ Todas as 14 fases da especificação foram implementadas. Limitações conhecida
 2. Dê um duplo clique em **`instalar.bat`**, que: verifica Windows e Python → cria o ambiente virtual `.venv` →
    cria `data\` → instala `requirements.txt` → cria `.env` (se não existir) → testa importações, SQLite e FastAPI →
    executa o diagnóstico.
-3. (Opcional) Dê um duplo clique em **`aceitacao.bat`** para conferir os critérios de conclusão com documentos
-   fictícios (seus dados não são usados).
+3. (Opcional) Rode a suíte de testes (`.venv\Scripts\python.exe -m pytest -q`), que inclui testes ponta a ponta no
+   navegador (Microsoft Edge) com documentos fictícios.
 
 ## 4. Configuração
 
@@ -116,8 +116,7 @@ em DOC/RTF/ODT, planilhas XLS/ODS, apresentações PPT/PPTX e dois arquivos prot
 | `start.bat` | Inicia o servidor e abre o navegador. Mantenha a janela aberta. |
 | `servidor.bat` | Inicia sem janela nem navegador, para o início automático pelo Agendador de Tarefas (Manual Técnico, 5.8). |
 | `stop.bat` | Encerra o servidor de forma controlada. |
-| `diagnostico.bat` | Verifica Windows, Python, pip, venv, SQLite, permissões, diretório documental, espaço em disco, FastAPI, Uvicorn, bibliotecas, OCR, mecanismo de respostas, banco de dados e porta 8000 (`[OK]`, `[WARNING]`, `[ERRO]`). |
-| `aceitacao.bat` | Confere os critérios de conclusão da especificação com documentos fictícios. |
+| `diagnostico.bat` | Verifica Windows, Python, pip, venv, SQLite, permissões, diretório documental, espaço em disco, FastAPI, Uvicorn, bibliotecas, OCR, sqlite-vec, migrações e modelos do SAD-GD, Tesseract, banco de dados e porta 8000 (`[OK]`, `[WARNING]`, `[ERRO]`). |
 | `backup.bat` | Cria um backup na pasta `BACKUP` do projeto, mantendo os 30 mais recentes (pode ser agendado). |
 | `usuarios.bat` | Gestão de usuários pela linha de comando (recuperar o acesso de administrador). |
 

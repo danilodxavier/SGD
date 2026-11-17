@@ -22,9 +22,15 @@ def db(tmp_path, monkeypatch):
 
 
 @pytest.fixture()
-def indexed(db, docs_dir):
-    from app.indexing.indexer import run_index
+def indexed(db, docs_dir, monkeypatch):
+    """Documentos de amostra (PDF, DOCX, XLSX, digitalizado, corrompido…) indexados pelo indexador do SAD-GD."""
+    from app.infrastructure import servico_indexacao
+    from app.infrastructure.servico_indexacao import ServicoIndexacao
 
     database.set_setting("documents_root", str(docs_dir))
-    result = run_index()
-    return {"root": docs_dir, "result": result}
+    servico = ServicoIndexacao(docs_dir, com_embeddings=False)
+    monkeypatch.setattr(servico_indexacao, "servico", servico)
+    servico.iniciar(None)
+    estado = servico.aguardar(120)
+    assert estado["erro"] is None, estado["erro"]
+    return {"root": docs_dir, "result": estado}

@@ -55,7 +55,8 @@ def recuperador(tmp_path):
     embedder = EmbedderFalso()
     IndexarCorpus(RepositorioIndexacaoSqlite(fabrica), lambda c: extrair(c, ocr=None), sha256, embedder,
                   SqliteVecStore(fabrica), modelo="falso").executar(str(raiz.parent), listar(raiz.parent,
-                                                                                           extensoes_suportadas()))
+                                                                                           extensoes_suportadas(),
+                                                                                           excluir=()))
 
     def criar(reranker=None):
         return RecuperadorHibrido(BuscaLexicalSqlite(fabrica), RepositorioTrechosSqlite(fabrica), embedder,

@@ -68,7 +68,7 @@ def ambiente(tmp_path):
                          SqliteVecStore(fabrica), modelo="falso")
 
     def indexar():
-        return caso.executar(str(raiz), listar(raiz, extensoes_suportadas()))
+        return caso.executar(str(raiz), listar(raiz, extensoes_suportadas(), excluir=()))
 
     return raiz, fabrica, indexar, embedder
 
@@ -130,15 +130,15 @@ def test_documento_gravado_sem_vetores_e_reprocessado(ambiente):
     raiz, fabrica, _, embedder = ambiente
     sem_vetores = IndexarCorpus(RepositorioIndexacaoSqlite(fabrica), lambda c: extrair(c, ocr=None), sha256, None,
                                 None, modelo="")
-    sem_vetores.executar(str(raiz), listar(raiz, extensoes_suportadas()))
+    sem_vetores.executar(str(raiz), listar(raiz, extensoes_suportadas(), excluir=()))
     conn = fabrica()
     assert conn.execute("SELECT count(*) FROM trechos_vec").fetchone()[0] == 0
     conn.close()
     com_vetores = IndexarCorpus(RepositorioIndexacaoSqlite(fabrica), lambda c: extrair(c, ocr=None), sha256,
                                 embedder, SqliteVecStore(fabrica), modelo="falso")
-    r = com_vetores.executar(str(raiz), listar(raiz, extensoes_suportadas()))
+    r = com_vetores.executar(str(raiz), listar(raiz, extensoes_suportadas(), excluir=()))
     assert r.alterados == 2 and r.vetores == r.trechos > 0
-    assert com_vetores.executar(str(raiz), listar(raiz, extensoes_suportadas())).inalterados == 2
+    assert com_vetores.executar(str(raiz), listar(raiz, extensoes_suportadas(), excluir=())).inalterados == 2
 
 
 def test_limite_de_tempo_interrompe_sem_remover_arquivos_nao_vistos(ambiente):
@@ -147,12 +147,12 @@ def test_limite_de_tempo_interrompe_sem_remover_arquivos_nao_vistos(ambiente):
     (raiz / "outros" / "a.txt").write_text("Documento novo A sobre diárias.\n", encoding="utf-8")
     caso = IndexarCorpus(RepositorioIndexacaoSqlite(fabrica), lambda c: extrair(c, ocr=None), sha256, embedder,
                          SqliteVecStore(fabrica), modelo="falso")
-    r = caso.executar(str(raiz), listar(raiz, extensoes_suportadas()), limite_segundos=0)
+    r = caso.executar(str(raiz), listar(raiz, extensoes_suportadas(), excluir=()), limite_segundos=0)
     assert r.interrompido and r.removidos == 0
     conn = fabrica()
     assert conn.execute("SELECT count(*) FROM documentos").fetchone()[0] >= 2  # nada foi apagado
     conn.close()
-    r2 = caso.executar(str(raiz), listar(raiz, extensoes_suportadas()))
+    r2 = caso.executar(str(raiz), listar(raiz, extensoes_suportadas(), excluir=()))
     assert not r2.interrompido and r2.novos == 1 and r2.vetores == r2.trechos
 
 
@@ -170,7 +170,7 @@ def test_indexacao_parcial_de_um_arquivo_enviado_nao_remove_o_resto(ambiente):
     enviado.write_text("Ofício sobre manutenção de elevadores do prédio-sede.\n", encoding="utf-8")
     caso = IndexarCorpus(RepositorioIndexacaoSqlite(fabrica), lambda c: extrair(c, ocr=None), sha256, embedder,
                          SqliteVecStore(fabrica), modelo="falso")
-    so_ele = [a for a in listar(raiz, extensoes_suportadas()) if a.relativo == "enviados/oficio.txt"]
+    so_ele = [a for a in listar(raiz, extensoes_suportadas(), excluir=()) if a.relativo == "enviados/oficio.txt"]
     r = caso.executar(str(raiz), so_ele, parcial=True)
     assert (r.novos, r.removidos) == (1, 0)
     conn = fabrica()

@@ -54,23 +54,23 @@ def test_iniciar_e_parar_servidor(docs_dir, tmp_path):
             server.kill()
 
 
-def test_diagnostico_em_processo(indexed):
+def test_diagnostico_em_processo(db):
     checks = {c["name"]: c for c in diagnostics.run_checks()}
     for name in ("Windows", "Python", "pip", "venv", "SQLite", "diretório documental", "permissão de leitura",
                  "permissão de escrita", "espaço em disco", "FastAPI", "Uvicorn", "bibliotecas de documentos", "OCR",
-                 "banco de dados", "relatórios PDF", "mecanismo de respostas"):
+                 "banco de dados", "sqlite-vec", "migrações SAD-GD", "Tesseract"):
         assert name in checks, name
     assert checks["SQLite"]["level"] == "OK" and checks["banco de dados"]["level"] == "OK"
     assert not [c for c in checks.values() if c["level"] == "ERRO"]
 
 
 @pytest.fixture()
-def client(indexed):
+def client(db):
     with logged_client() as c:
         yield c
 
 
-def test_rotas_de_sistema(client, indexed, tmp_path):
+def test_rotas_de_sistema(client, db, tmp_path):
     cfg = client.get("/api/config").json()
     assert cfg["documents_root_ok"] and cfg["app_host"] == "127.0.0.1"
     other = tmp_path / "outro"
@@ -78,28 +78,12 @@ def test_rotas_de_sistema(client, indexed, tmp_path):
     assert client.post("/api/config", json={"documents_root": str(other)}, headers=HEADERS).json()[
         "documents_root"] == str(other)
     assert client.get("/health").json()["status"] == "ok"
-    assert client.get("/api/index/status").json()["running"] is False
+    assert client.get("/api/sadgd/indexacao").json()["executando"] is False
     assert client.get("/api/diagnostics").json()["checks"]
     assert isinstance(client.get("/api/logs", params={"lines": 5}).json()["lines"], list)
     assert client.post("/api/system/shutdown", headers=HEADERS).status_code == 403  # sem token
 
 
-def test_rotas_de_documentos(client, monkeypatch):
-    opened = []
-    monkeypatch.setattr(os, "startfile", opened.append, raising=False)
-    docs = client.get("/api/documents", params={"q": "Contrato_034"}).json()["items"]
-    doc_id = docs[0]["id"]
-    assert client.post(f"/api/documents/{doc_id}/open", headers=HEADERS).json() == {"opened": True}
-    assert opened and opened[0].endswith("Contrato_034_2022.pdf")
-    assert client.post(f"/api/documents/{doc_id}/reindex", headers=HEADERS).json()["status"] == "COM_TEXTO"
-    dup = client.get("/api/documents/duplicates").json()
-    assert len(dup["identical"]) == 1
-    assert client.get("/api/documents", params={"status": "CORROMPIDO"}).json()["total"] == 1
-    assert client.get("/api/documents", params={"doc_type": "ADITIVO"}).json()["total"] == 1
-    assert client.get("/api/contracts").json()[0]["contract_number"] == "034/2022"
-    assert client.post("/api/documents/99999/open", headers=HEADERS).status_code == 404
-
-
 def test_requisicao_invalida_tem_mensagem_amigavel(client):
-    r = client.post("/api/ask", json={"pergunta": "x"}, headers=HEADERS)
+    r = client.post("/api/sadgd/perguntar", json={"texto": "x"}, headers=HEADERS)
     assert r.status_code == 422 and r.json()["detail"] == "Dados inválidos na requisição."

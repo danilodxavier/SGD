@@ -8,14 +8,11 @@ from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app import __version__
-from app.api import (
-    routes_auth, routes_checklist, routes_documents, routes_questions, routes_reports, routes_search, routes_system,
-)
+from app.api import routes_auth, routes_system
 from app.core.config import BASE_DIR, settings
 from app.core.database import get_documents_root, init_db
 from app.core.logging import get_logger, setup_logging
 from app.core.security import NetworkGuard
-from app.indexing import indexer
 from app.ingestion.scanner import check_root
 
 FRONTEND_DIR = BASE_DIR / "frontend"
@@ -30,8 +27,10 @@ async def lifespan(app):
              "acesso pela rede" if settings.network_mode else "acesso somente local")
     if app.state.auto_index and settings.auto_index:
         ok, message = check_root(get_documents_root())
-        if ok:
-            indexer.start_background()
+        if ok:  # atualização incremental do acervo do SAD-GD (somente arquivos novos ou alterados)
+            from app.infrastructure.servico_indexacao import servico
+
+            servico.iniciar(None)
         else:
             log.warning("Indexação automática não executada: %s", message)
     yield
@@ -44,13 +43,11 @@ def create_app(auto_index=True):
     app.state.auto_index = auto_index
     app.add_middleware(NetworkGuard)
 
-    for module in (routes_auth, routes_system, routes_documents, routes_search, routes_questions, routes_checklist,
-                   routes_reports):
+    for module in (routes_auth, routes_system):
         app.include_router(module.router)
-    from app.interfaces.api import linha_do_tempo as api_linha_do_tempo  # SAD-GD (Fase 6)
-
     from app.interfaces.api import acervo as api_acervo  # SAD-GD (Fase 9)
     from app.interfaces.api import decisoes as api_decisoes  # SAD-GD (Fase 8)
+    from app.interfaces.api import linha_do_tempo as api_linha_do_tempo  # SAD-GD (Fase 6)
     from app.interfaces.api import perguntar as api_perguntar  # SAD-GD (Fase 7)
 
     app.include_router(api_linha_do_tempo.router)

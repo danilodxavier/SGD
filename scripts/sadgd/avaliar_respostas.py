@@ -1,6 +1,7 @@
 """SAD-051/054/055 — Avaliação das respostas (F1, linha do tempo e ausência; F2 fica para a Fase 8).
 
-  v1 : respondedor por regras do app legado (LocalDocumentAnswerProvider), sem LLM
+  (baseline v1: código removido na Fase 10; resultados em avaliacao/execucoes/fase5 e fase6;
+   reprodutível pela tag git backup/pre-limpeza-v1)
   v2 : RAG — top-6 do recuperador híbrido+rerank (cache do estágio de recuperação) + ResponderF1 com LLM do Ollama
 
 Retomável (cache por pergunta) e com limite de tempo, para caber na memória da máquina.
@@ -48,28 +49,6 @@ def metricas_item(it, resposta, classificacao, citados, suportes=None):
             resposta, suportes if suportes is not None else [c.texto for c in citados], it["pergunta"])
         if afirmou else [],
     }
-
-
-def responder_v1():
-    from app.core.database import get_conn
-    from app.services.questions import LocalDocumentAnswerProvider
-
-    provedor = LocalDocumentAnswerProvider()
-    with get_conn() as conn:
-        caminhos = {r["id"]: (r["relative_path"] or "").replace("\\", "/")
-                    for r in conn.execute("SELECT id, relative_path FROM documents")}
-
-    def responder(it):
-        t0 = time.perf_counter()
-        res = provedor.answer(it["pergunta"])
-        ms = int((time.perf_counter() - t0) * 1000)
-        citados = [TrechoAvaliado(caminhos.get(s["document_id"], ""), None, s.get("excerpt") or "")
-                   for s in res.get("sources", [])]
-        classe = V1_CLASSES.get(res.get("kind"), "fato")
-        return {"resposta": res.get("answer", ""), "classificacao": classe, "ms": ms, "modelo": "regras-v1",
-                "tokens_entrada": 0, "tokens_saida": 0, "citados": [c.arquivo for c in citados]}, citados, \
-            [f"{c.texto} {s.get('filename', '')}" for c, s in zip(citados, res.get("sources", []), strict=False)]
-    return responder
 
 
 def responder_v2(modelo, rotulo, usar_grafo=True, usar_verificador=False):
@@ -147,7 +126,7 @@ def avaliar(sistema, modelo, conjunto, rotulo, limite_s, usar_grafo=True, usar_v
     if not itens:
         print(f"[OK] {nome}: nada pendente ({len(feitos)} respostas)")
         return 0
-    responder = responder_v1() if sistema == "v1" else responder_v2(modelo, rotulo, usar_grafo, usar_verificador)
+    responder = responder_v2(modelo, rotulo, usar_grafo, usar_verificador)
     inicio = time.perf_counter()
     with arquivo.open("a", encoding="utf-8", newline="\n") as f:
         for n, it in enumerate(itens, start=1):
@@ -218,7 +197,7 @@ def _agregar(rs):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    p.add_argument("--sistema", choices=["v1", "v2"])
+    p.add_argument("--sistema", choices=["v2"], default="v2")
     p.add_argument("--modelo", default=settings.llm_modelo_padrao)
     p.add_argument("--conjunto", default="validacao", choices=["validacao", "teste", "todos"])
     p.add_argument("--rotulo", default="fase5")

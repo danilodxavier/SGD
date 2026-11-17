@@ -89,15 +89,6 @@ def run_checks(documents_root=None, check_port=True):
                          "faltando: " + ", ".join(missing) if missing else
                          "PDF, DOC, DOCX, RTF, ODT, XLS, XLSX, ODS, PPT, PPTX, TXT, CSV, MD"))
 
-    pdf_version = _version("fpdf")
-    if not pdf_version:
-        checks.append(_check("relatórios PDF", ERRO, "fpdf2 não instalado. Execute instalar.bat."))
-    else:
-        from app.services.report_writers import unicode_font_available
-        checks.append(_check("relatórios PDF", OK if unicode_font_available() else WARNING,
-                             f"fpdf2 {pdf_version}" + ("" if unicode_font_available() else
-                                                        " — fonte Arial não encontrada; símbolos especiais serão simplificados")))
-
     try:
         from app.ingestion import ocr
 
@@ -112,19 +103,6 @@ def run_checks(documents_root=None, check_port=True):
             checks.append(_check("OCR", WARNING, f"Nenhum mecanismo disponível ({reasons})"))
     except Exception as exc:
         checks.append(_check("OCR", WARNING, f"Não foi possível verificar o OCR: {exc}"))
-    try:
-        from app.services import llm
-
-        ai = llm.status()
-        if ai["provider"] != "llm_local":
-            checks.append(_check("mecanismo de respostas", OK, "Local — somente documentos (sem IA)"))
-        else:
-            ready = ai["reachable"] and ai["model"] in ai["models"]
-            checks.append(_check("mecanismo de respostas", OK if ready else WARNING,
-                                 f"LLM local em {ai['base_url']}: {ai['message']}"
-                                 + ("" if ready else " As respostas usarão o mecanismo local.")))
-    except Exception as exc:
-        checks.append(_check("mecanismo de respostas", WARNING, f"Não foi possível verificar: {exc}"))
     try:
         from app.core import auth
         from app.core.database import init_db

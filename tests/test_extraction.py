@@ -1,4 +1,3 @@
-from app.indexing.chunks import chunk_segments
 from app.ingestion import extractor
 
 
@@ -48,14 +47,6 @@ def test_formato_nao_suportado(tmp_path):
     path = tmp_path / "desenho.dwg"
     path.write_bytes(b"x")
     assert extractor.extract(path).status == extractor.STATUS_NAO_SUPORTADO
-
-
-def test_chunks_registram_pagina_e_secao(docs_dir):
-    result = extractor.extract(docs_dir / "Contratos" / "034-2022" / "Contrato_034_2022.pdf")
-    chunks = chunk_segments(result.segments)
-    valor = next(c for c in chunks if "120.000,00" in c["text"])
-    assert valor["page"] == 2
-    assert valor["section"].startswith("CLÁUSULA TERCEIRA")
 
 
 def test_csv_com_ponto_e_virgula(tmp_path):

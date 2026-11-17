@@ -1,4 +1,6 @@
-"""Saúde, configuração, indexação, diagnóstico, logs e encerramento."""
+"""Saúde, configuração (raiz documental, OCR), diagnóstico, logs e encerramento.
+
+A indexação e o painel do acervo ficam na API do SAD-GD (`/api/sadgd/indexar`, `/api/sadgd/painel`)."""
 import hmac
 import os
 from pathlib import Path
@@ -6,14 +8,13 @@ from pathlib import Path
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 
-from app.api.deps import require_admin, require_local, require_login
+from app.api.deps import require_admin, require_local
 from app.core.config import settings
 from app.core.database import get_conn, get_documents_root, set_setting
 from app.core.logging import get_logger
-from app.indexing import indexer
 from app.ingestion import ocr
 from app.ingestion.scanner import check_root
-from app.services import diagnostics, documents, llm
+from app.services import diagnostics
 
 router = APIRouter()
 log = get_logger("api.system")
@@ -21,17 +22,6 @@ log = get_logger("api.system")
 
 class ConfigIn(BaseModel):
     documents_root: str
-
-
-class IndexIn(BaseModel):
-    force: bool = False
-    retry_ocr: bool = False
-
-
-class AiConfigIn(BaseModel):
-    provider: str
-    base_url: str = ""
-    model: str = ""
 
 
 class OcrConfigIn(BaseModel):
@@ -45,7 +35,7 @@ def health():
     index = "vazio"
     try:
         with get_conn() as conn:
-            if conn.execute("SELECT COUNT(*) FROM document_chunks").fetchone()[0] > 0:
+            if conn.execute("SELECT COUNT(*) FROM trechos").fetchone()[0] > 0:
                 index = "ok"
     except Exception:
         database = "erro"
@@ -54,11 +44,6 @@ def health():
     root = "ok" if root_ok else "indisponivel"
     status = "erro" if database != "ok" else ("ok" if root_ok else "atencao")
     return {"status": status, "database": database, "documents_root": root, "index": index}
-
-
-@router.get("/api/status", dependencies=[Depends(require_login)])
-def status():
-    return documents.dashboard()
 
 
 @router.get("/api/config", dependencies=[Depends(require_admin)])
@@ -72,8 +57,8 @@ def get_config():
         "app_host": settings.app_host,
         "app_port": settings.app_port,
         "ocr_enabled": ocr.current_config()["enabled"],
-        "ai_provider": llm.current_config()["provider"],
-        "ai_key_configured": settings.ai_key_configured,
+        "llm_modelo": settings.llm_modelo_padrao,
+        "ollama_url": settings.ollama_url,
         "auto_index": settings.auto_index,
     }
 
@@ -111,55 +96,6 @@ def browse_directory():
     return {"path": str(Path(chosen)) if chosen else None}
 
 
-@router.post("/api/index", dependencies=[Depends(require_admin)])
-def start_index(body: IndexIn):
-    ok, message = check_root(get_documents_root())
-    if not ok:
-        raise HTTPException(400, message)
-    if not indexer.start_background(force=body.force, retry_ocr=body.retry_ocr):
-        raise HTTPException(409, "Já existe uma indexação em andamento.")
-    return {"started": True}
-
-
-@router.get("/api/ai", dependencies=[Depends(require_admin)])
-def ai_status():
-    return llm.status()
-
-
-@router.post("/api/ai", dependencies=[Depends(require_admin)])
-def ai_configure(body: AiConfigIn):
-    provider = llm.ALIASES.get(body.provider, body.provider)
-    if provider not in llm.PROVIDERS:
-        raise HTTPException(400, "Mecanismo de respostas inválido.")
-    base_url = body.base_url.strip().rstrip("/") or settings.llm_base_url
-    if provider == "llm_local":
-        try:
-            llm.check_url(base_url)
-        except llm.LLMError as exc:
-            raise HTTPException(400, str(exc))
-    set_setting("ai_provider", provider)
-    set_setting("llm_base_url", base_url)
-    set_setting("llm_model", body.model.strip())
-    log.info("Mecanismo de respostas: %s (%s, modelo %s)", provider, base_url, body.model or "-")
-    return llm.status()
-
-
-@router.get("/api/ai/models", dependencies=[Depends(require_admin)])
-def ai_models(base_url: str):
-    try:
-        return {"models": llm.list_models(base_url.strip().rstrip("/"))}
-    except llm.LLMError as exc:
-        raise HTTPException(400, str(exc))
-
-
-@router.post("/api/ai/test", dependencies=[Depends(require_admin)])
-def ai_test():
-    try:
-        return llm.test_connection()
-    except llm.LLMError as exc:
-        raise HTTPException(400, str(exc))
-
-
 @router.get("/api/ocr", dependencies=[Depends(require_admin)])
 def ocr_status():
     return ocr.status(refresh=True)
@@ -178,11 +114,6 @@ def ocr_configure(body: OcrConfigIn):
 @router.post("/api/ocr/test", dependencies=[Depends(require_admin)])
 def ocr_test():
     return ocr.run_test()
-
-
-@router.get("/api/index/status", dependencies=[Depends(require_login)])
-def index_status():
-    return indexer.status()
 
 
 @router.get("/api/diagnostics", dependencies=[Depends(require_admin)])
