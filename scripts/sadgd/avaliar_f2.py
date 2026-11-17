@@ -31,7 +31,7 @@ def media(vals):
     return round(sum(vals) / len(vals), 4) if vals else None
 
 
-def construir(modelo, rotulo, precedentes=True, modelo_especialistas=None):
+def construir(modelo, rotulo, precedentes=True, modelo_especialistas=None, provedor_f2="local"):
     from app.application.agentes.orquestrador import Orquestrador
     from app.application.agentes.verificador import verificar
     from app.application.respostas.f1 import ResponderF1
@@ -64,7 +64,20 @@ def construir(modelo, rotulo, precedentes=True, modelo_especialistas=None):
         def buscar_precedentes(pergunta, documentos):
             return memoria.precedentes(pergunta, documento_ids=documentos)
     return Orquestrador(recuperar, ResponderF1(llm, conflitos=grafo, verificador=verificar), llm_esp,
-                        linha_do_tempo=grafo.resumo, precedentes=buscar_precedentes, k=K, llm_relator=llm)
+                        linha_do_tempo=grafo.resumo, precedentes=buscar_precedentes, k=K, llm_relator=llm,
+                        **_remoto(provedor_f2))
+
+
+def _remoto(provedor_f2):
+    if provedor_f2 == "local":
+        return {}
+    from app.infrastructure.llm.provedores import llm_f2_remoto
+
+    remoto = llm_f2_remoto()
+    if remoto is None:
+        raise SystemExit("[ERRO] Gemini não configurado: defina SADGD_LLM_F2=gemini, AI_ALLOW_REMOTE=true e "
+                         "GEMINI_API_KEY no .env")
+    return {"llm_f2_remoto": remoto, "envio_externo_permitido": settings.ai_allow_remote}
 
 
 def metricas(it, estado, ms):
@@ -101,11 +114,14 @@ def metricas(it, estado, ms):
         "tokens_entrada": r.tokens_entrada + sum(p.tokens_entrada for p in pareceres),
         "tokens_saida": r.tokens_saida + sum(p.tokens_saida for p in pareceres),
         "tempos": dict(estado.get("tempos", [])), "resposta": r.resposta, "recomendacao": dados,
+        "provedor_f2": estado.get("provedor_f2"),
     }
 
 
-def avaliar(modelo, rotulo, limite_s, precedentes=True, modelo_especialistas=None, conjunto="todos"):
+def avaliar(modelo, rotulo, limite_s, precedentes=True, modelo_especialistas=None, conjunto="todos",
+            provedor_f2="local"):
     sufixo = f"__esp_{modelo_especialistas.replace(':', '_')}" if modelo_especialistas else ""
+    sufixo += f"__f2_{provedor_f2}" if provedor_f2 != "local" else ""
     (EXECUCOES / rotulo).mkdir(parents=True, exist_ok=True)
     arquivo = EXECUCOES / rotulo / f"f2_{modelo.replace(':', '_')}{sufixo}.jsonl"
     feitos = _jsonl_existente(arquivo)
@@ -113,7 +129,7 @@ def avaliar(modelo, rotulo, limite_s, precedentes=True, modelo_especialistas=Non
     if not itens:
         print(f"[OK] F2: nada pendente ({len(feitos)} itens)")
         return 0
-    orq = construir(modelo, rotulo, precedentes, modelo_especialistas)
+    orq = construir(modelo, rotulo, precedentes, modelo_especialistas, provedor_f2)
     inicio = time.perf_counter()
     with arquivo.open("a", encoding="utf-8", newline="\n") as f:
         for n, it in enumerate(itens, start=1):
@@ -185,11 +201,13 @@ def main():
     p.add_argument("--sem-precedentes", action="store_true")
     p.add_argument("--modelo-especialistas", default=None, help="LLM dos especialistas (o relator usa --modelo)")
     p.add_argument("--conjunto", default="todos", choices=["validacao", "teste", "todos"])
+    p.add_argument("--provedor-f2", default="local", choices=["local", "gemini"],
+                   help="gemini: especialistas e relator no Gemini (corpus acadêmico, anonimizado, reserva local)")
     a = p.parse_args()
     if a.resumo:
         return resumo(a.rotulo)
     return avaliar(a.modelo, a.rotulo, a.max_minutos * 60 if a.max_minutos else None, not a.sem_precedentes,
-                   a.modelo_especialistas, a.conjunto)
+                   a.modelo_especialistas, a.conjunto, a.provedor_f2)
 
 
 if __name__ == "__main__":

@@ -15,7 +15,9 @@ from langgraph.graph import END, START, StateGraph
 from langgraph.types import Send
 
 from app.application.agentes.especialistas import executar_especialista, relatar_f2
+from app.application.agentes.politica_llm import LLMComReserva, LLMProtegido
 from app.application.agentes.roteador import rotear
+from app.domain.politicas import avaliar_envio_externo
 
 
 class Estado(TypedDict, total=False):
@@ -24,6 +26,8 @@ class Estado(TypedDict, total=False):
     trechos: list
     contexto_extra: str
     precedentes: list
+    provedor_f2: dict
+    falhas_remotas: Annotated[list, operator.add]
     agente: str
     pareceres: Annotated[list, operator.add]
     resposta: Any
@@ -32,13 +36,17 @@ class Estado(TypedDict, total=False):
 
 class Orquestrador:
     def __init__(self, recuperar, responder_f1, llm_especialistas, *, linha_do_tempo=None, precedentes=None,
-                 tracer=None, checkpointer=None, k=8, llm_relator=None):
+                 tracer=None, checkpointer=None, k=8, llm_relator=None, llm_f2_remoto=None,
+                 envio_externo_permitido=False):
         """recuperar(pergunta, k) -> list[TrechoRecuperado]; responder_f1: ResponderF1;
         linha_do_tempo(documento_ids) -> str (resumo para F2);
         precedentes(pergunta, documento_ids) -> list[Precedente] (memória de decisões, RF-19);
-        llm_relator: modelo do relator, se diferente do dos especialistas (Fase 10: especialistas menores)."""
+        llm_relator: modelo do relator, se diferente do dos especialistas (Fase 10: especialistas menores);
+        llm_f2_remoto: provedor em nuvem para a F2 (ex.: Gemini) — usado só se TODO o contexto (trechos e
+        precedentes) for do corpus acadêmico e o envio estiver autorizado no .env; anonimizado; com reserva local."""
         self._recuperar, self._f1, self._llm = recuperar, responder_f1, llm_especialistas
         self._llm_relator = llm_relator or llm_especialistas
+        self._remoto, self._envio_permitido = llm_f2_remoto, envio_externo_permitido
         self._tl, self._prec, self._tracer, self._k = linha_do_tempo, precedentes, tracer, k
         g = StateGraph(Estado)
         g.add_node("rotear", self._no(self._rotear))
@@ -89,7 +97,25 @@ class Orquestrador:
         if precedentes:
             resumo += ("\n\nPRECEDENTES DA GESTÃO (decisões anteriores semelhantes; informam, não vinculam):\n"
                        + "\n\n".join(p.como_contexto() for p in precedentes))
-        return {"contexto_extra": resumo.strip(), "precedentes": precedentes}
+        return {"contexto_extra": resumo.strip(), "precedentes": precedentes,
+                "provedor_f2": self._decidir_provedor(s["trechos"], precedentes)}
+
+    def _decidir_provedor(self, trechos, precedentes):
+        if self._remoto is None:
+            return {"provedor": "local", "motivo": "nenhum provedor remoto configurado", "origens": []}
+        origens = {t.corpus_origem for t in trechos} | {p.decisao.corpus_origem for p in precedentes}
+        d = avaliar_envio_externo(remoto=True, permitido_na_config=self._envio_permitido, origens=origens,
+                                  anonimizado=True)
+        return {"provedor": self._remoto.nome if d.permitido else "local", "motivo": d.motivo,
+                "origens": sorted(origens)}
+
+    def _llm_f2(self, s, local):
+        """LLM da F2 para esta consulta: remoto protegido (com reserva local) ou o local."""
+        p = s.get("provedor_f2") or {}
+        if self._remoto is None or p.get("provedor", "local") == "local":
+            return local
+        protegido = LLMProtegido(self._remoto, permitido_na_config=self._envio_permitido, origens=p["origens"])
+        return LLMComReserva(protegido, local)
 
     def _distribuir(self, s):
         agentes = s["decisao"].agentes
@@ -98,13 +124,20 @@ class Orquestrador:
         return [Send("especialista", {**s, "agente": a}) for a in agentes]
 
     def _especialista(self, s):
-        return {"pareceres": [executar_especialista(self._llm, s["agente"], s["pergunta"], s["trechos"],
-                                                    s.get("contexto_extra", ""))]}
+        llm = self._llm_f2(s, self._llm)
+        parecer = executar_especialista(llm, s["agente"], s["pergunta"], s["trechos"], s.get("contexto_extra", ""))
+        return {"pareceres": [parecer], "falhas_remotas": [getattr(llm, "falhas", 0)]}
 
     def _relator(self, s):
-        return {"resposta": relatar_f2(self._llm_relator, s["pergunta"], s["trechos"], s.get("pareceres", []),
-                                       s.get("contexto_extra", ""), s.get("precedentes", []))}
+        llm = self._llm_f2(s, self._llm_relator)
+        resposta = relatar_f2(llm, s["pergunta"], s["trechos"], s.get("pareceres", []), s.get("contexto_extra", ""),
+                              s.get("precedentes", []))
+        return {"resposta": resposta, "falhas_remotas": [getattr(llm, "falhas", 0)]}
 
     def executar(self, pergunta, thread_id=None):
         config = {"configurable": {"thread_id": thread_id}} if thread_id else None
-        return self.grafo.invoke({"pergunta": pergunta, "pareceres": [], "tempos": []}, config=config)
+        estado = self.grafo.invoke({"pergunta": pergunta, "pareceres": [], "tempos": [], "falhas_remotas": []},
+                                   config=config)
+        if "provedor_f2" in estado:
+            estado["provedor_f2"] = {**estado["provedor_f2"], "falhas_remotas": sum(estado.get("falhas_remotas", []))}
+        return estado

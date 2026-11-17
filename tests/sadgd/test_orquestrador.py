@@ -148,3 +148,62 @@ def test_f2_recebe_precedentes_da_memoria_e_entrega_os_seis_elementos():
     assert final.valido  # schema relator.v2
     assert [p["codigo"] for p in final.dados["precedentes"]] == ["DG-011/2025"]
     assert set(elementos_rf20(final.dados).values()) <= {"presente", "declarado"}
+
+
+# ----------------------------------------------------------------- F2 em provedor remoto (Gemini), Fase 10/11
+class LLMRemotoFalso(LLMRoteiro):
+    nome, remoto = "gemini-falso", True
+
+    def __init__(self, falhar=False):
+        super().__init__()
+        self.falhar, self.recebidas = falhar, []
+
+    def chat(self, mensagens, **kw):
+        with self._trava:
+            self.recebidas.append(mensagens)
+        if self.falhar:
+            raise RuntimeError("429 quota")
+        return super().chat(mensagens, **kw)
+
+
+def _orq(remoto, trechos, permitido=True):
+    local = LLMRoteiro()
+    orq = Orquestrador(lambda pergunta, k: trechos, ResponderF1(local, verificador=verificar), local,
+                       linha_do_tempo=lambda docs: "", llm_f2_remoto=remoto, envio_externo_permitido=permitido)
+    return orq, local
+
+
+PERGUNTA_F2 = "Devo prorrogar novamente o Contrato nº 044/2023 de vigilância? O fiscal Joaquim Pereira Lins opinou."
+
+
+def test_f2_vai_ao_provedor_remoto_so_com_corpus_academico_e_anonimizado():
+    remoto = LLMRemotoFalso()
+    orq, local = _orq(remoto, TRECHOS)  # trechos sintéticos
+    estado = orq.executar(PERGUNTA_F2)
+    assert remoto.recebidas
+    assert estado["provedor_f2"]["provedor"] == "gemini-falso"
+    enviados = json.dumps(remoto.recebidas, ensure_ascii=False)
+    assert "Joaquim Pereira Lins" not in enviados and "[PESSOA_1]" in enviados  # anonimizado antes de sair
+    assert estado["resposta"].valido
+
+
+def test_trecho_de_origem_real_mantem_a_f2_local():
+    from dataclasses import replace
+
+    remoto = LLMRemotoFalso()
+    real = [replace(TRECHOS[0], corpus_origem="real"), TRECHOS[1]]
+    orq, local = _orq(remoto, real)
+    estado = orq.executar(PERGUNTA_F2)
+    assert remoto.recebidas == [] and estado["provedor_f2"]["provedor"] == "local"
+    assert "real" in estado["provedor_f2"]["motivo"]
+
+
+def test_envio_nao_autorizado_no_env_mantem_local_e_falha_remota_cai_para_local():
+    remoto = LLMRemotoFalso()
+    orq, _ = _orq(remoto, TRECHOS, permitido=False)
+    assert orq.executar(PERGUNTA_F2)["provedor_f2"]["provedor"] == "local" and remoto.recebidas == []
+    quebrado = LLMRemotoFalso(falhar=True)
+    orq, local = _orq(quebrado, TRECHOS)
+    estado = orq.executar(PERGUNTA_F2)
+    assert quebrado.recebidas and estado["resposta"].valido  # o Qwen local assumiu cada chamada que falhou
+    assert estado["provedor_f2"]["falhas_remotas"] > 0

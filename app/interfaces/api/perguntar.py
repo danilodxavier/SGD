@@ -68,6 +68,7 @@ def construir_orquestrador(tracer=None):
     from app.application.recuperacao.hibrida import RecuperadorHibrido
     from app.application.respostas.f1 import ResponderF1
     from app.infrastructure.llm.openai_compativel import OpenAICompativelAdapter
+    from app.infrastructure.llm.provedores import llm_f2_remoto
     from app.infrastructure.sqlite.busca import BuscaLexicalSqlite, RepositorioTrechosSqlite
     from app.infrastructure.sqlite.repositorio_grafo import RepositorioGrafoSqlite
     from app.infrastructure.sqlite.vetores import SqliteVecStore
@@ -82,7 +83,8 @@ def construir_orquestrador(tracer=None):
     grafo = RepositorioGrafoSqlite(_fabrica_sem_vetores)
     return Orquestrador(lambda p, k: rec.recuperar(p, k=k), ResponderF1(llm, conflitos=grafo, verificador=verificar),
                         llm, linha_do_tempo=grafo.resumo,
-                        precedentes=lambda p, docs: memoria.precedentes(p, documento_ids=docs), tracer=tracer)
+                        precedentes=lambda p, docs: memoria.precedentes(p, documento_ids=docs), tracer=tracer,
+                        llm_f2_remoto=llm_f2_remoto(), envio_externo_permitido=settings.ai_allow_remote)
 
 
 def _fonte(t):
@@ -96,7 +98,8 @@ def serializar(estado):
     base = {"rota": decisao.rota, "agentes": decisao.agentes, "justificativa_rota": decisao.justificativa,
             "resposta": r.resposta, "fontes": [_fonte(t) for t in r.fontes], "observacoes": r.observacoes,
             "tokens": {"entrada": r.tokens_entrada, "saida": r.tokens_saida},
-            "tempos_ms": dict(estado.get("tempos", [])), "aviso": AVISO_DECISAO}
+            "tempos_ms": dict(estado.get("tempos", [])), "aviso": AVISO_DECISAO,
+            "provedor_f2": estado.get("provedor_f2")}
     if decisao.rota == "F2":
         from app.application.decisoes.recomendacao import elementos_rf20
 

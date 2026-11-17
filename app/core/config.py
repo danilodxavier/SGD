@@ -88,6 +88,12 @@ class Settings:
         self.ollama_models = _path(os.getenv("OLLAMA_MODELS"), r"modelos\ollama")
         self.llm_modelo_padrao = os.getenv("LLM_MODELO_PADRAO", "sadgd-qwen2.5-7b").strip()
         self.observabilidade = os.getenv("OBSERVABILIDADE", "sqlite").strip().lower()  # sqlite | phoenix | nenhuma
+        # F2 em provedor gratuito em nuvem (Fase 10/11; ADR-004): só corpus acadêmico, anonimizado, com reserva local.
+        # Exige AI_ALLOW_REMOTE=true E SADGD_LLM_F2=gemini E a chave no .env (nunca no código ou no chat).
+        self.llm_f2 = os.getenv("SADGD_LLM_F2", "local").strip().lower()  # local | gemini
+        self.gemini_url = os.getenv("GEMINI_URL", "https://generativelanguage.googleapis.com/v1beta/openai/").strip()
+        self.gemini_modelo = os.getenv("GEMINI_MODELO", "gemini-2.5-flash").strip()
+        self.gemini_extras = os.getenv("GEMINI_EXTRAS", '{"reasoning_effort": "none"}').strip()
         self.versao_sistema = "2.0.0.dev0"
 
     @property

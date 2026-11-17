@@ -23,3 +23,20 @@ class LLMProtegido:
                                anonimizado=True)
         r = self._llm.chat(anonimizadas, **kwargs)
         return replace(r, texto=restaurar(r.texto, mapa), json=restaurar_objeto(r.json, mapa))
+
+
+class LLMComReserva:
+    """Tenta o provedor principal (ex.: Gemini protegido); se ele falhar (cota, rede, JSON inválido), a mesma chamada
+    vai ao LLM local. Violação de política (PermissionError) NUNCA é engolida."""
+
+    def __init__(self, principal, reserva):
+        self._principal, self._reserva = principal, reserva
+        self.nome, self.remoto = principal.nome, principal.remoto
+        self.falhas = 0
+
+    def chat(self, mensagens, **kwargs):
+        try:
+            return self._principal.chat(mensagens, **kwargs)
+        except RuntimeError:  # ErroLLM e falhas de transporte
+            self.falhas += 1
+            return self._reserva.chat(mensagens, **kwargs)

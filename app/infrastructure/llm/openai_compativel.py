@@ -31,7 +31,8 @@ def endereco_local(base_url: str) -> bool:
 
 
 class OpenAICompativelAdapter:
-    def __init__(self, nome, base_url, modelo, *, chave=None, timeout=120, tentativas=3, espera_inicial=1.0):
+    def __init__(self, nome, base_url, modelo, *, chave=None, timeout=120, tentativas=3, espera_inicial=1.0,
+                 extras=None):
         if urlparse(base_url).scheme not in ("http", "https"):
             raise ValueError(f"URL do servidor de IA deve usar http ou https: {base_url}")
         self.nome = nome
@@ -42,10 +43,11 @@ class OpenAICompativelAdapter:
         self._timeout = timeout
         self._tentativas = tentativas
         self._espera = espera_inicial
+        self._extras = dict(extras or {})  # campos adicionais do corpo da requisição, específicos do provedor
 
     def chat(self, mensagens, *, schema=None, max_tokens=700, temperatura=0.0, json_livre=False):
         corpo = {"model": self.modelo, "messages": list(mensagens), "max_tokens": max_tokens,
-                 "temperature": temperatura, "stream": False}
+                 "temperature": temperatura, "stream": False, **self._extras}
         if schema is not None:
             corpo["response_format"] = {"type": "json_schema",
                                         "json_schema": {"name": "saida", "schema": schema, "strict": True}}

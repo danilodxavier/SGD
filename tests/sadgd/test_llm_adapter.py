@@ -112,3 +112,26 @@ def test_rejeita_esquema_nao_http(url):
 def test_identifica_provedor_remoto(url, local):
     assert endereco_local(url) is local
     assert OpenAICompativelAdapter("x", url, "m").remoto is (not local)
+
+
+def test_parametros_extras_do_provedor_vao_no_corpo(servidor):
+    s = servidor(ok("{}"))
+    OpenAICompativelAdapter("gemini", s.url, "m", extras={"reasoning_effort": "none"}).chat(
+        [{"role": "user", "content": "oi"}], json_livre=True)
+    assert s.recebidos[0]["reasoning_effort"] == "none" and s.recebidos[0]["model"] == "m"
+
+
+def test_provedor_gemini_so_com_opcao_e_chave(monkeypatch):
+    from app.core.config import settings
+    from app.infrastructure.llm import provedores
+
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    monkeypatch.setattr(settings, "llm_f2", "gemini")
+    assert provedores.llm_f2_remoto() is None  # sem chave: tudo local
+    monkeypatch.setenv("GEMINI_API_KEY", "chave-de-teste")
+    monkeypatch.setattr(settings, "llm_f2", "local")
+    assert provedores.llm_f2_remoto() is None  # sem a opção explícita: tudo local
+    monkeypatch.setattr(settings, "llm_f2", "gemini")
+    llm = provedores.llm_f2_remoto()
+    assert llm.remoto is True and llm.nome.startswith("gemini:") and llm.base_url.startswith("https://")
+    assert "chave-de-teste" not in repr(vars(settings))  # a chave nunca fica na configuração
