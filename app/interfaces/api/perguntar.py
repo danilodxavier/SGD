@@ -81,7 +81,7 @@ def construir_orquestrador(tracer=None):
     rec, memoria = _componentes["recuperador"], memoria_decisoes()
     llm = OpenAICompativelAdapter("ollama", settings.ollama_url + "/v1", settings.llm_modelo_padrao, timeout=300)
     grafo = RepositorioGrafoSqlite(_fabrica_sem_vetores)
-    return Orquestrador(lambda p, k: rec.recuperar(p, k=k), ResponderF1(llm, conflitos=grafo, verificador=verificar),
+    return Orquestrador(lambda p, k: rec.recuperar(p, k=k).trechos, ResponderF1(llm, conflitos=grafo, verificador=verificar),
                         llm, linha_do_tempo=grafo.resumo,
                         precedentes=lambda p, docs: memoria.precedentes(p, documento_ids=docs), tracer=tracer,
                         llm_f2_remoto=llm_f2_remoto(), envio_externo_permitido=settings.ai_allow_remote)

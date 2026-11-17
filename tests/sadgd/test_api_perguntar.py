@@ -129,3 +129,20 @@ def test_cache_semantico_reaproveita_so_a_mesma_pergunta_e_audita(db, monkeypatc
     assert segunda["consulta_id"] != primeira["consulta_id"]  # toda consulta é auditada, mesmo vinda do cache
     assert _linhas(f"SELECT cache_hit, tokens_entrada FROM consultas WHERE id = {segunda['consulta_id']}") == [(1, 0)]
     assert _linhas(f"SELECT trecho_id FROM consulta_fontes WHERE consulta_id = {segunda['consulta_id']}") == [(10,)]
+
+
+def test_construir_orquestrador_entrega_lista_de_trechos_ao_grafo(monkeypatch):
+    """Regressão (Fase 11): o recuperador real devolve ResultadoRecuperacao; o orquestrador espera a lista de trechos.
+
+    Os demais testes da API e o E2E substituem o orquestrador, por isso a montagem real nunca era exercitada."""
+    from app.application.recuperacao.hibrida import ResultadoRecuperacao
+
+    class RecuperadorReal:
+        def recuperar(self, pergunta, k=8):
+            return ResultadoRecuperacao(pergunta, [TRECHO][:k])
+
+    monkeypatch.setitem(api._componentes, "recuperador", RecuperadorReal())
+    monkeypatch.setitem(api._componentes, "memoria", object())
+    orq = api.construir_orquestrador()
+    trechos = orq._recuperar_no({"pergunta": "Qual o valor global do contrato 012/2023?"})["trechos"]
+    assert isinstance(trechos, list) and trechos[0].id == TRECHO.id

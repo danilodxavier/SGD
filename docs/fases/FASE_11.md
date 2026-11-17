@@ -39,3 +39,12 @@ Relatório técnico, documentação final (README, manuais do usuário e técnic
 - Itens idênticos entre execuções (roteador e recuperação determinísticos): precisão/recall de agentes 0,942 / 0,790.
 
 Evidências: `avaliacao/execucoes/fase11/f2_sadgd-qwen2.5-7b__f2_gemini.jsonl`, `f2_resumo.json`. Testes: 220 passando em `tests/sadgd`, ruff limpo.
+
+## 4. Defeito encontrado e corrigido (transparência)
+
+| Ocorrência | Causa | Tratamento |
+|---|---|---|
+| Ao validar ao vivo as perguntas do roteiro de demonstração, `POST /api/sadgd/perguntar` falhava com `TypeError: 'ResultadoRecuperacao' object is not subscriptable` | Desde a Fase 7, `construir_orquestrador` passava o objeto do recuperador híbrido ao grafo, que espera a lista de trechos. Os testes da API e o E2E substituem o orquestrador por um falso, e os scripts de avaliação montam a recuperação por conta própria — a montagem real nunca era exercitada | `rec.recuperar(p, k=k).trechos`; teste de regressão que monta o orquestrador real com recuperador que devolve `ResultadoRecuperacao` (falha sem a correção). Validação ao vivo no banco real: F1 fato, conflito, ausência e linha do tempo corretos; F2 com 2 especialistas, relator válido e 6 elementos de RF-20 |
+
+**Impacto nas métricas:** nenhum — todas as avaliações (Fases 5–11) usam a mesma recuperação e o mesmo orquestrador, montados pelos scripts. **Impacto no produto:** a tela Perguntar falhava com o pipeline real desde a Fase 7; corrigido.
+
