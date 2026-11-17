@@ -24,7 +24,8 @@ ORDEM_PARECER = ("Responda SOMENTE com um objeto JSON com as chaves nesta ordem:
                  "máximo 4 afirmações, 3 fundamentos, 3 riscos, 2 alternativas e 3 lacunas, cada texto com uma frase.")
 ORDEM_RELATOR = ("Modo F2. Responda SOMENTE com um objeto JSON com as chaves nesta ordem: \"resposta\" "
                  "(síntese com citações [T<id>] e, se houver, [P<id>] dos precedentes), \"recomendacao\" (1 a 2 "
-                 "frases), \"consensos\", \"divergencias\" (lista de {\"tema\", \"posicoes\": [{\"agente\", "
+                 "frases), \"consensos\" (lista de frases curtas, texto simples), "
+                 "\"divergencias\" (lista de {\"tema\", \"posicoes\": [{\"agente\", "
                  "\"posicao\"}]}), \"alternativas\" (lista de {\"descricao\", \"pros\": [\"...\"], "
                  "\"contras\": [\"...\"]}), \"riscos\" (lista de {\"descricao\", \"probabilidade\": "
                  "baixa|media|alta, \"impacto\": baixo|medio|alto, \"mitigacao\"}), \"lacunas\", \"fontes\" "
@@ -63,6 +64,18 @@ def _rotulo(x):
 def _nivel(valor, validos, padrao):
     v = str(valor or "").strip().lower().translate(SEM_ACENTO)
     return v if v in validos else padrao
+
+
+def _consenso_em_frase(item):
+    """Consenso deve ser texto; objetos {tema, posicoes:[{agente, posicao}]} viram uma frase sem perder conteúdo."""
+    if isinstance(item, str):
+        return item.strip()
+    if not isinstance(item, dict):
+        return ""
+    tema = str(item.get("tema") or item.get("descricao") or "").strip()
+    posicoes = [f"{p.get('agente', '')}: {p.get('posicao', '')}".strip(": ") for p in item.get("posicoes") or []
+                if isinstance(p, dict)]
+    return " — ".join(x for x in (tema, "; ".join(posicoes)) if x)
 
 
 def _reparar_parecer(d, agente, rotulos):
@@ -221,6 +234,8 @@ def relatar_f2(llm, pergunta, trechos, pareceres, contexto_extra="", precedentes
         d["confianca"] = 0.0
     for chave in ("consensos", "divergencias", "alternativas", "riscos", "lacunas"):
         d[chave] = d.get(chave) if isinstance(d.get(chave), list) else []
+    # reparo de forma: consenso no formato das divergências ({"tema", "posicoes"}) → frase (Gemini, Fase 11)
+    d["consensos"] = [_consenso_em_frase(c) for c in d["consensos"] if _consenso_em_frase(c)]
     for risco in d["riscos"]:  # reparo de forma: "médio"/"Alta" → "medio"/"alta"
         if isinstance(risco, dict):
             for campo in ("probabilidade", "impacto"):

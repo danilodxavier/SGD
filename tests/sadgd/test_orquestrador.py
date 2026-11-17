@@ -207,3 +207,48 @@ def test_envio_nao_autorizado_no_env_mantem_local_e_falha_remota_cai_para_local(
     estado = orq.executar(PERGUNTA_F2)
     assert quebrado.recebidas and estado["resposta"].valido  # o Qwen local assumiu cada chamada que falhou
     assert estado["provedor_f2"]["falhas_remotas"] > 0
+
+
+def test_reserva_repete_no_remoto_quando_o_json_vem_cortado():
+    from app.application.agentes.politica_llm import LLMComReserva
+
+    class Cortado:
+        nome, remoto = "remoto", True
+
+        def __init__(self):
+            self.orcamentos = []
+
+        def chat(self, mensagens, **kw):
+            self.orcamentos.append(kw["max_tokens"])
+            if len(self.orcamentos) == 1:
+                raise RuntimeError("O modelo não retornou JSON válido.")
+            return RespostaLLM("{}", "remoto", json={})
+
+    class LocalQueNaoDeveSerUsado:
+        nome, remoto = "local", False
+
+        def chat(self, mensagens, **kw):
+            raise AssertionError("não deveria cair no local")
+
+    remoto = Cortado()
+    r = LLMComReserva(remoto, LocalQueNaoDeveSerUsado())
+    r.chat([{"role": "user", "content": "x"}], max_tokens=800)
+    assert remoto.orcamentos == [800, 1280] and r.falhas == 0
+
+
+def test_relator_com_consensos_no_formato_de_divergencia_e_reparado():
+    """Gemini (Fase 11) devolve consensos como {tema, posicoes}; o reparo converte em frase sem perder conteúdo."""
+
+    class LLMConsensoObjeto(LLMRoteiro):
+        def chat(self, mensagens, **kw):
+            r = super().chat(mensagens, **kw)
+            if "Modo F2" in mensagens[0]["content"]:
+                r.json["consensos"] = [{"tema": "Prorrogação", "posicoes": [
+                    {"agente": "gestor_publico", "posicao": "viável"}, {"agente": "fiscal_contrato",
+                                                                         "posicao": "com pesquisa de preços"}]}]
+            return r
+
+    estado = criar(LLMConsensoObjeto()).executar("Devo prorrogar novamente o Contrato nº 044/2023 de vigilância?")
+    final = estado["resposta"]
+    assert final.valido and not any(o.startswith("relator_schema") for o in final.observacoes)
+    assert final.dados["consensos"] == ["Prorrogação — gestor_publico: viável; fiscal_contrato: com pesquisa de preços"]

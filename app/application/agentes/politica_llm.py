@@ -37,6 +37,13 @@ class LLMComReserva:
     def chat(self, mensagens, **kwargs):
         try:
             return self._principal.chat(mensagens, **kwargs)
-        except RuntimeError:  # ErroLLM e falhas de transporte
+        except RuntimeError as exc:  # ErroLLM e falhas de transporte
+            # JSON cortado pelo limite de tokens: repete no próprio provedor com orçamento maior antes da reserva
+            # (indisponibilidade/cota — 503, 429, rede — vai direto à reserva local)
+            if "JSON" in str(exc) and kwargs.get("max_tokens"):
+                try:
+                    return self._principal.chat(mensagens, **{**kwargs, "max_tokens": int(kwargs["max_tokens"] * 1.6)})
+                except RuntimeError:
+                    pass
             self.falhas += 1
             return self._reserva.chat(mensagens, **kwargs)
