@@ -66,6 +66,7 @@ Variáveis de ambiente que forçam caches para dentro do projeto (definidas em `
 - Nunca editar caminhos Windows com `sed` (as barras invertidas são consumidas); usar PowerShell `[IO.File]` ou Python.
 - Avaliações longas com LLM (F2 ≈ 4–6 min/item) só em primeiro plano, em ciclos `--max-minutos 4` (o segundo plano é encerrado por falta de memória).
 - Dentro de `corpus/` só `publico/`, `sintetico/` e os manifestos vão ao Git; `corpus/enviados/` (uploads) pode ter dados reais.
+- CI: falhas de teste viram anotações públicas (`/check-runs/{id}/annotations`). A API pública do GitHub tem limite de 60 req/h sem login: consultar o CI com intervalos ≥ 40 s.
 - Testes E2E usam o Microsoft Edge do sistema via Playwright (`channel="msedge"`) — não baixar navegadores.
 - Ollama do projeto: `scripts\sadgd\ollama.ps1 -Acao iniciar|parar|status`; Tesseract: `scripts\sadgd\tesseract.ps1`.
 

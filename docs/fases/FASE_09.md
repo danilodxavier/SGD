@@ -37,6 +37,7 @@
 | Painel, indexação e OCR da v1 acionavam o indexador antigo (tabelas v1) | Trocados pelo indexador do SAD-GD |
 | Raiz documental lida de lugares diferentes (banco × `.env`) | Serviço usa a mesma função da tela Configurações |
 | Construção do grafo só existia como script | Caso de uso `construir_grafo` reutilizado pelo script e pelo serviço |
+| CI falhou após o commit da fase: `python-multipart` (upload por formulário) estava instalado no venv local, mas não declarado em `requirements.txt` — um clone limpo com o **mesmo venv** não detecta isso | Dependência declarada; o CI passou a publicar cada teste que falha como **anotação pública** do check run (diagnóstico sem login) |
 
 ## 4. Testes
 

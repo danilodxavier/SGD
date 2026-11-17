@@ -52,6 +52,7 @@
 | 2026-11-16 | Saída JSON cortada por `max_tokens` é a principal falha dos especialistas locais; pedir concisão com limites por lista e repetir com orçamento maior resolve sem schema estrito | Fase 7 |
 | 2026-11-16 | Em GPU de 6 GB, o paralelismo do `Send` do LangGraph não reduz latência: o Ollama serializa as gerações; o custo da F2 cresce linearmente com o número de especialistas | Fase 7 |
 | 2026-11-16 | Signatários de atos oficiais (ministros, presidentes) são pessoas físicas: a anonimização os mascara para envio remoto, mas o texto local permanece íntegro (atos públicos) | Fase 7 |
+| 2026-11-17 | Dependência implícita só aparece num ambiente novo: o CI (venv do zero) é a prova real do `requirements.txt`; anotações `::error::` tornam a falha legível sem acesso aos logs | Fase 9 — CI |
 | 2026-11-17 | HTML do portal da legislação é conteúdo de terceiros: servi-lo na origem do sistema exige `CSP: sandbox` para não executar scripts | Fase 9 |
 | 2026-11-17 | Indexação incremental "por lista" tem semântica de sincronização (o que não está na lista some): upload precisa de modo parcial explícito | Fase 9 |
 | 2026-11-17 | Recriar tabelas referenciadas com `ON DELETE SET NULL` desfaz vínculos silenciosamente; guardar uma chave natural estável permite religar | Fase 9 |
