@@ -75,9 +75,9 @@ const Layout = (() => {
       focusTarget(menu.querySelector('.nav-item[aria-current="page"]') || menu.querySelector(".nav-item"));
       return;
     }
-    const ask = document.getElementById("ask-input");
+    const ask = document.getElementById("sg-pergunta");
     if (target === "busca" && ask && typeof showView === "function") {
-      showView("perguntas");
+      showView("perguntar");
       focusTarget(ask);
       return;
     }
@@ -104,7 +104,7 @@ const Layout = (() => {
       else home.removeAttribute("aria-current");
     }
     document.title = label && name !== "dashboard"
-      ? `${label} — Agente de Inteligência Documental` : "Agente de Inteligência Documental";
+      ? `${label} — SAD-GD` : "SAD-GD — Apoio à Decisão e Gestão Documental";
   }
 
   function init() {

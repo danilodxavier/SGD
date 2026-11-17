@@ -150,95 +150,88 @@ async function refreshHealth() {
   }
 }
 
-/* ---------- indexação ---------- */
+/* ---------- indexação (SAD-GD: acervo inteiro, incremental; uploads são indexados pela tela Acervo) ---------- */
 let indexPoll = null;
 
-async function startIndex(force) {
+async function startIndex() {
   try {
-    await API.post("/api/index", { force });
-    toast(force ? "Reindexação completa iniciada." : "Indexação iniciada.");
+    await API.post("/api/sadgd/indexar");
+    toast("Atualização do índice iniciada (somente arquivos novos ou alterados).");
     watchIndexer();
   } catch (e) { toast(e.message, true); }
 }
 
 function renderIndexer(state) {
   const bar = $("#indexer-bar");
-  if (!state.running) { bar.classList.add("hidden"); return; }
+  if (!state || !state.executando) { bar.classList.add("hidden"); return; }
   bar.classList.remove("hidden");
-  const pct = state.total ? Math.round((state.processed / state.total) * 100) : 0;
-  $("#indexer-text").textContent =
-    `Indexando (${state.phase}): ${state.processed} de ${state.total} arquivos${state.current ? ` — ${state.current}` : ""}`;
-  $("#indexer-progress").style.width = `${pct}%`;
+  $("#indexer-text").textContent = `Indexando o acervo: ${state.etapa || "…"}`;
+  $("#indexer-progress").style.width = "100%";
 }
 
-function watchIndexer() {
+function watchIndexer(onDone) {
   if (indexPoll) return;
   const tick = async () => {
     try {
-      const state = await API.get("/api/index/status");
+      const state = await API.get("/api/sadgd/indexacao");
       renderIndexer(state);
-      if (!state.running) {
+      if (!state.executando) {
         clearInterval(indexPoll);
         indexPoll = null;
-        if (state.error) toast(state.error, true);
+        if (state.erro) toast(`Falha na indexação: ${state.erro}`, true);
+        else if (state.resumo) toast(`Indexação concluída: ${state.resumo.novos} novo(s), ${state.resumo.alterados} alterado(s).`);
+        if (onDone) onDone(state);
         loadDashboard();
         refreshHealth();
       }
     } catch (e) { /* tenta novamente no próximo ciclo */ }
   };
-  indexPoll = setInterval(tick, 1200);
+  indexPoll = setInterval(tick, 1500);
   tick();
 }
 
-/* ---------- painel ---------- */
+/* ---------- painel (SAD-GD) ---------- */
+const ORIGEM_LABEL = { publico: "Público", sintetico: "Sintético", real: "Real" };
+
 async function loadDashboard() {
   try {
-    const s = await API.get("/api/status");
-    $("#dash-root").textContent = `Diretório documental: ${s.documents_root}`;
-    const last = s.last_run;
+    const s = await API.get("/api/sadgd/painel");
+    $("#dash-root").textContent = "Acervo documental do SAD-GD (corpus acadêmico público e sintético + documentos enviados).";
+    const origens = Object.entries(s.por_origem || {}).map(([k, v]) => `${ORIGEM_LABEL[k] || k}: ${v}`).join(" · ");
     const cards = [
-      ["Documentos encontrados", s.found],
-      ["Documentos indexados", s.indexed],
-      ["Documentos com erro", s.errors, s.errors ? "err" : ""],
-      ["Sem texto (requer OCR)", s.without_text, s.without_text ? "warn" : ""],
-      ["Formato não suportado", s.unsupported],
-      ["Contratos identificados", s.contracts],
-      ["Checklists", s.checklists],
-      ["Última atualização", last ? formatDate(last.finished_at) : "—", "", true],
-      ["Indexador", s.indexer.running ? "Em execução" : "Parado", "", true],
+      ["Documentos", s.documentos],
+      ["Trechos indexados", s.trechos],
+      ["Vetores (bge-m3)", s.vetores ?? "—"],
+      ["Processos reconstruídos", s.processos],
+      ["Relações entre documentos", s.relacoes],
+      ["Contradições detectadas", s.contradicoes, s.contradicoes ? "warn" : ""],
+      ["Normas revogadas", s.normas_revogadas],
+      ["Decisões na memória", s.decisoes],
+      ["Origem", origens || "—", "", true],
     ];
     $("#dash-cards").innerHTML = cards.map(([label, value, cls, small]) => `
       <div class="card ${cls || ""}">
         <div class="label">${esc(label)}</div>
         <div class="value ${small ? "small-value" : ""}">${esc(value)}</div>
       </div>`).join("");
-    $("#dash-last-run").innerHTML = last
-      ? `Arquivos encontrados: <b>${last.found}</b> · novos: <b>${last.new}</b> · alterados: <b>${last.changed}</b> ·
-         inalterados: <b>${last.unchanged}</b> · removidos: <b>${last.removed}</b> · erros: <b>${last.errors}</b>`
-      : "Nenhuma indexação realizada. Configure o diretório documental e clique em “Atualizar índice”.";
-    renderIndexer(s.indexer);
-    if (s.indexer.running) watchIndexer();
-
-    const contracts = await API.get("/api/contracts");
-    $("#dash-contracts").innerHTML = contracts.length ? `
-      <div class="table-wrap"><table class="table">
-        <thead><tr><th>Contrato</th><th>Contratada</th><th>Valor</th><th>Vigência</th><th>Fonte</th></tr></thead>
-        <tbody>${contracts.map((c) => `
-          <tr>
-            <td><b>${esc(c.contract_number)}</b>${c.process_number ? `<div class="path">Processo ${esc(c.process_number)}</div>` : ""}</td>
-            <td>${esc(c.contractor || "—")}${c.cnpj ? `<div class="path">CNPJ ${esc(c.cnpj)}</div>` : ""}</td>
-            <td>${esc(c.value || "—")}</td>
-            <td>${esc(c.start_date || "?")} a ${esc(c.end_date || "?")}</td>
-            <td><a href="${fileUrl(c.source_document_id)}" target="_blank" rel="noopener">${esc(c.filename)}</a></td>
-          </tr>`).join("")}
-        </tbody></table></div>
-      <p class="muted small" style="margin-top: var(--space-2)">Dados extraídos do termo de contrato original. Aditivos posteriores
-        podem alterá-los — consulte a aba Perguntas.</p>`
-      : `<p class="empty">Nenhum contrato identificado até o momento.</p>`;
+    const ROTA = { F1_simples: "F1 — pergunta simples", F1_complexa: "F1 — pergunta complexa", F2: "F2 — apoio à decisão" };
+    $("#dash-consultas").innerHTML = (s.consultas || []).length ? `
+      <div class="table-wrap"><table class="table"><thead><tr><th>Rota</th><th>Consultas</th><th>Latência média</th></tr></thead>
+      <tbody>${s.consultas.map((c) => `<tr><td>${esc(ROTA[c.rota] || c.rota)}</td><td>${c.total}</td>
+        <td>${(c.latencia_media_ms / 1000).toFixed(1)} s</td></tr>`).join("")}</tbody></table></div>
+      <p class="muted small">A pergunta é registrada apenas como hash (LGPD); rota, agentes, fontes, tokens e latência ficam na auditoria.</p>`
+      : `<p class="empty">Nenhuma consulta realizada ainda.</p>`;
+    const u = s.ultima_indexacao || {};
+    $("#dash-last-run").innerHTML = u.inicio
+      ? `${formatDate(u.fim || u.inicio)} — novos: <b>${u.novos}</b> · alterados: <b>${u.alterados}</b> ·
+         removidos: <b>${u.removidos}</b> · erros: <b>${u.erros}</b> · trechos gravados: <b>${u.trechos}</b>`
+      : "Nenhuma indexação registrada.";
+    renderIndexer(s.indexacao);
+    if (s.indexacao && s.indexacao.executando) watchIndexer();
   } catch (e) { toast(e.message, true); }
 }
 
-$("#dash-index").addEventListener("click", () => startIndex(false));
+$("#dash-index").addEventListener("click", () => startIndex());
 views.dashboard = loadDashboard;
 
 /* ---------- configurações ---------- */
@@ -275,10 +268,10 @@ $("#cfg-browse").addEventListener("click", async (ev) => {
   ev.target.disabled = false;
 });
 
-$("#cfg-index").addEventListener("click", () => { startIndex(false); showView("dashboard"); });
+$("#cfg-index").addEventListener("click", () => { startIndex(); showView("dashboard"); });
 $("#cfg-reindex").addEventListener("click", () => {
-  if (confirm("Reprocessar todos os documentos? Isso pode levar alguns minutos. Os arquivos originais não são alterados.")) {
-    startIndex(true);
+  if (confirm("Atualizar o índice do acervo? Apenas arquivos novos ou alterados são processados; os originais não são alterados.")) {
+    startIndex();
     showView("dashboard");
   }
 });
@@ -353,9 +346,8 @@ $("#ocr-test").addEventListener("click", async (ev) => {
 
 $("#ocr-retry").addEventListener("click", async () => {
   try {
-    await API.post("/api/index", { retry_ocr: true });
-    toast("Reprocessando documentos digitalizados e imagens.");
-    watchIndexer();
+    // SAD-GD: o indexador do acervo (não mais o da v1) aplica o OCR configurado aos arquivos novos ou alterados
+    await startIndex();
     showView("dashboard");
   } catch (e) { toast(e.message, true); }
 });
@@ -460,6 +452,7 @@ const Auth = {
     const user = status.user;
     this.user = user;
     document.body.classList.toggle("is-admin", !!(user && user.is_admin));
+    document.body.classList.toggle("is-gestor", !!(user && user.is_gestor));
     document.body.classList.toggle("is-local", !!status.is_local);
     if (user) {
       $("#user-name").textContent = user.name;

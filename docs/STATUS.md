@@ -5,10 +5,10 @@
 | Campo | Valor |
 |---|---|
 | Atualizado em | 2026-11-17 |
-| Fase atual | **Fase 8 — Apoio à decisão (F2) e memória de decisões** |
-| Situação da fase | Entregáveis concluídos — **aguardando aprovação do responsável** |
-| Última tarefa concluída | Memória de decisões (30 decisões + 50 perguntas de precedente; R@3 1,00 no teste), recomendação F2 com os 6 elementos de RF-20 (100% presentes ou declarados), relator v2, API de decisões, correção do agrupamento do grafo (pureza 0,966) (`docs/fases/FASE_08.md`) |
-| Próxima tarefa exata | Após "Aprovado, siga para a Fase 9": MVP — (1) SAD-090 chat com fontes clicáveis, pareceres por agente, precedentes e elementos RF-20; (2) upload de documentos com indexação (RF-22); (3) linha do tempo visual (RF-13); (4) perfil Gestor (RF-23) para registrar decisões; (5) testes E2E. Reaproveitar o frontend da v1 em `frontend\` |
+| Fase atual | **Fase 9 — MVP completo** |
+| Situação da fase | Entregáveis concluídos — **aguardando aprovação do responsável** (e decisão sobre exclusão de código v1 e identidade visual: `FASE_09.md` §6) |
+| Última tarefa concluída | Telas Perguntar (F1/F2), Acervo (upload + indexação no servidor), Linha do tempo, Decisões e Painel; perfil Gestor; API do acervo; 4 testes E2E no Edge; 465 testes (`docs/fases/FASE_09.md`) |
+| Próxima tarefa exata | Após "Aprovado, siga para a Fase 10": (1) latência da F2 (especialistas no Qwen 2.5 3B, contexto menor, cache semântico) com reavaliação em ciclos; (2) faithfulness com LLM-juiz calibrado (κ de Cohen) no corpus acadêmico; (3) precedentes: limiar relativo; (4) remoção do código v1 se aprovada; (5) tabela final métricas × metas |
 | Bloqueios | Kanban (SAD-003) depende do `gh`. RAM livre da máquina baixa (1–2 GB): indexações com `--max-minutos 7.5`; avaliações F2 só em primeiro plano com `--max-minutos 4` |
 
 ## Histórico de fases
@@ -23,7 +23,8 @@
 | 5 — RAG, golden set e baseline | ✅ Aprovada em 2026-11-16 | `docs/fases/FASE_05.md` |
 | 6 — Linha do tempo e relações | ✅ Aprovada em 2026-11-16 | `docs/fases/FASE_06.md` |
 | 7 — Sistema multiagentes | ✅ Aprovada em 2026-11-16 | `docs/fases/FASE_07.md` |
-| 8 — Apoio à decisão (F2) | Aguardando aprovação | `docs/fases/FASE_08.md` |
+| 8 — Apoio à decisão (F2) | ✅ Aprovada em 2026-11-17 | `docs/fases/FASE_08.md` |
+| 9 — MVP completo | Aguardando aprovação | `docs/fases/FASE_09.md` |
 
 ## Fatos-chave para retomada
 
@@ -39,3 +40,4 @@
 - Multiagentes: `app/application/agentes/` (roteador, verificador, especialistas, orquestrador, politica_llm); API `POST /api/sadgd/perguntar`. Avaliações: `avaliar_roteador.py`, `avaliar_anonimizacao.py`, `avaliar_respostas.py --verificador --rotulo fase7`, `avaliar_f2.py [--resumo]` → `avaliacao\execucoes\fase7\`.
 - Qwen 2.5 3B (`qwen2.5:3b-instruct-q4_K_M`) instalado: exatidão 0,462 na validação; candidato a especialista rápido na Fase 10.
 - Memória de decisões: `scripts\sadgd\gerar_memoria_decisoes.py` → `importar_decisoes.py` (rodar após `construir_grafo.py`; idempotente). Avaliações: `avaliar_precedentes.py`, `avaliar_f2.py --rotulo fase8` (ciclos `--max-minutos 4` em primeiro plano). API: `/api/sadgd/decisoes`, `/api/sadgd/precedentes`.
+- MVP: `start.bat` → http://127.0.0.1:8000 (telas Perguntar, Acervo, Linha do tempo, Decisões). Uploads vão para `corpus/enviados/` (fora do Git, origem real). E2E: `pytest tests/sadgd/test_e2e_navegador.py` (Edge do sistema; `SADGD_E2E_CAPTURAS=1` grava telas em `docs/img/fase09/`).

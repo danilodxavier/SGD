@@ -4,7 +4,7 @@
 |---|---|
 | Período | 2026-11-16 a 2026-11-17 |
 | Executor | Claude Code (`claude-opus-5-5`) |
-| Situação | **Aguardando aprovação** |
+| Situação | ✅ **Aprovada** em 2026-11-17 |
 
 ## 1. Entregas
 
@@ -86,4 +86,4 @@ Ao ligar decisões a processos, o contrato de TI 031/2023 aparecia dentro de um 
 
 ## 7. Aprovação
 
-- [ ] Aprovado por: ______ em ____/____/______
+- [x] Aprovado pelo responsável em 2026-11-17 ("Aprovado siga para a fase 9")

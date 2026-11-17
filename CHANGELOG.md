@@ -5,6 +5,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 ## [Não lançado] — Reestruturação SAD-GD
 
 ### Adicionado
+- Fase 9 (MVP): telas Perguntar (F1/F2 com fontes, pareceres, precedentes e RF-20), Acervo (upload e indexação no servidor), Linha do tempo (fases e evidências), Decisões e Painel do SAD-GD; perfil Gestor; API do acervo (painel, documentos, arquivo com CSP sandbox, trecho, busca, upload, indexação); serviço de indexação em segundo plano; caso de uso `construir_grafo`; migração 005; testes E2E no Edge com Playwright; 11 novos testes.
 - Fase 8 (apoio à decisão): memória de decisões (domínio, migração 004 com FTS5, repositório, busca híbrida com rerank e limiar calibrado), memória sintética de 30 decisões e 50 perguntas de precedente, recomendação F2 com os 6 elementos de RF-20 (precedentes e base legal determinísticos, hierarquia e vigência), relator v2 (prompt e schema), API `/api/sadgd/decisoes` e `/api/sadgd/precedentes`, scripts `gerar_memoria_decisoes.py`, `importar_decisoes.py`, `avaliar_precedentes.py`; 17 novos testes.
 - Fase 7 (multiagentes): roteador por regras, verificador de fontes determinístico (integrado ao ResponderF1), especialistas com JSON validado e reparo de forma, relator F2, orquestrador LangGraph com fan-out paralelo, anonimização LGPD reversível e política de envio a provedores remotos, auditoria de consultas (hash da pergunta), resumo da linha do tempo para a F2, API `POST /api/sadgd/perguntar`, scripts `avaliar_roteador.py`, `avaliar_anonimizacao.py`, `avaliar_f2.py` e flag `--verificador` em `avaliar_respostas.py`; Qwen 2.5 3B avaliado.
 - Fase 6 (linha do tempo): extração de referências, classificador de relações por regras (notas de compilação, revogação parcial, retomada), detecção de contradições, agrupamento, vigência pelo grafo, respostas de conflito determinísticas, API `/api/sadgd/processos` e `/api/sadgd/linha-do-tempo`, scripts de construção e avaliação do grafo; 21 novos testes.
@@ -23,6 +24,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 - Relatório de auditoria `docs/fases/FASE_00.md`.
 
 ### Alterado
+- Produto renomeado para SAD-GD 2.0.0.dev0 na interface; painel, "Atualizar índice" e OCR passam a usar o indexador do SAD-GD; telas v1 (Perguntas, Documentos, Checklist, Relatórios) saem do menu; indexador com modo parcial; `.gitignore` restringe `corpus/` ao público/sintético.
 - Grafo: documento não normativo que cita ato normativo passa a `fundamenta` (pureza do agrupamento 0,932 → 0,966); instruções dos especialistas exigem `pros`/`contras` como listas.
 - Gabarito sintético revisado (99 → 103 relações) via `gerar_corpus_sintetico.py --somente-gabarito`; métrica de alucinação numérica normaliza datas por extenso e citações de atos.
 - `LLMPort.chat` aceita `json_livre`; CI executa a avaliação reduzida (`avaliar.py ci`).

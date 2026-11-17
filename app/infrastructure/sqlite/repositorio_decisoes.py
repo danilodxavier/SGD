@@ -32,6 +32,8 @@ class RepositorioDecisoesSqlite:
                     "resultado, avaliacao_resultado, corpus_origem, consulta_id, codigo, registrado_por, criado_em) "
                     "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                     (*valores, d.codigo, registrado_por, datetime.now().isoformat(timespec="seconds"))).lastrowid
+            conn.execute("UPDATE decisoes SET processo_chave = (SELECT chave FROM processos WHERE id = "
+                         "decisoes.processo_id) WHERE id = ?", (decisao_id,))
             conn.executemany("INSERT INTO decisao_fontes (decisao_id, documento_id, trecho_id) VALUES (?, ?, ?)",
                              [(decisao_id, doc, None) for doc in documento_ids] +
                              [(decisao_id, None, t) for t in trecho_ids])

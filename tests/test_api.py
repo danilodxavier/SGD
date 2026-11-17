@@ -17,7 +17,7 @@ def test_health(client):
 
 def test_painel_servido(client):
     r = client.get("/")
-    assert r.status_code == 200 and "Agente" in r.text
+    assert r.status_code == 200 and "SAD-GD" in r.text
 
 
 def test_pergunta(client):

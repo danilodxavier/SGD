@@ -21,6 +21,7 @@ async function loadUsers() {
         <td>
           <select data-profile="${u.id}">
             <option value="consulta" ${u.profile === "consulta" ? "selected" : ""}>Consulta</option>
+            <option value="gestor" ${u.profile === "gestor" ? "selected" : ""}>Gestor</option>
             <option value="admin" ${u.profile === "admin" ? "selected" : ""}>Administrador</option>
           </select>
         </td>

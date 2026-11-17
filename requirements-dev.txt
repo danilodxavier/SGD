@@ -3,3 +3,4 @@ pytest>=8.0
 pytest-cov>=6.0
 ruff>=0.12
 httpx>=0.27
+playwright>=1.49  # E2E no navegador (usa o Microsoft Edge do sistema; sem download de navegador)

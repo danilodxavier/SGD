@@ -17,7 +17,8 @@ from app.core.logging import get_logger
 
 log = get_logger("auth")
 
-PROFILES = {"admin": "Administrador", "consulta": "Consulta"}
+# RF-23: Gestor registra decisões e envia documentos; Consulta só consulta; Administrador faz tudo
+PROFILES = {"admin": "Administrador", "gestor": "Gestor", "consulta": "Consulta"}
 COOKIE_NAME = "agente_sessao"
 PBKDF2_ITERATIONS = 390_000
 MAX_FAILURES = 5
@@ -90,6 +91,7 @@ def _public(row):
     user["must_change_password"] = bool(user["must_change_password"])
     user["profile_label"] = PROFILES.get(user["profile"], user["profile"])
     user["is_admin"] = user["profile"] == "admin"
+    user["is_gestor"] = user["profile"] in ("admin", "gestor")
     return user
 
 

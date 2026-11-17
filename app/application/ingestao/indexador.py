@@ -87,7 +87,8 @@ class IndexarCorpus:
         self.origem_padrao, self.lote, self.modelo = origem_padrao, lote_embeddings, modelo
 
     def executar(self, raiz: str, arquivos: Iterable[ArquivoFonte], forcar: bool = False,
-                 limite_segundos: float | None = None) -> Resumo:
+                 limite_segundos: float | None = None, parcial: bool = False) -> Resumo:
+        """parcial=True: `arquivos` é só um subconjunto (ex.: upload) — nada fora dele é considerado removido."""
         inicio_iso, t0 = datetime.now().isoformat(timespec="seconds"), time.perf_counter()
         resumo, conhecidos = Resumo(), self.repo.estado()
         pendentes_vetor, docs_com_vetor = [], set()
@@ -132,7 +133,8 @@ class IndexarCorpus:
         if docs_com_vetor:
             resumo.vetores += self._descarregar(pendentes_vetor, docs_com_vetor)
         # numa execução interrompida, arquivos não vistos NÃO são considerados removidos
-        removidos = [] if resumo.interrompido else [v[0] for k, v in conhecidos.items() if k not in vistos]
+        removidos = [] if resumo.interrompido or parcial else [v[0] for k, v in conhecidos.items()
+                                                                if k not in vistos]
         if removidos:
             self.repo.remover(removidos)
             resumo.removidos = len(removidos)

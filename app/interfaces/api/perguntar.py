@@ -2,7 +2,6 @@
 
 Os modelos de recuperação (bge-m3 + reranker) rodam por padrão na CPU (`SADGD_DISPOSITIVO_RECUPERACAO`), deixando
 a GPU de 6 GB para o LLM do Ollama. O orquestrador é criado sob demanda e reaproveitado (singleton)."""
-import os
 import threading
 import time
 
@@ -34,15 +33,10 @@ def _fabrica_sem_vetores():
 
 
 def _modelos_recuperacao():
-    """bge-m3 + reranker, carregados uma única vez e compartilhados por trechos e decisões."""
-    from app.infrastructure.modelos.embeddings import BgeM3Embedder
-    from app.infrastructure.modelos.reranker import BgeReranker
+    """bge-m3 + reranker compartilhados por trechos, decisões e indexação (um único carregamento por processo)."""
+    from app.infrastructure.modelos import compartilhados
 
-    if "modelos" not in _componentes:
-        dispositivo = os.environ.get("SADGD_DISPOSITIVO_RECUPERACAO", "cpu")
-        _componentes["modelos"] = (BgeM3Embedder(dispositivo=dispositivo, liberar_gpu=dispositivo != "cpu"),
-                                   BgeReranker(dispositivo=dispositivo))
-    return _componentes["modelos"]
+    return compartilhados.embedder(), compartilhados.reranker()
 
 
 def memoria_decisoes():

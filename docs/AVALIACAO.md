@@ -75,6 +75,15 @@ Alucinação numérica recalculada com normalização de datas e citações de a
 |---|---|---|---|---|---|---|
 | Fase 8 | **1,00** | 0,714 | 0,789 / 1,00 | 0,794 | 13/21 | 329 s / 387 s |
 
+### Fase 9 — MVP (testes de aceitação)
+
+| Critério | Evidência | Resultado |
+|---|---|---|
+| RF-21 pergunta → resposta → fonte abre o documento | E2E no Edge (`test_e2e_navegador.py`) | ✅ |
+| RF-22 documento enviado aparece na busca | API + E2E | ✅ |
+| RF-13 fases e relações clicáveis | E2E (evidência da ruptura) | ✅ |
+| RF-23 401/403 por perfil | `test_api_acervo.py`, `test_api_decisoes.py` | ✅ |
+
 ### Roteador e anonimização (Fase 7)
 
 | Avaliação | Validação | Teste |
@@ -108,3 +117,4 @@ Alucinação numérica recalculada com normalização de datas e citações de a
 | 2026-11-17 | fase8_relacoes | sintético + público | Contrato que cita lei = fundamenta | pureza 0,932 → 0,966; relações inalteradas |
 | 2026-11-17 | fase8_precedentes | precedentes (15/35) | Memória de decisões híbrida + limiar calibrado na validação | R@3 0,929 / 1,00 |
 | 2026-11-17 | fase8 (F2) | validação + teste (21) | Precedentes no contexto, relator v2, RF-20 | 6 elementos 100%; schema bruto 0 → 0,789; p50 329 s |
+| 2026-11-17 | fase9 (E2E) | navegador | MVP completo | 4/4 E2E; 465 testes |

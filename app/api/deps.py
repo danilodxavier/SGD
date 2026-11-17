@@ -4,6 +4,7 @@ from fastapi import HTTPException, Request
 LOGIN_REQUIRED = "Sua sessão expirou ou você não está conectado. Faça login para continuar."
 PASSWORD_CHANGE = "Troque sua senha temporária para continuar."
 ADMIN_REQUIRED = "Esta função é restrita a administradores."
+GESTOR_REQUIRED = "Esta função é restrita aos perfis Gestor e Administrador."
 LOCAL_REQUIRED = "Esta função só pode ser usada no computador onde o sistema está instalado."
 
 
@@ -20,6 +21,14 @@ def require_admin(request: Request):
     user = require_login(request)
     if not user["is_admin"]:
         raise HTTPException(403, ADMIN_REQUIRED)
+    return user
+
+
+def require_gestor(request: Request):
+    """RF-23: registrar decisões da gestão e enviar documentos (Gestor ou Administrador)."""
+    user = require_login(request)
+    if not user.get("is_gestor"):
+        raise HTTPException(403, GESTOR_REQUIRED)
     return user
 
 

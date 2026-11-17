@@ -66,5 +66,9 @@
 | Calibração de limiar com regra fixada antes de ver o teste (validação apenas) | Precedentes | `docs/fases/FASE_08.md` §3.1 | 8 |
 | Separação LLM × regras: o que é verificável (precedentes, base legal, hierarquia, vigência) sai do LLM e vira regra determinística | Recomendação F2 | `app/application/decisoes/recomendacao.py` | 8 |
 | Versionamento de prompt e schema (relator v1 para F1, v2 para F2) com teste de consistência do catálogo | Agentes | `prompts/relator.v2.md`, `tests/test_agentes_specs.py` | 8 |
+| Testes ponta a ponta no navegador real (Playwright) com servidor real e dublê apenas do LLM | MVP | `tests/sadgd/test_e2e_navegador.py` | 9 |
+| Defesa em profundidade para arquivos: confinamento à raiz, CSP sandbox, nosniff, validação de upload | Segurança | `app/interfaces/api/acervo.py` | 9 |
+| Controle de acesso baseado em papéis (RBAC: Administrador, Gestor, Consulta) | Segurança | `app/api/deps.py` | 9 |
+| Processamento assíncrono em segundo plano com estado observável (indexação) | Upload | `app/infrastructure/servico_indexacao.py` | 9 |
 
 Planejadas: GitHub Flow, RAGAS com juiz calibrado (κ de Cohen).

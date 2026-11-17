@@ -160,3 +160,21 @@ def test_origem_por_caminho():
     assert origem_por_caminho("publico/federal/lei/x.htm", CorpusOrigem.REAL) is CorpusOrigem.PUBLICO
     assert origem_por_caminho("sintetico/P01/x.docx", CorpusOrigem.REAL) is CorpusOrigem.SINTETICO
     assert origem_por_caminho("contratos/x.pdf", CorpusOrigem.REAL) is CorpusOrigem.REAL
+
+
+def test_indexacao_parcial_de_um_arquivo_enviado_nao_remove_o_resto(ambiente):
+    raiz, fabrica, indexar, embedder = ambiente
+    indexar()
+    enviado = raiz / "enviados" / "oficio.txt"
+    enviado.parent.mkdir()
+    enviado.write_text("Ofício sobre manutenção de elevadores do prédio-sede.\n", encoding="utf-8")
+    caso = IndexarCorpus(RepositorioIndexacaoSqlite(fabrica), lambda c: extrair(c, ocr=None), sha256, embedder,
+                         SqliteVecStore(fabrica), modelo="falso")
+    so_ele = [a for a in listar(raiz, extensoes_suportadas()) if a.relativo == "enviados/oficio.txt"]
+    r = caso.executar(str(raiz), so_ele, parcial=True)
+    assert (r.novos, r.removidos) == (1, 0)
+    conn = fabrica()
+    assert conn.execute("SELECT count(*) FROM documentos WHERE status != 'REMOVIDO'").fetchone()[0] == 3
+    assert conn.execute("SELECT corpus_origem FROM documentos WHERE caminho_relativo = 'enviados/oficio.txt'"
+                        ).fetchone()[0] == "real"  # envio do usuário: origem mais restritiva (LGPD)
+    conn.close()

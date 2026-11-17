@@ -25,3 +25,11 @@ BACKUP/
 /modelos/
 /ferramentas/
 data/observabilidade/
+
+# SAD-GD Fase 9: dentro de corpus/ só o corpus acadêmico (público/sintético) e os manifestos vão ao Git.
+# Uploads (corpus/enviados/) e qualquer outra pasta podem conter DADOS REAIS (LGPD) e nunca são versionados.
+/corpus/*
+!/corpus/publico/
+!/corpus/sintetico/
+!/corpus/*.csv
+!/corpus/*.md

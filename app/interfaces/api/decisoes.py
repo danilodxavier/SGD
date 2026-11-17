@@ -1,12 +1,12 @@
 """SAD-082 — API da memória de decisões (RF-19): registrar decisões da gestão, atualizar o resultado, listar e
-consultar precedentes. Registrar/atualizar exige perfil Administrador (o perfil Gestor chega na Fase 9, RF-23);
-toda escrita vai para a trilha de auditoria."""
+consultar precedentes. Registrar/atualizar exige perfil Gestor ou Administrador (RF-23); toda escrita vai para a
+trilha de auditoria."""
 from datetime import date, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, Field, field_validator
 
-from app.api.deps import require_admin, require_login
+from app.api.deps import require_gestor, require_login
 from app.core.config import settings
 from app.domain.decisoes import AvaliacaoResultado, Decisao
 from app.infrastructure.sqlite.conexao import conectar
@@ -70,7 +70,7 @@ def listar(processo_id: int | None = None, limite: int = 200):
 
 
 @router.post("/decisoes", status_code=201)
-def registrar(corpo: NovaDecisao, request: Request, user=Depends(require_admin)):
+def registrar(corpo: NovaDecisao, request: Request, user=Depends(require_gestor)):
     from app.interfaces.api.perguntar import memoria_decisoes
 
     d = Decisao(titulo=corpo.titulo, decisao=corpo.decisao, data=corpo.data.isoformat(), contexto=corpo.contexto,
@@ -83,7 +83,7 @@ def registrar(corpo: NovaDecisao, request: Request, user=Depends(require_admin))
 
 
 @router.patch("/decisoes/{decisao_id}/resultado")
-def atualizar_resultado(decisao_id: int, corpo: Resultado, request: Request, user=Depends(require_admin)):
+def atualizar_resultado(decisao_id: int, corpo: Resultado, request: Request, user=Depends(require_gestor)):
     if not _repo().atualizar_resultado(decisao_id, corpo.resultado, corpo.avaliacao_resultado.value):
         raise HTTPException(404, "Decisão não encontrada.")
     _auditar(user, "avaliar_resultado_decisao", f"decisao:{decisao_id}", request)

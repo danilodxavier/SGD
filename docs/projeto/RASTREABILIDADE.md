@@ -40,3 +40,12 @@ Atualizada a cada fase. Componentes seguem a estrutura de ADR-013. "Teste/métri
 | RNF-12 | ADR-011 | GitHub Actions | suíte reduzida por PR | 3–5 |
 | RNF-13 | ADR-008 | frontend | `scripts/verificar_contraste.py`, teclado | 9 |
 | RNF-14 | CLAUDE.md | docs | retomada por STATUS.md | todas |
+
+## Implementação da Fase 9 (MVP)
+
+| Requisito | Implementação | Verificação |
+|---|---|---|
+| RF-13 | `frontend/js/sadgd.js` (Linha do tempo), `/api/sadgd/linha-do-tempo` | E2E `test_linha_do_tempo_com_fases_e_evidencia` |
+| RF-21 | `frontend/js/sadgd.js` (Perguntar), `/api/sadgd/perguntar`, `/api/sadgd/trechos/{id}`, `/documentos/{id}/arquivo` | E2E `test_pergunta_resposta_e_fonte_que_abre_o_documento`, `test_f2_mostra_…` |
+| RF-22 | `POST /api/sadgd/documentos`, `servico_indexacao.py` | API + E2E `test_upload_indexa_e_aparece_no_acervo_e_na_busca` |
+| RF-23 | `auth.PROFILES` (gestor), `require_gestor` | `test_api_acervo.py`, `test_api_decisoes.py` |

@@ -39,7 +39,7 @@ async def lifespan(app):
 
 
 def create_app(auto_index=True):
-    app = FastAPI(title="Agente de Inteligência Documental", version=__version__, lifespan=lifespan,
+    app = FastAPI(title="SAD-GD — Sistema de Apoio à Decisão e Gestão Documental", version=__version__, lifespan=lifespan,
                   docs_url="/api/docs", redoc_url=None, openapi_url="/api/openapi.json")
     app.state.auto_index = auto_index
     app.add_middleware(NetworkGuard)
@@ -49,12 +49,14 @@ def create_app(auto_index=True):
         app.include_router(module.router)
     from app.interfaces.api import linha_do_tempo as api_linha_do_tempo  # SAD-GD (Fase 6)
 
+    from app.interfaces.api import acervo as api_acervo  # SAD-GD (Fase 9)
     from app.interfaces.api import decisoes as api_decisoes  # SAD-GD (Fase 8)
     from app.interfaces.api import perguntar as api_perguntar  # SAD-GD (Fase 7)
 
     app.include_router(api_linha_do_tempo.router)
     app.include_router(api_perguntar.router)
     app.include_router(api_decisoes.router)
+    app.include_router(api_acervo.router)
 
     @app.exception_handler(StarletteHTTPException)
     async def http_error(request: Request, exc: StarletteHTTPException):

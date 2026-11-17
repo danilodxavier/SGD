@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Agente de Inteligência Documental</title>
+  <title>SAD-GD — Apoio à Decisão e Gestão Documental</title>
   <link rel="stylesheet" href="/static/css/tokens.css">
   <link rel="stylesheet" href="/static/css/app.css">
   <script src="/static/js/layout.js"></script>
@@ -39,8 +39,8 @@
                alt="Governo de Mato Grosso — SEMA, Secretaria de Estado de Meio Ambiente">
         </span>
         <span class="site-title">
-          <span class="site-name">Agente de Inteligência Documental</span>
-          <span class="site-subtitle">Contratos e Checklists</span>
+          <span class="site-name">SAD-GD</span>
+          <span class="site-subtitle">Sistema de Apoio à Decisão e Gestão Documental</span>
         </span>
       </div>
       <div class="header-user">
@@ -121,10 +121,10 @@
   <aside class="sidebar">
     <nav class="sidebar-nav" id="menu" aria-label="Menu principal">
       <button class="nav-item active" data-view="dashboard">Painel</button>
-      <button class="nav-item" data-view="perguntas">Perguntas</button>
-      <button class="nav-item" data-view="documentos">Documentos</button>
-      <button class="nav-item" data-view="checklist">Checklist</button>
-      <button class="nav-item" data-view="relatorios">Relatórios</button>
+      <button class="nav-item" data-view="perguntar">Perguntar</button>
+      <button class="nav-item" data-view="acervo">Acervo</button>
+      <button class="nav-item" data-view="linha">Linha do tempo</button>
+      <button class="nav-item" data-view="decisoes">Decisões</button>
       <button class="nav-item admin-only" data-view="usuarios">Usuários</button>
       <button class="nav-item admin-only" data-view="configuracoes">Configurações</button>
     </nav>
@@ -153,12 +153,104 @@
       </div>
       <div class="cards" id="dash-cards"></div>
       <div class="panel">
-        <h2>Contratos identificados</h2>
-        <div id="dash-contracts"></div>
+        <h2>Consultas registradas</h2>
+        <div id="dash-consultas"></div>
       </div>
       <div class="panel">
         <h2>Última indexação</h2>
         <div id="dash-last-run" class="muted"></div>
+      </div>
+    </section>
+
+    <!-- SAD-GD: PERGUNTAR (F1 e F2) -->
+    <section class="view" id="view-perguntar">
+      <header class="view-header">
+        <div>
+          <h1>Perguntar</h1>
+          <p class="muted">Respostas somente com base nos documentos do acervo, sempre com as fontes. Perguntas de
+            decisão ("devo…", "é recomendável…") acionam os agentes especialistas e podem levar alguns minutos.</p>
+        </div>
+      </header>
+      <form class="ask-form" id="sg-form">
+        <label class="sr-only" for="sg-pergunta">Pergunta</label>
+        <input type="text" id="sg-pergunta" placeholder="Digite sua pergunta…" autocomplete="off" maxlength="2000">
+        <button class="btn primary" type="submit" id="sg-enviar">Perguntar</button>
+      </form>
+      <div class="chips" id="sg-exemplos"></div>
+      <div id="sg-resultado" aria-live="polite"></div>
+    </section>
+
+    <!-- SAD-GD: ACERVO -->
+    <section class="view" id="view-acervo">
+      <header class="view-header">
+        <div>
+          <h1>Acervo</h1>
+          <p class="muted" id="ac-contagem"></p>
+        </div>
+        <form class="row gestor-only" id="ac-upload">
+          <label class="btn" for="ac-arquivo">Escolher arquivo</label>
+          <input type="file" id="ac-arquivo" class="sr-only"
+                 accept=".pdf,.docx,.doc,.odt,.rtf,.txt,.md,.htm,.html,.xlsx,.xls,.ods,.csv,.pptx,.ppt,.png,.jpg,.jpeg,.tif,.tiff">
+          <span class="muted small" id="ac-arquivo-nome">nenhum arquivo</span>
+          <button class="btn primary" type="submit">Enviar e indexar</button>
+        </form>
+      </header>
+      <div class="indexer-bar hidden" id="ac-indexacao"><div class="indexer-text" id="ac-indexacao-texto"></div></div>
+      <div class="filters">
+        <input type="search" id="ac-q" placeholder="Filtrar por título, número ou arquivo">
+        <select id="ac-tipo" aria-label="Tipo documental"><option value="">Todos os tipos</option></select>
+        <select id="ac-origem" aria-label="Origem">
+          <option value="">Todas as origens</option>
+          <option value="publico">Público (atos oficiais)</option>
+          <option value="sintetico">Sintético (acadêmico)</option>
+          <option value="real">Real (enviado ao sistema)</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table class="table" id="ac-tabela">
+          <thead><tr><th>Documento</th><th>Tipo</th><th>Data</th><th>Origem</th><th>Situação</th><th>Trechos</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SAD-GD: LINHA DO TEMPO -->
+    <section class="view" id="view-linha">
+      <header class="view-header">
+        <div>
+          <h1>Linha do tempo</h1>
+          <p class="muted">Processos e contratos reconstruídos pelo grafo documental: fases, relações entre documentos
+            (continuação, aditivo, alteração, revogação, substituição, ruptura, contradição, retomada) e a evidência de
+            cada relação.</p>
+        </div>
+      </header>
+      <div class="filters">
+        <select id="tl-processo" aria-label="Processo"><option value="">Selecione um processo…</option></select>
+      </div>
+      <div id="tl-conteudo"></div>
+    </section>
+
+    <!-- SAD-GD: DECISÕES -->
+    <section class="view" id="view-decisoes">
+      <header class="view-header">
+        <div>
+          <h1>Memória de decisões</h1>
+          <p class="muted">Decisões anteriores da gestão e seus resultados. São usadas como precedentes nas perguntas
+            de decisão — informam, não vinculam.</p>
+        </div>
+        <button class="btn primary gestor-only" id="dc-nova">Registrar decisão</button>
+      </header>
+      <form class="ask-form" id="dc-busca">
+        <label class="sr-only" for="dc-pergunta">Buscar precedentes</label>
+        <input type="search" id="dc-pergunta" placeholder="Buscar precedentes para uma situação…" maxlength="500">
+        <button class="btn" type="submit">Buscar precedentes</button>
+      </form>
+      <div id="dc-precedentes"></div>
+      <div class="table-wrap">
+        <table class="table" id="dc-tabela">
+          <thead><tr><th>Decisão</th><th>Data</th><th>Resultado</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
       </div>
     </section>
 
@@ -331,6 +423,7 @@ eports</code>.</p>
           <label>Perfil
             <select id="new-profile">
               <option value="consulta">Consulta</option>
+              <option value="gestor">Gestor</option>
               <option value="admin">Administrador</option>
             </select>
           </label>
@@ -445,8 +538,8 @@ eports</code>.</p>
           Secretaria de Estado de Meio Ambiente — SEMA-MT</p>
         <address>Endereço: Rua C esquina com Rua F, Centro Político Administrativo<br>
           CEP 78049-913 — Cuiabá, Mato Grosso</address>
-        <p class="footer-system">Agente de Inteligência Documental · versão <span id="app-version"></span> · uso interno.
-          Os documentos são indexados e pesquisados localmente; os arquivos originais nunca são alterados.</p>
+        <p class="footer-system">SAD-GD · versão <span id="app-version"></span> · uso interno. Documentos indexados e
+          pesquisados localmente; os arquivos originais nunca são alterados. O sistema sugere; a decisão cabe à gestão.</p>
       </div>
       <ul class="footer-links">
         <li><a href="/static/acessibilidade.html">Acessibilidade</a></li>
@@ -477,6 +570,32 @@ eports</code>.</p>
     <div id="doc-dialog-body"></div>
   </dialog>
 
+  <dialog id="dc-dialogo">
+    <form class="dialog-form" id="dc-form" method="dialog">
+      <div class="dialog-head">
+        <h3 id="dc-dialogo-titulo">Registrar decisão</h3>
+        <button class="btn ghost" type="button" id="dc-fechar" aria-label="Fechar">✕</button>
+      </div>
+      <input type="hidden" id="dc-id">
+      <div id="dc-campos-nova">
+        <label>Título <input type="text" id="dc-titulo" maxlength="300" required></label>
+        <label>Código (opcional) <input type="text" id="dc-codigo" maxlength="60" placeholder="DG-001/2026"></label>
+        <label>Data <input type="date" id="dc-data" required></label>
+        <label>Contexto <textarea id="dc-contexto" rows="2" maxlength="4000"></textarea></label>
+        <label>Decisão <textarea id="dc-decisao" rows="2" maxlength="4000" required></textarea></label>
+        <label>Fundamentos <textarea id="dc-fundamentos" rows="2" maxlength="4000"></textarea></label>
+      </div>
+      <label>Resultado observado <textarea id="dc-resultado" rows="2" maxlength="4000"></textarea></label>
+      <label>Avaliação do resultado
+        <select id="dc-avaliacao">
+          <option value="pendente">Pendente</option><option value="positivo">Positivo</option>
+          <option value="neutro">Neutro</option><option value="negativo">Negativo</option>
+        </select>
+      </label>
+      <div class="row"><button class="btn primary" type="submit">Salvar</button></div>
+    </form>
+  </dialog>
+
   <div class="toast hidden" id="toast" role="status" aria-live="polite"></div>
   <div class="sr-only" id="a11y-status" aria-live="polite"></div>
 
@@ -486,6 +605,7 @@ eports</code>.</p>
   <script src="/static/js/checklist.js"></script>
   <script src="/static/js/reports.js"></script>
   <script src="/static/js/users.js"></script>
+  <script src="/static/js/sadgd.js"></script>
 
   <!-- VLibras: código de incorporação oficial do Governo Federal (https://vlibras.gov.br), sem alterações.
        Carrega o tradutor para Libras a partir da Internet; sem Internet, o botão apenas não aparece.

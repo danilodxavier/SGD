@@ -125,6 +125,9 @@ class RepositorioGrafoSqlite:
                              "WHERE documento_id = ? AND situacao != 'revogada'",
                              (f"Grafo: {acao} por {titulos.get(r.destino) or r.destino} (trecho T{r.trecho_id})",
                               doc_id))
+            # os processos foram recriados com ids novos: religa as decisões pela chave estável do processo
+            conn.execute("UPDATE decisoes SET processo_id = (SELECT min(p.id) FROM processos p "
+                         "WHERE p.chave = decisoes.processo_chave) WHERE processo_chave IS NOT NULL")
             conn.execute("COMMIT")
         except Exception:
             conn.execute("ROLLBACK")

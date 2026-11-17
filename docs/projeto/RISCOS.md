@@ -21,6 +21,7 @@ Escala: Probabilidade (P) e Impacto (I) de 1 (muito baixo) a 5 (muito alto). Exp
 | R15 | Latência da F2 alta no hardware local (≈ 4 min com 2 especialistas + relator no Qwen 7B / GTX 1660) | Técnico | 4 | 3 | 12 | Mitigar | Só os agentes necessários; concisão; Fase 10: especialistas no Qwen 3B, contexto menor, cache semântico, provedor gratuito em nuvem só para corpus acadêmico | Arquiteto |
 | R16 | Anonimização heurística deixa passar nomes fora da lista de prenomes | Legal | 2 | 4 | 8 | Mitigar | Envio remoto bloqueado para corpus real (política por origem); dados reais só com LLM local; recall medido (1,00 no sintético) | Arquiteto |
 | R17 | Precedente sem relação apresentado na F2 induzindo a gestão (8/21 fracos no top-1) | Negócio | 3 | 3 | 9 | Mitigar | Limiar calibrado; pontuação e lição visíveis; prompt trata precedente como informação; Fase 10: limiar relativo / mesmo processo | Arquiteto |
+| R18 | Documento real enviado vazar para o GitHub público ou provedor remoto | Legal | 2 | 5 | 10 | Evitar | `.gitignore` restrito a público/sintético em `corpus/`; origem real bloqueia envio remoto; teste de origem no upload | Arquiteto |
 
 ## Mapa de calor (exposição)
 
@@ -29,5 +30,5 @@ Escala: Probabilidade (P) e Impacto (I) de 1 (muito baixo) a 5 (muito alto). Exp
 | 5 | | | | | |
 | 4 | | | R06, R15 | R03 | R01 |
 | 3 | | R12 | R04, R09, R17 | R02, R08, R14 | R07 |
-| 2 | | | | R10, R13, R16 | R05, R11 |
+| 2 | | | | R10, R13, R16 | R05, R11, R18 |
 | 1 | | | | | |
