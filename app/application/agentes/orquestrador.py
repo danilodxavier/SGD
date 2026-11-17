@@ -32,11 +32,13 @@ class Estado(TypedDict, total=False):
 
 class Orquestrador:
     def __init__(self, recuperar, responder_f1, llm_especialistas, *, linha_do_tempo=None, precedentes=None,
-                 tracer=None, checkpointer=None, k=8):
+                 tracer=None, checkpointer=None, k=8, llm_relator=None):
         """recuperar(pergunta, k) -> list[TrechoRecuperado]; responder_f1: ResponderF1;
         linha_do_tempo(documento_ids) -> str (resumo para F2);
-        precedentes(pergunta, documento_ids) -> list[Precedente] (memória de decisões, RF-19)."""
+        precedentes(pergunta, documento_ids) -> list[Precedente] (memória de decisões, RF-19);
+        llm_relator: modelo do relator, se diferente do dos especialistas (Fase 10: especialistas menores)."""
         self._recuperar, self._f1, self._llm = recuperar, responder_f1, llm_especialistas
+        self._llm_relator = llm_relator or llm_especialistas
         self._tl, self._prec, self._tracer, self._k = linha_do_tempo, precedentes, tracer, k
         g = StateGraph(Estado)
         g.add_node("rotear", self._no(self._rotear))
@@ -100,7 +102,7 @@ class Orquestrador:
                                                     s.get("contexto_extra", ""))]}
 
     def _relator(self, s):
-        return {"resposta": relatar_f2(self._llm, s["pergunta"], s["trechos"], s.get("pareceres", []),
+        return {"resposta": relatar_f2(self._llm_relator, s["pergunta"], s["trechos"], s.get("pareceres", []),
                                        s.get("contexto_extra", ""), s.get("precedentes", []))}
 
     def executar(self, pergunta, thread_id=None):

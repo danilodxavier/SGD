@@ -1,0 +1,85 @@
+{
+  "negativos": 404,
+  "maior_negativo": 0.8831,
+  "top_negativos": [
+    [
+      0.8831,
+      "por quanto tempo podem ser prorrogados os contratos de serviços contínuos na lei no 14.133/2021",
+      "qual o prazo máximo inicial dos contratos de serviços e fornecimentos contínuos na lei no 14.133/2021"
+    ],
+    [
+      0.8525,
+      "em que situação a licitação é inexigível pela lei no 14.133/2021",
+      "quais são as hipóteses em que a licitação é dispensável segundo a lei no 14.133/2021"
+    ],
+    [
+      0.8348,
+      "qual o valor da garantia contratual prestada no contrato no 072/2024",
+      "qual é o valor global do contrato no 072/2024"
+    ],
+    [
+      0.8286,
+      "em que data o contrato no 058/2023 foi publicado no diário oficial",
+      "qual é o valor global do contrato no 058/2023"
+    ],
+    [
+      0.8198,
+      "em que data o contrato no 058/2023 foi publicado no diário oficial",
+      "qual o período de vigência original do contrato no 058/2023"
+    ]
+  ],
+  "positivos": [
+    [
+      0.8757,
+      "Qual a sequência de eventos do Contrato nº 031/2023?",
+      "Qual a cronologia do Contrato nº 031/2023?"
+    ],
+    [
+      0.9158,
+      "Quem é a contratada do Contrato nº 031/2023?",
+      "Qual empresa foi contratada no Contrato nº 031/2023?"
+    ],
+    [
+      0.9282,
+      "Qual o objeto do Contrato nº 072/2024?",
+      "O que é contratado pelo Contrato nº 072/2024?"
+    ],
+    [
+      0.9307,
+      "Devo prorrogar novamente o Contrato nº 044/2023 de vigilância?",
+      "É recomendável prorrogar mais uma vez o Contrato nº 044/2023 de vigilância?"
+    ],
+    [
+      0.9393,
+      "Quando termina a vigência do Contrato nº 012/2023?",
+      "Até quando vale o Contrato nº 012/2023?"
+    ],
+    [
+      0.9585,
+      "Qual o valor global do Contrato nº 044/2023?",
+      "Qual é o valor total do Contrato nº 044/2023?"
+    ],
+    [
+      0.962,
+      "Qual o prazo de vigência do Convênio nº 007/2023?",
+      "Por quanto tempo vigora o Convênio nº 007/2023?"
+    ],
+    [
+      0.967,
+      "Quais aditivos alteraram o Contrato nº 058/2023?",
+      "Que termos aditivos modificaram o Contrato nº 058/2023?"
+    ],
+    [
+      0.9778,
+      "O Decreto nº 7.892/2013 ainda está em vigor?",
+      "O Decreto nº 7.892/2013 continua vigente?"
+    ],
+    [
+      0.9966,
+      "Qual lei revogou a Lei nº 8.666/1993?",
+      "Que lei revogou a Lei nº 8.666/1993?"
+    ]
+  ],
+  "limiar": 0.893,
+  "recall_parafrases": 0.9
+}

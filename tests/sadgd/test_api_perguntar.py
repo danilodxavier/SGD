@@ -105,3 +105,27 @@ def test_resumo_da_linha_do_tempo_para_f2(grafo):  # noqa: F811
     texto = grafo.resumo({1})
     assert texto.startswith("LINHA DO TEMPO") and "ruptura" in texto and "retomada" in texto
     assert texto.index("2023-03-01") < texto.index("2023-10-10") and grafo.resumo(set()) == ""
+
+
+def test_cache_semantico_reaproveita_so_a_mesma_pergunta_e_audita(db, monkeypatch):
+    chamadas = []
+
+    class Contador(OrquestradorFalso):
+        def executar(self, pergunta):
+            chamadas.append(pergunta)
+            return super().executar(pergunta)
+
+    monkeypatch.setitem(api._componentes, "fabrica_orquestrador", Contador)
+    pergunta = "Qual o valor global do Contrato nº 012/2023?"
+    with logged_client() as c:
+        primeira = c.post("/api/sadgd/perguntar", json={"pergunta": pergunta}, headers=HEADERS).json()
+        segunda = c.post("/api/sadgd/perguntar", json={"pergunta": "  qual o valor global do contrato nº 012/2023 "},
+                         headers=HEADERS).json()
+        outra = c.post("/api/sadgd/perguntar", json={"pergunta": "Qual o valor global do Contrato nº 044/2023?"},
+                       headers=HEADERS).json()
+        sem = c.post("/api/sadgd/perguntar", json={"pergunta": pergunta, "usar_cache": False}, headers=HEADERS).json()
+    assert (primeira["cache"], segunda["cache"], outra["cache"], sem["cache"]) == (False, True, False, False)
+    assert len(chamadas) == 3 and segunda["resposta"] == primeira["resposta"]
+    assert segunda["consulta_id"] != primeira["consulta_id"]  # toda consulta é auditada, mesmo vinda do cache
+    assert _linhas(f"SELECT cache_hit, tokens_entrada FROM consultas WHERE id = {segunda['consulta_id']}") == [(1, 0)]
+    assert _linhas(f"SELECT trecho_id FROM consulta_fontes WHERE consulta_id = {segunda['consulta_id']}") == [(10,)]

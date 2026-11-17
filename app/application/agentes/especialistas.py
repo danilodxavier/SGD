@@ -234,6 +234,12 @@ def relatar_f2(llm, pergunta, trechos, pareceres, contexto_extra="", precedentes
             for campo in ("pros", "contras"):
                 if isinstance(alt.get(campo), str):
                     alt[campo] = [alt[campo]] if alt[campo].strip() else []
+    # reparo de forma: chaves extras inventadas pelo modelo (ex.: "fontes" dentro de uma alternativa) são descartadas
+    permitidas = {"alternativas": ("descricao", "pros", "contras", "riscos"),
+                  "riscos": ("descricao", "probabilidade", "impacto", "mitigacao"),
+                  "divergencias": ("tema", "posicoes")}
+    for campo, chaves in permitidas.items():
+        d[campo] = [{k: v for k, v in item.items() if k in chaves} for item in d[campo] if isinstance(item, dict)]
     obs = ["relator_sem_json_valido"] if r is None else (["relator_nova_tentativa"] if tentativas > 1 else [])
     v = verificar(d["resposta"], fontes, pergunta)
     if not v.aprovada:  # remove frases sem suporte da síntese

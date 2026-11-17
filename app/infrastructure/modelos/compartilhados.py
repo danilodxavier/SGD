@@ -21,6 +21,11 @@ def embedder():
         return _cache["embedder"]
 
 
+def carregado(nome):
+    """Instância já carregada (ou None) — usos oportunistas que não devem disparar o carregamento do modelo."""
+    return _cache.get(nome)
+
+
 def reranker():
     with _trava:
         if "reranker" not in _cache:

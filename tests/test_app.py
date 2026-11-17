@@ -54,7 +54,7 @@ def test_iniciar_e_parar_servidor(docs_dir, tmp_path):
             server.kill()
 
 
-def test_diagnostico_em_processo(db):
+def test_diagnostico_em_processo(indexed):  # raiz documental de amostra
     checks = {c["name"]: c for c in diagnostics.run_checks()}
     for name in ("Windows", "Python", "pip", "venv", "SQLite", "diretório documental", "permissão de leitura",
                  "permissão de escrita", "espaço em disco", "FastAPI", "Uvicorn", "bibliotecas de documentos", "OCR",
@@ -65,12 +65,12 @@ def test_diagnostico_em_processo(db):
 
 
 @pytest.fixture()
-def client(db):
+def client(indexed):
     with logged_client() as c:
         yield c
 
 
-def test_rotas_de_sistema(client, db, tmp_path):
+def test_rotas_de_sistema(client, indexed, tmp_path):
     cfg = client.get("/api/config").json()
     assert cfg["documents_root_ok"] and cfg["app_host"] == "127.0.0.1"
     other = tmp_path / "outro"

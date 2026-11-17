@@ -22,6 +22,7 @@ _componentes = {}
 
 class Pergunta(BaseModel):
     pergunta: str = Field(min_length=3, max_length=2000)
+    usar_cache: bool = True
 
 
 def _fabrica():
@@ -47,6 +48,17 @@ def memoria_decisoes():
         embedder, reranker = _modelos_recuperacao()
         _componentes["memoria"] = MemoriaDecisoes(RepositorioDecisoesSqlite(_fabrica), embedder, reranker)
     return _componentes["memoria"]
+
+
+def cache_semantico():
+    """Cache semântico (Fase 10). Paráfrases só quando o bge-m3 já está carregado (nunca o carrega só para isso)."""
+    from app.application.cache_semantico import CacheSemantico
+    from app.infrastructure.modelos import compartilhados
+    from app.infrastructure.sqlite.cache_semantico import RepositorioCacheSqlite
+
+    if "cache" in _componentes:
+        return _componentes["cache"]
+    return CacheSemantico(RepositorioCacheSqlite(_fabrica), compartilhados.carregado("embedder"))
 
 
 def construir_orquestrador(tracer=None):
@@ -101,10 +113,21 @@ def serializar(estado):
 def perguntar(corpo: Pergunta, request: Request, user=Depends(require_login)):
     from app.infrastructure.tracing.sqlite_tracer import SqliteTracer
 
+    from app.infrastructure.sqlite.auditoria import concluir_por_cache
+    from app.infrastructure.sqlite.cache_semantico import RepositorioCacheSqlite
+
     auditoria = AuditoriaSqlite(_fabrica_sem_vetores)
     consulta_id = auditoria.iniciar(user["id"], corpo.pergunta, request.client.host if request.client else None)
     fabrica = _componentes.get("fabrica_orquestrador", construir_orquestrador)
     inicio = time.perf_counter()
+    versao = RepositorioCacheSqlite(_fabrica_sem_vetores).versao_do_acervo()
+    cache = cache_semantico() if corpo.usar_cache else None
+    if cache is not None:
+        reaproveitada = cache.buscar(corpo.pergunta, versao)
+        if reaproveitada is not None:
+            latencia = int((time.perf_counter() - inicio) * 1000)
+            concluir_por_cache(_fabrica_sem_vetores, consulta_id, reaproveitada, latencia)
+            return {"consulta_id": consulta_id, "latencia_ms": latencia, "cache": True, **reaproveitada}
     with _lock:  # um LLM local por vez (GPU de 6 GB)
         try:
             estado = fabrica(TracerDaConsulta(SqliteTracer(_fabrica_sem_vetores), consulta_id)).executar(corpo.pergunta)
@@ -113,4 +136,7 @@ def perguntar(corpo: Pergunta, request: Request, user=Depends(require_login)):
             raise HTTPException(503, f"Falha ao processar a pergunta ({type(exc).__name__}).") from exc
     latencia = int((time.perf_counter() - inicio) * 1000)
     auditoria.concluir(consulta_id, estado, latencia)
-    return {"consulta_id": consulta_id, "latencia_ms": latencia, **serializar(estado)}
+    payload = serializar(estado)
+    if corpo.usar_cache:
+        cache_semantico().gravar(corpo.pergunta, payload, versao)  # o embedder pode ter sido carregado agora
+    return {"consulta_id": consulta_id, "latencia_ms": latencia, "cache": False, **payload}

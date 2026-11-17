@@ -56,6 +56,22 @@ class AuditoriaSqlite:
             conn.close()
 
 
+def concluir_por_cache(fabrica, consulta_id, payload, latencia_ms):
+    """Consulta respondida pelo cache semântico: sem tokens de LLM; rota e fontes vêm da resposta reaproveitada."""
+    conn = fabrica()
+    try:
+        conn.execute("UPDATE consultas SET rota = ?, agentes = ?, classificacao = ?, confianca = ?, latencia_ms = ?, "
+                     "cache_hit = 1 WHERE id = ?",
+                     (payload.get("rota"), json.dumps(payload.get("agentes") or []),
+                      payload.get("classificacao") or (payload.get("recomendacao") or {}).get("classificacao"),
+                      payload.get("confianca"), latencia_ms, consulta_id))
+        conn.executemany("INSERT INTO consulta_fontes (consulta_id, trecho_id, aprovada_verificador) VALUES (?, ?, 1)",
+                         [(consulta_id, f["trecho_id"]) for f in payload.get("fontes", [])])
+        conn.commit()
+    finally:
+        conn.close()
+
+
 class TracerDaConsulta:
     """Liga os spans de um tracer (ex.: SqliteTracer) a uma consulta específica."""
 

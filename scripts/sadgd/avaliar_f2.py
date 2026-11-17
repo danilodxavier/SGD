@@ -31,7 +31,7 @@ def media(vals):
     return round(sum(vals) / len(vals), 4) if vals else None
 
 
-def construir(modelo, rotulo, precedentes=True):
+def construir(modelo, rotulo, precedentes=True, modelo_especialistas=None):
     from app.application.agentes.orquestrador import Orquestrador
     from app.application.agentes.verificador import verificar
     from app.application.respostas.f1 import ResponderF1
@@ -48,6 +48,8 @@ def construir(modelo, rotulo, precedentes=True):
         return repo.obter([r["trecho_id"] for r in cache[por_pergunta[pergunta]]["recuperados"][:k]])
 
     llm = OpenAICompativelAdapter("ollama", settings.ollama_url + "/v1", modelo, timeout=300)
+    llm_esp = (OpenAICompativelAdapter("ollama", settings.ollama_url + "/v1", modelo_especialistas, timeout=300)
+               if modelo_especialistas else llm)
     grafo = RepositorioGrafoSqlite(lambda: conectar(settings.database_path, vetores=False))
     buscar_precedentes = None
     if precedentes:
@@ -61,8 +63,8 @@ def construir(modelo, rotulo, precedentes=True):
 
         def buscar_precedentes(pergunta, documentos):
             return memoria.precedentes(pergunta, documento_ids=documentos)
-    return Orquestrador(recuperar, ResponderF1(llm, conflitos=grafo, verificador=verificar), llm,
-                        linha_do_tempo=grafo.resumo, precedentes=buscar_precedentes, k=K)
+    return Orquestrador(recuperar, ResponderF1(llm, conflitos=grafo, verificador=verificar), llm_esp,
+                        linha_do_tempo=grafo.resumo, precedentes=buscar_precedentes, k=K, llm_relator=llm)
 
 
 def metricas(it, estado, ms):
@@ -102,14 +104,16 @@ def metricas(it, estado, ms):
     }
 
 
-def avaliar(modelo, rotulo, limite_s, precedentes=True):
-    arquivo = EXECUCOES / rotulo / f"f2_{modelo.replace(':', '_')}.jsonl"
+def avaliar(modelo, rotulo, limite_s, precedentes=True, modelo_especialistas=None, conjunto="todos"):
+    sufixo = f"__esp_{modelo_especialistas.replace(':', '_')}" if modelo_especialistas else ""
+    (EXECUCOES / rotulo).mkdir(parents=True, exist_ok=True)
+    arquivo = EXECUCOES / rotulo / f"f2_{modelo.replace(':', '_')}{sufixo}.jsonl"
     feitos = _jsonl_existente(arquivo)
-    itens = [i for i in carregar_golden("todos") if i["tipo"] == "F2" and i["id"] not in feitos]
+    itens = [i for i in carregar_golden(conjunto) if i["tipo"] == "F2" and i["id"] not in feitos]
     if not itens:
         print(f"[OK] F2: nada pendente ({len(feitos)} itens)")
         return 0
-    orq = construir(modelo, rotulo, precedentes)
+    orq = construir(modelo, rotulo, precedentes, modelo_especialistas)
     inicio = time.perf_counter()
     with arquivo.open("a", encoding="utf-8", newline="\n") as f:
         for n, it in enumerate(itens, start=1):
@@ -179,10 +183,13 @@ def main():
     p.add_argument("--max-minutos", type=float, default=None)
     p.add_argument("--resumo", action="store_true")
     p.add_argument("--sem-precedentes", action="store_true")
+    p.add_argument("--modelo-especialistas", default=None, help="LLM dos especialistas (o relator usa --modelo)")
+    p.add_argument("--conjunto", default="todos", choices=["validacao", "teste", "todos"])
     a = p.parse_args()
     if a.resumo:
         return resumo(a.rotulo)
-    return avaliar(a.modelo, a.rotulo, a.max_minutos * 60 if a.max_minutos else None, not a.sem_precedentes)
+    return avaliar(a.modelo, a.rotulo, a.max_minutos * 60 if a.max_minutos else None, not a.sem_precedentes,
+                   a.modelo_especialistas, a.conjunto)
 
 
 if __name__ == "__main__":
