@@ -7,8 +7,8 @@
 | Atualizado em | 2026-11-17 |
 | Fase atual | **Fase 11 — Entrega acadêmica** |
 | Situação da fase | Em andamento |
-| Última tarefa concluída | **Avaliação da F2 no Gemini** (21 itens): v2 com reparo de `consensos` → schema relator 1,00, recall docs 0,865, p50/p95 30 s / 100 s (meta ≤ 120 s ✅) × 329 s / 387 s local; v1 registrada (relator 0,333). Ver `docs/fases/FASE_11.md` §3 e `docs/AVALIACAO.md`. Antes: relatório de atividades e ferramentas; vídeo de apresentação |
-| Próxima tarefa exata | (1) relatório técnico `docs/RELATORIO_TECNICO.md`; (2) manuais do usuário e técnico; (3) README final; (4) roteiro de demonstração `docs/DEMONSTRACAO.md` (vídeo já gerado: `scripts/video/gerar_video.py`); (5) lições aprendidas; (6) pedir aprovação da Fase 11 |
+| Última tarefa concluída | **Relatório técnico** (`docs/RELATORIO_TECNICO.md`). Antes: avaliação da F2 no Gemini — p50/p95 30 s / 100 s (meta ≤ 120 s ✅), schema do relator 1,00, recall docs 0,865 (`FASE_11.md` §3) |
+| Próxima tarefa exata | (1) reescrever `docs/MANUAL_DO_USUARIO.md` e `docs/MANUAL_TECNICO.md` para o SAD-GD (os atuais descrevem a v1 → mover para `docs/legado/`); (2) README final; (3) roteiro de demonstração `docs/DEMONSTRACAO.md`; (4) lições aprendidas `docs/projeto/LICOES_APRENDIDAS.md`; (5) pedir aprovação da Fase 11 |
 | Bloqueios | Nenhum para a Fase 11. Kanban (SAD-003) depende do `gh` |
 
 ## Histórico de fases

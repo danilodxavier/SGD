@@ -19,7 +19,7 @@ Relatório técnico, documentação final (README, manuais do usuário e técnic
 | Correção do relator | `consensos` como lista de frases (instrução + reparo de `{tema, posicoes}`) | `app/application/agentes/especialistas.py`, `tests/sadgd/test_orquestrador.py` | ✅ |
 | Relatório de atividades e ferramentas | Atividades por fase, ferramentas e conectores | `docs/RELATORIO_ATIVIDADES_E_FERRAMENTAS.md` | ✅ |
 | Vídeo de apresentação | Roteiro e gerador (vídeo fora do Git, LGPD) | `docs/video/ROTEIRO.md`, `scripts/video/` | ✅ |
-| Relatório técnico | — | `docs/RELATORIO_TECNICO.md` | Pendente |
+| Relatório técnico | Problema, metodologia, arquitetura, base de conhecimento, F1/F2, LGPD, avaliação, experimentos negativos, limitações | `docs/RELATORIO_TECNICO.md` | ✅ |
 | Manuais do usuário e técnico | — | `docs/manuais/` | Pendente |
 | README final | — | `README.md` | Pendente |
 | Roteiro de demonstração ao vivo | — | `docs/DEMONSTRACAO.md` | Pendente |
