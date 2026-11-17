@@ -22,7 +22,7 @@ Relatório técnico, documentação final (README, manuais do usuário e técnic
 | Relatório técnico | Problema, metodologia, arquitetura, base de conhecimento, F1/F2, LGPD, avaliação, experimentos negativos, limitações | `docs/RELATORIO_TECNICO.md` | ✅ |
 | Manuais do usuário e técnico | Reescritos para o SAD-GD; os da v1 movidos para `docs/legado/*_v1.md` | `docs/MANUAL_DO_USUARIO.md`, `docs/MANUAL_TECNICO.md` | ✅ |
 | README final | Visão, resultados × metas, arquitetura, como rodar e avaliar, corpus, documentação (conteúdo v1 removido) | `README.md` | ✅ |
-| Roteiro de demonstração ao vivo | — | `docs/DEMONSTRACAO.md` | Pendente |
+| Roteiro de demonstração ao vivo | 8 cenas com perguntas **validadas ao vivo** no banco real (resultados e tempos), preparação, plano B e perguntas prováveis da banca | `docs/DEMONSTRACAO.md` | ✅ |
 | Lições aprendidas | — | `docs/projeto/LICOES_APRENDIDAS.md` | Pendente |
 
 ## 3. F2 no Gemini — resultados (2026-11-17)

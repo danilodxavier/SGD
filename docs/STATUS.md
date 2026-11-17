@@ -7,8 +7,8 @@
 | Atualizado em | 2026-11-17 |
 | Fase atual | **Fase 11 — Entrega acadêmica** |
 | Situação da fase | Em andamento |
-| Última tarefa concluída | **Manuais do usuário e técnico do SAD-GD** (`docs/MANUAL_DO_USUARIO.md`, `docs/MANUAL_TECNICO.md`; v1 em `docs/legado/`). Antes: relatório técnico; avaliação da F2 no Gemini (p95 100 s) |
-| Próxima tarefa exata | (1) README final (substituir o conteúdo v1); (2) roteiro de demonstração `docs/DEMONSTRACAO.md`; (3) lições aprendidas `docs/projeto/LICOES_APRENDIDAS.md`; (4) pedir aprovação da Fase 11 |
+| Última tarefa concluída | **Roteiro de demonstração** (`docs/DEMONSTRACAO.md`, perguntas validadas ao vivo) e **correção da API** `POST /api/sadgd/perguntar` (falhava com o pipeline real desde a Fase 7; `bead9a7`, `FASE_11.md` §4). Antes: README, manuais, relatório técnico, F2 no Gemini |
+| Próxima tarefa exata | (1) lições aprendidas `docs/projeto/LICOES_APRENDIDAS.md`; (2) fechar `FASE_11.md` (critérios, retrospectiva) e pedir aprovação da Fase 11 |
 | Bloqueios | Nenhum para a Fase 11. Kanban (SAD-003) depende do `gh` |
 
 ## Histórico de fases
