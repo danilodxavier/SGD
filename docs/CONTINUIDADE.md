@@ -14,7 +14,8 @@
 ```powershell
 cd "D:\AGENTES\INTELIGENCIA_DOCUMENTAL_GESTAO_ CONTRATO"
 .\instalar.bat                     # cria .venv, instala dependências, cria .env e roda diagnóstico
-.\.venv\Scripts\python.exe -m pytest -q   # testes (238 na v1)
+.\.venv\Scripts\python.exe scripts\sadgd\preparar_bge_m3.py   # modelo de embeddings (uma vez)
+.\.venv\Scripts\python.exe -m pytest -q   # testes (315 + 4 E2E)
 .\start.bat                        # painel em http://127.0.0.1:8000
 ```
 
@@ -31,7 +32,8 @@ cd "D:\AGENTES\INTELIGENCIA_DOCUMENTAL_GESTAO_ CONTRATO"
 | `docs/AVALIACAO.md` | Métricas por versão |
 | `docs/MODELOS_IA.md`, `docs/METODOLOGIAS.md`, `docs/HABILIDADES.md` | Rastreabilidade de IA, métodos e aprendizado |
 | `docs/legado/` | Especificação e documentos da v1 |
-| `docs/MANUAL_DO_USUARIO.md`, `docs/MANUAL_TECNICO.md` | Manuais da v1 (atualizados na Fase 11) |
+| `docs/MANUAL_DO_USUARIO.md`, `docs/MANUAL_TECNICO.md` | Manuais do SAD-GD (Fase 11); os da v1 estão em `docs/legado/` |
+| `docs/RELATORIO_TECNICO.md` | Relatório técnico (Fase 11) |
 
 ## Pontos de restauração
 

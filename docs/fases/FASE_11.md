@@ -20,7 +20,7 @@ Relatório técnico, documentação final (README, manuais do usuário e técnic
 | Relatório de atividades e ferramentas | Atividades por fase, ferramentas e conectores | `docs/RELATORIO_ATIVIDADES_E_FERRAMENTAS.md` | ✅ |
 | Vídeo de apresentação | Roteiro e gerador (vídeo fora do Git, LGPD) | `docs/video/ROTEIRO.md`, `scripts/video/` | ✅ |
 | Relatório técnico | Problema, metodologia, arquitetura, base de conhecimento, F1/F2, LGPD, avaliação, experimentos negativos, limitações | `docs/RELATORIO_TECNICO.md` | ✅ |
-| Manuais do usuário e técnico | — | `docs/manuais/` | Pendente |
+| Manuais do usuário e técnico | Reescritos para o SAD-GD; os da v1 movidos para `docs/legado/*_v1.md` | `docs/MANUAL_DO_USUARIO.md`, `docs/MANUAL_TECNICO.md` | ✅ |
 | README final | — | `README.md` | Pendente |
 | Roteiro de demonstração ao vivo | — | `docs/DEMONSTRACAO.md` | Pendente |
 | Lições aprendidas | — | `docs/projeto/LICOES_APRENDIDAS.md` | Pendente |

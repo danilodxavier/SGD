@@ -228,7 +228,7 @@ caem no Qwen local; JSON cortado é repetido no próprio provedor com orçamento
 | Acesso | Perfis Administrador, Gestor e Consulta; senhas com hash; troca obrigatória da senha temporária |
 | Envio externo | Bloqueado por padrão; política por origem do trecho (real nunca sai); teste automatizado |
 | Pseudonimização | Nomes de pessoas e CPF substituídos de forma reversível antes do envio (recall de nomes 1,00; CPF 100%); CNPJ e órgãos não são mascarados (pessoa jurídica) |
-| Auditoria | Cada consulta registra hash da pergunta, rota, agentes, provedor, fontes e acerto de cache |
+| Auditoria | Cada consulta registra hash SHA-256 da pergunta, usuário, rota, agentes, classificação, confiança, tokens, latência, fontes e acerto de cache |
 | Arquivos | Confinamento de caminho, CSP sandbox ao abrir documentos, validação de upload; originais nunca alterados |
 | Repositório | gitleaks no CI; `.env`, `DOCUMENTOS\`, `corpus/enviados/` e `data/` fora do Git |
 
