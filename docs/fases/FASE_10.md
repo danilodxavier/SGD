@@ -80,6 +80,13 @@ No golden set, o par de perguntas **diferentes** mais parecido com os mesmos ide
 3. Manuais (`MANUAL_DO_USUARIO.md`, `MANUAL_TECNICO.md`) ainda descrevem a v1 — reescrita na Fase 11.
 4. Kanban depende do `gh`.
 
+## 7.1 Incidentes de CI (transparência)
+
+| Ocorrência | Tratamento |
+|---|---|
+| Após a limpeza v1, 2 testes de sistema falharam só no CI: passaram a depender do diretório documental do `.env` desta máquina | Voltaram a usar a raiz de amostra; a suíte agora é validada localmente também com `DOCUMENTS_ROOT` inexistente |
+| `test_iniciar_e_parar_servidor` falhou no CI: a indexação automática do início (agora do SAD-GD) tentava **baixar o bge-m3** no runner e o servidor não encerrava a tempo | O início do servidor só gera vetores se o modelo já estiver em `modelos/` (nunca baixa); sem ele, indexa só o texto. Teste de regressão. CI verde em `26fe9d9` |
+
 ## 8. Retrospectiva
 
 - **Bem:** olhar dentro das métricas agregadas evitou duas conclusões erradas (o 3B "igual e 2,5× mais rápido"; o juiz "dizendo" 25% de alucinação); a calibração do juiz pegou um defeito do próprio instrumento.
