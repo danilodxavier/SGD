@@ -178,3 +178,13 @@ def test_indexacao_parcial_de_um_arquivo_enviado_nao_remove_o_resto(ambiente):
     assert conn.execute("SELECT corpus_origem FROM documentos WHERE caminho_relativo = 'enviados/oficio.txt'"
                         ).fetchone()[0] == "real"  # envio do usuário: origem mais restritiva (LGPD)
     conn.close()
+
+
+def test_sem_modelo_local_nao_ha_vetores_no_inicio_e_nada_e_baixado(tmp_path, monkeypatch):
+    from app.infrastructure.modelos import embeddings
+
+    monkeypatch.setattr(embeddings, "PASTA_LOCAL", tmp_path / "vazio")
+    assert embeddings.modelo_local_disponivel() is False  # o início do servidor indexa só o texto
+    (tmp_path / "vazio").mkdir()
+    (tmp_path / "vazio" / "model.safetensors").write_bytes(b"x")
+    assert embeddings.modelo_local_disponivel() is True

@@ -19,6 +19,11 @@ def origem_modelo(nome=MODELO_PADRAO):
     return str(PASTA_LOCAL) if nome == MODELO_PADRAO and (PASTA_LOCAL / "model.safetensors").is_file() else nome
 
 
+def modelo_local_disponivel(nome=MODELO_PADRAO):
+    """True se os pesos estão em modelos/bge-m3 (nunca dispara download)."""
+    return origem_modelo(nome) != nome
+
+
 def liberar_gpu_ollama(url=None, timeout=10):
     """Descarrega modelos carregados no Ollama local para liberar VRAM. Silencioso se o Ollama estiver parado."""
     url = (url or settings.ollama_url).rstrip("/")

@@ -28,8 +28,11 @@ async def lifespan(app):
     if app.state.auto_index and settings.auto_index:
         ok, message = check_root(get_documents_root())
         if ok:  # atualização incremental do acervo do SAD-GD (somente arquivos novos ou alterados)
+            from app.infrastructure.modelos.embeddings import modelo_local_disponivel
             from app.infrastructure.servico_indexacao import servico
 
+            # vetores só com o modelo já em modelos/ (o início do servidor nunca baixa modelos); sem ele, só texto
+            servico.com_embeddings = modelo_local_disponivel()
             servico.iniciar(None)
         else:
             log.warning("Indexação automática não executada: %s", message)
