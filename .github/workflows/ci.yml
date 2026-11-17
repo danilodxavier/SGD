@@ -52,7 +52,13 @@ jobs:
       - name: Lint (código SAD-GD)
         run: python -m ruff check .
       - name: Testes v1 + SAD-GD
-        run: python -m pytest -q --cov --cov-report=term --cov-report=xml:data/cache/coverage.xml
+        shell: pwsh
+        # falhas viram anotações públicas do check run (legíveis sem login, ex.: pela API pública)
+        run: |
+          python -m pytest -q -rfE --cov --cov-report=term --cov-report=xml:data/cache/coverage.xml 2>&1 | Tee-Object -FilePath data/cache/pytest.txt
+          $rc = $LASTEXITCODE
+          Select-String -Path data/cache/pytest.txt -Pattern '^(FAILED|ERROR) ' | ForEach-Object { Write-Output "::error::$($_.Line)" }
+          exit $rc
       - name: Cobertura mínima de domain/ e application/ (RNF-09)
         run: python -m coverage report --include="app/domain/*,app/application/*" --fail-under=80
       - name: Avaliação reduzida e determinística (BM25 no corpus sintético, piso de regressão)
