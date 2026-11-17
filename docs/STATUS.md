@@ -5,11 +5,11 @@
 | Campo | Valor |
 |---|---|
 | Atualizado em | 2026-11-16 |
-| Fase atual | **Fase 6 — Linha do tempo e relações entre documentos** |
+| Fase atual | **Fase 7 — Sistema multiagentes** |
 | Situação da fase | Entregáveis concluídos — **aguardando aprovação do responsável** |
-| Última tarefa concluída | Grafo documental (referências, relações por regras, contradições, vigência), API da linha do tempo, respostas de conflito; v2.1 avaliada no teste (`docs/fases/FASE_06.md`) |
-| Próxima tarefa exata | Após "Aprovado, siga para a Fase 7": (1) SAD-070 roteador (regras + intents; LLM pequeno só se ambíguo) em `app/application/agentes/`; (2) SAD-072 verificador de fontes (checagem lexical/numérica determinística + LLM de outra família — Llama 3.1 8B) atacando as alucinações de data (T100, T109, T124); (3) SAD-071 especialistas com saída JSON validada; (4) SAD-073 relator; (5) SAD-074 anonimizador; (6) SAD-075 auditoria; grafo LangGraph com checkpointer SQLite |
-| Bloqueios | Kanban (SAD-003) depende do `gh`. RAM livre da máquina baixa (1–2 GB): rodar indexações com `--max-minutos 7.5` |
+| Última tarefa concluída | Roteador, verificador de fontes, especialistas, relator, orquestrador LangGraph, anonimização LGPD, auditoria, API `POST /api/sadgd/perguntar`; v2.2 (F1) e F2 avaliadas (`docs/fases/FASE_07.md`) |
+| Próxima tarefa exata | Após "Aprovado, siga para a Fase 8": (1) SAD-080 memória de decisões — registrar decisões da gestão e resultados (tabela `decisoes`) e recuperá-las como precedentes no contexto da F2; (2) SAD-081 recomendação F2 com alternativas, riscos, confiança e base legal vigente; (3) API de registro de decisões; (4) avaliar com as 21 perguntas F2 em ciclos de 4 min em primeiro plano |
+| Bloqueios | Kanban (SAD-003) depende do `gh`. RAM livre da máquina baixa (1–2 GB): indexações com `--max-minutos 7.5`; avaliações F2 só em primeiro plano com `--max-minutos 4` |
 
 ## Histórico de fases
 
@@ -21,7 +21,8 @@
 | 3 — Infraestrutura local | ✅ Aprovada em 2026-11-16 | `docs/fases/FASE_03.md` |
 | 4 — Ingestão e base de conhecimento | ✅ Aprovada em 2026-11-16 | `docs/fases/FASE_04.md` |
 | 5 — RAG, golden set e baseline | ✅ Aprovada em 2026-11-16 | `docs/fases/FASE_05.md` |
-| 6 — Linha do tempo e relações | Aguardando aprovação | `docs/fases/FASE_06.md` |
+| 6 — Linha do tempo e relações | ✅ Aprovada em 2026-11-16 | `docs/fases/FASE_06.md` |
+| 7 — Sistema multiagentes | Aguardando aprovação | `docs/fases/FASE_07.md` |
 
 ## Fatos-chave para retomada
 
@@ -34,3 +35,5 @@
 - Avaliação: `scripts\sadgd\avaliar.py recuperacao|relatorio|ci` e `scripts\sadgd\avaliar_respostas.py --sistema v1|v2 --modelo <tag> --conjunto validacao|teste [--max-minutos 8.5]` (retomáveis). Resultados em `avaliacao\execucoes\fase5\`. LLM escolhido: `sadgd-qwen2.5-7b`; `llama3.1:8b-instruct-q4_K_M` também instalado.
 - Grafo: `scripts\sadgd\construir_grafo.py` (rodar após indexar); avaliação: `scripts\sadgd\avaliar_relacoes.py`. API: `/api/sadgd/processos`, `/api/sadgd/linha-do-tempo`. Resultados v2.1 em `avaliacao\execucoes\fase6\`.
 - Embeddings em **float32** (fp16 é 5× mais lento nesta GPU); `HF_DEACTIVATE_ASYNC_LOAD=1` é obrigatório (crash nativo sem ele).
+- Multiagentes: `app/application/agentes/` (roteador, verificador, especialistas, orquestrador, politica_llm); API `POST /api/sadgd/perguntar`. Avaliações: `avaliar_roteador.py`, `avaliar_anonimizacao.py`, `avaliar_respostas.py --verificador --rotulo fase7`, `avaliar_f2.py [--resumo]` → `avaliacao\execucoes\fase7\`.
+- Qwen 2.5 3B (`qwen2.5:3b-instruct-q4_K_M`) instalado: exatidão 0,462 na validação; candidato a especialista rápido na Fase 10.

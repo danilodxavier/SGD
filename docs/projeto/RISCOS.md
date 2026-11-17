@@ -18,13 +18,15 @@ Escala: Probabilidade (P) e Impacto (I) de 1 (muito baixo) a 5 (muito alto). Exp
 | R12 | Ausência de GitHub autenticado bloqueia Projects/CI (**parcialmente resolvido**: código e CI no GitHub desde 2026-11-16; Issues/Projects ainda dependem do `gh`) | Operacional | 3 | 2 | 6 | Mitigar | Backlog versionado em CSV + script `scripts\github\criar_backlog.ps1` executável após `gh auth login` | Responsável |
 | R13 | Perda de dados locais (máquina única) — código e docs já no GitHub | Operacional | 1 | 4 | 4 | Mitigar | Remoto GitHub para código/docs; `BACKUP\` com rotina; corpus reprodutível pelo manifesto | Responsável |
 | R14 | Escopo excessivo (11 fases, muitos agentes) | Escopo | 3 | 4 | 12 | Mitigar | Agentes acionados sob demanda; perfis extras só com justificativa; revisão de escopo a cada sprint | PO |
+| R15 | Latência da F2 alta no hardware local (≈ 4 min com 2 especialistas + relator no Qwen 7B / GTX 1660) | Técnico | 4 | 3 | 12 | Mitigar | Só os agentes necessários; concisão; Fase 10: especialistas no Qwen 3B, contexto menor, cache semântico, provedor gratuito em nuvem só para corpus acadêmico | Arquiteto |
+| R16 | Anonimização heurística deixa passar nomes fora da lista de prenomes | Legal | 2 | 4 | 8 | Mitigar | Envio remoto bloqueado para corpus real (política por origem); dados reais só com LLM local; recall medido (1,00 no sintético) | Arquiteto |
 
 ## Mapa de calor (exposição)
 
 | P \ I | 1 | 2 | 3 | 4 | 5 |
 |---|---|---|---|---|---|
 | 5 | | | | | |
-| 4 | | | R06 | R03 | R01 |
+| 4 | | | R06, R15 | R03 | R01 |
 | 3 | | R12 | R04, R09 | R02, R08, R14 | R07 |
-| 2 | | | | R10, R13 | R05, R11 |
+| 2 | | | | R10, R13, R16 | R05, R11 |
 | 1 | | | | | |

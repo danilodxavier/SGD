@@ -1,0 +1,171 @@
+{
+  "recall_nomes": 1.0,
+  "ocorrencias_nomes": 160,
+  "nomes_nao_mascarados": {},
+  "recall_cpf": 1.0,
+  "cpf": 3,
+  "recall_email": null,
+  "emails": 0,
+  "publico_mascarados_como_pessoa": [
+    [
+      "Paulo Guedes",
+      11
+    ],
+    [
+      "Wagner de Campos Rosário",
+      8
+    ],
+    [
+      "Luís Inácio Lucena Adams",
+      6
+    ],
+    [
+      "Jorge Hage Sobrinho",
+      5
+    ],
+    [
+      "José Eduardo Cardozo",
+      4
+    ],
+    [
+      "Pedro Colnago Junior",
+      4
+    ],
+    [
+      "Nelson Jobim",
+      3
+    ],
+    [
+      "Gustavo Torres",
+      3
+    ],
+    [
+      "Pedro Malan",
+      3
+    ],
+    [
+      "Paulo Bernardo Silva",
+      3
+    ],
+    [
+      "Henrique de Oliveira",
+      3
+    ],
+    [
+      "Jorge Arbage",
+      2
+    ],
+    [
+      "Marcelo Cordeiro",
+      2
+    ],
+    [
+      "Mário Maia",
+      2
+    ],
+    [
+      "Luiz Soyer",
+      2
+    ],
+    [
+      "Bernardo Cabral",
+      2
+    ],
+    [
+      "Antônio Carlos Konder Reis",
+      2
+    ],
+    [
+      "José Fogaça",
+      2
+    ],
+    [
+      "Alexandre Costa",
+      2
+    ],
+    [
+      "Alexandre Puzyna",
+      2
+    ],
+    [
+      "Maria Rattes",
+      2
+    ],
+    [
+      "Antônio Câmara",
+      2
+    ],
+    [
+      "Antônio Carlos Franco",
+      2
+    ],
+    [
+      "Antonio Carlos Mendes Thame",
+      2
+    ],
+    [
+      "Antônio de Jesus",
+      2
+    ],
+    [
+      "Antonio Ferreira",
+      2
+    ],
+    [
+      "Antonio Gaspar",
+      2
+    ],
+    [
+      "Antonio Mariz",
+      2
+    ],
+    [
+      "Antonio Perosa",
+      2
+    ],
+    [
+      "Antônio Salim Curiati",
+      2
+    ],
+    [
+      "Antonio Ueno",
+      2
+    ],
+    [
+      "Augusto Carvalho",
+      2
+    ],
+    [
+      "Caio Pompeu",
+      2
+    ],
+    [
+      "Carlos Alberto",
+      2
+    ],
+    [
+      "Carlos Alberto Caó",
+      2
+    ],
+    [
+      "Carlos Benevides",
+      2
+    ],
+    [
+      "Carlos Cardinal",
+      2
+    ],
+    [
+      "Carlos Chiarelli",
+      2
+    ],
+    [
+      "Carlos Mosconi",
+      2
+    ],
+    [
+      "Carlos Sant",
+      2
+    ]
+  ]
+}

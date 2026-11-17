@@ -93,3 +93,16 @@ Regra de ouro: **o agente só pode citar ids de trechos que recebeu**. O verific
 | Verificador | Precisão e recall na detecção de afirmação sem suporte (casos plantados) | ≥ 0,90 |
 | Especialistas | Validade do JSON; citações corretas; faithfulness | 100% / ≥ 0,95 / ≥ 0,90 |
 | Relator | Faithfulness; presença dos elementos F2; consensos/divergências corretos | ≥ 0,90 / 100% |
+
+## Implementação (Fase 7)
+
+| Componente | Código | Observações |
+|---|---|---|
+| Roteador | `app/application/agentes/roteador.py` | Regras + matriz de pontuação por agente; `gestor_publico` sempre na F2 + até 3 especialistas; F1 complexa aciona até 2. O LLM pequeno ficou dispensado (acurácia 0,92–0,94 só com regras) |
+| Especialistas | `especialistas.py` (`executar_especialista`) | Prompt versionado (`prompts/<agente>.v1.md`) + ordem dos campos (JSON livre); reparo de forma; afirmações sem citação válida ou com número/data sem suporte são descartadas; saída cortada → nova tentativa com +50% de tokens; falha persistente → parecer inválido ignorado pelo relator |
+| Verificador de fontes | `verificador.py` | Determinístico: número/data/valor sem suporte, vigência contrária à fonte, afirmação contraditória. No F1: nova tentativa com o feedback → remoção de frases → ausência |
+| Relator | `especialistas.py` (`relatar_f2`) | Consensos, divergências, alternativas, riscos, base legal, precedentes; aviso "O sistema sugere; a decisão cabe à gestão." sempre forçado; frases sem suporte removidas e confiança limitada a 0,6 |
+| Orquestrador | `orquestrador.py` (LangGraph) | `rotear → recuperar → (responder_f1 | contexto_f2 → especialista×N → relator)`; spans por nó; checkpointer opcional |
+| Proteção LGPD | `app/application/anonimizacao.py`, `politica_llm.py` | Provedor remoto: bloqueado com corpus real; com corpus acadêmico, texto pseudonimizado e resposta restaurada |
+| Auditoria | `app/infrastructure/sqlite/auditoria.py` | `consultas` (hash SHA-256 da pergunta, rota, agentes, tokens, latência), `consulta_fontes`, `pareceres`, `auditoria`, `spans` |
+| API | `POST /api/sadgd/perguntar` (`app/interfaces/api/perguntar.py`) | Login obrigatório; modelos de recuperação na CPU por padrão (`SADGD_DISPOSITIVO_RECUPERACAO`) para deixar a GPU ao LLM; 1 consulta por vez |

@@ -1,0 +1,28 @@
+{
+  "f2_sadgd-qwen2.5-7b": {
+    "n": 21,
+    "erros": 0,
+    "rota_f2": 1.0,
+    "agentes_precisao": 0.9423,
+    "agentes_recall": 0.7903,
+    "pareceres_por_consulta": 2.4762,
+    "schema_pareceres_bruto": 0.0,
+    "schema_pareceres_reparado": 1.0,
+    "schema_relator": 1.0,
+    "afirmacoes_removidas_por_consulta": 0.2381,
+    "recall_documentos": 0.746,
+    "precisao_documentos": 0.4446,
+    "com_alternativas": 1.0,
+    "com_riscos": 1.0,
+    "com_aviso": 1.0,
+    "confianca_media": 0.7714,
+    "latencia_ms": {
+      "p50": 249763,
+      "p95": 347940
+    },
+    "tokens_medios": {
+      "entrada": 17352.8095,
+      "saida": 2513.619
+    }
+  }
+}

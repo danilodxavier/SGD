@@ -48,4 +48,8 @@
 | 2026-11-16 | Textos compilados do portal da legislação anotam alterações na voz passiva e entre parênteses — "(Revogado pela Lei nº X)", "(Redação dada pela Lei nº X)", "(Vide…)": quem age é o ato referido, não o documento que contém a nota | Fase 6 |
 | 2026-11-16 | Revogar "dispositivos e seção" de uma lei é revogação parcial; a lei continua vigente (ex.: Lei 8.429 após a 14.230) | Fase 6 |
 | 2026-11-16 | Contradição ≠ alteração: o aditivo altera legitimamente o contrato; um relatório ou apostilamento que declara outro valor/prazo contradiz a cadeia contrato → aditivos | Fase 6 |
+| 2026-11-16 | Num LLM local de 7B, recusar é melhor que errar: o verificador transformou as 3 datas erradas da v2.1 em "não localizei" (alucinação numérica 3,1% → 0%) ao custo de 3 falsas recusas | Fase 7 |
+| 2026-11-16 | Saída JSON cortada por `max_tokens` é a principal falha dos especialistas locais; pedir concisão com limites por lista e repetir com orçamento maior resolve sem schema estrito | Fase 7 |
+| 2026-11-16 | Em GPU de 6 GB, o paralelismo do `Send` do LangGraph não reduz latência: o Ollama serializa as gerações; o custo da F2 cresce linearmente com o número de especialistas | Fase 7 |
+| 2026-11-16 | Signatários de atos oficiais (ministros, presidentes) são pessoas físicas: a anonimização os mascara para envio remoto, mas o texto local permanece íntegro (atos públicos) | Fase 7 |
 | 2026-11-16 | Atos oficiais não têm proteção autoral (Lei 9.610/1998, art. 8º, IV) — podem compor corpus público versionado | Fase 4 — corpus |

@@ -55,6 +55,38 @@ class RepositorioGrafoSqlite:
                                           self._trecho_com(origem, vigente), self._trecho_com(destino, declarado)))
         return conflitos
 
+    def resumo(self, documentos, max_processos=3, max_eventos=12):
+        """Resumo textual da linha do tempo dos processos aos quais pertencem os documentos (contexto da F2)."""
+        ids = list(documentos)
+        if not ids:
+            return ""
+        marcadores = ",".join("?" * len(ids))
+        conn = self._conexao()
+        try:
+            processos = [r[0] for r in conn.execute(
+                f"SELECT dp.processo_id FROM documento_processo dp WHERE dp.documento_id IN ({marcadores}) "  # noqa: S608
+                f"GROUP BY dp.processo_id ORDER BY count(*) DESC LIMIT ?", ids + [max_processos])]
+            partes = []
+            for pid in processos:
+                p = conn.execute("SELECT tipo, chave FROM processos WHERE id = ?", (pid,)).fetchone()
+                docs = conn.execute(
+                    "SELECT d.id, d.data_documento, d.titulo, d.tipo_documental FROM documentos d JOIN "
+                    "documento_processo dp ON dp.documento_id = d.id WHERE dp.processo_id = ? "
+                    "ORDER BY d.data_documento LIMIT ?", (pid, max_eventos)).fetchall()
+                if len(docs) < 2:
+                    continue
+                titulos = {d[0]: (d[2] or "")[:80] for d in docs}
+                rels = conn.execute(
+                    "SELECT origem_id, destino_id, tipo FROM relacoes WHERE tipo != 'fundamenta' AND origem_id IN "
+                    "(SELECT documento_id FROM documento_processo WHERE processo_id = ?)", (pid,)).fetchall()
+                linhas = [f"LINHA DO TEMPO ({p[0]} {p[1]}):"] + [f"- {d[1] or 's/d'}: {titulos[d[0]]}" for d in docs]
+                linhas += [f"  · {titulos.get(o, o)} → {titulos.get(dd, dd)}: {t}" for o, dd, t in rels
+                           if o in titulos and dd in titulos][:max_eventos]
+                partes.append("\n".join(linhas))
+            return "\n\n".join(partes)
+        finally:
+            conn.close()
+
     def _trecho_com(self, documento_id, valor):
         """Trecho do documento que contém literalmente o valor (para a citação da resposta de conflito)."""
         from app.infrastructure.sqlite.busca import RepositorioTrechosSqlite

@@ -16,6 +16,7 @@
 | 2026-11-16 | Corpus acadêmico público/sintético para avaliação e demonstração; dados reais só locais, com LLM local | `docs/adr/ADR-002-corpus-academico.md` |
 | 2026-11-16 | Fase 1 aprovada; documentos, trechos e contratos do banco v1 **excluídos** (nova versão usará novos documentos); raiz documental = `corpus\` | `docs/fases/FASE_01.md` §7 |
 | 2026-11-16 | Fase 2 aprovada: ADR-003 a ADR-013 **aceitos**; autorização para **substituir o que for necessário do projeto antigo** para entregar o novo projeto na íntegra | `docs/fases/FASE_02.md` §8 |
+| 2026-11-16 | Fase 6 aprovada; Fase 7 entregue (roteador, verificador, especialistas, relator, LangGraph, LGPD, auditoria, API; v2.2 alucinação 0%; F2 p50 250 s) | `docs/fases/FASE_07.md` |
 | 2026-11-16 | Fase 5 aprovada; Fase 6 entregue (grafo documental, contradições, vigência; v2.1: exatidão 0,843, conflito 1,00) | `docs/fases/FASE_06.md` |
 | 2026-11-16 | Fase 4 aprovada; Fase 5 entregue (R@5 0,965; v2 exatidão 0,795 × v1 0,217; Qwen 2.5 7B escolhido) | `docs/fases/FASE_05.md` |
 | 2026-11-16 | Fase 3 aprovada; Fase 4 entregue (corpus 69 + 117, indexação híbrida bge-m3) | `docs/fases/FASE_04.md` |
@@ -61,6 +62,7 @@ Variáveis de ambiente que forçam caches para dentro do projeto (definidas em `
 - Nunca encadear `scripts\sadgd\ollama.ps1 -Acao iniciar` com `| Out-Null`: o `ollama serve` herda o pipe e o comando não termina.
 - Métricas sintéticas perfeitas exigem verificação externa (corpus público) antes de qualquer conclusão.
 - Nunca editar caminhos Windows com `sed` (as barras invertidas são consumidas); usar PowerShell `[IO.File]` ou Python.
+- Avaliações longas com LLM (F2 ≈ 4–6 min/item) só em primeiro plano, em ciclos `--max-minutos 4` (o segundo plano é encerrado por falta de memória).
 - Ollama do projeto: `scripts\sadgd\ollama.ps1 -Acao iniciar|parar|status`; Tesseract: `scripts\sadgd\tesseract.ps1`.
 
 ---

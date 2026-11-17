@@ -4,7 +4,7 @@
 |---|---|
 | Período | 2026-11-16 |
 | Executor | Claude Code (`claude-opus-5-5`) |
-| Situação | **Aguardando aprovação** |
+| Situação | ✅ **Aprovada** em 2026-11-16 |
 
 ## 1. Entregas
 
@@ -94,4 +94,4 @@ As 3 alucinações numéricas restantes da v2.1 (T100, T109, T124) são **datas 
 
 ## 7. Aprovação
 
-- [ ] Aprovado por: ______ em ____/____/______
+- [x] Aprovado pelo responsável em 2026-11-16 ("aprovado")

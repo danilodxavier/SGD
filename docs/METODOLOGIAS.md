@@ -55,5 +55,12 @@
 | Validação externa (holdout real) contra sobreajuste a dados sintéticos | Corpus público | `docs/fases/FASE_06.md` §3.1 | 6 |
 | Revisão do gabarito antes da avaliação (qualidade de rótulos) | Gabarito sintético | `docs/fases/FASE_06.md` §2 | 6 |
 | Testes de regressão a partir de erros reais | Grafo, métricas | `tests/sadgd/test_linha_do_tempo.py` | 6 |
+| Orquestração multiagentes em grafo de estados (LangGraph): roteamento condicional, fan-out paralelo com `Send`, redutores de estado | Sistema multiagentes | `app/application/agentes/orquestrador.py` | 7 |
+| Roteamento por regras com matriz de pontuação (agentes sob demanda; nunca todos) e avaliação com matriz de confusão | Otimização de tokens | `roteador.py`, `scripts/sadgd/avaliar_roteador.py` | 7 |
+| Verificação determinística pós-geração (anti-alucinação) com nova tentativa guiada e remoção de frases sem suporte | Verificador de fontes | `verificador.py`, `respostas/f1.py` | 7 |
+| Saída estruturada validada por JSON Schema + reparo apenas de forma (nunca de conteúdo), medindo validade bruta × reparada | Especialistas e relator | `especialistas.py` | 7 |
+| Degradação graciosa: nova tentativa com orçamento maior em saída cortada; falha de um agente não derruba o grafo | Especialistas e relator | `especialistas.py` (`_chat_json`) | 7 |
+| Privacy by design (LGPD): pseudonimização reversível antes de provedores remotos, política por origem do corpus, auditoria só com hash da pergunta | Segurança | `anonimizacao.py`, `politica_llm.py`, `auditoria.py` | 7 |
+| Dublês de teste (LLM falso por papel, orquestrador falso na API) para testar o grafo sem GPU | Testes | `tests/sadgd/test_orquestrador.py`, `test_api_perguntar.py` | 7 |
 
 Planejadas: GitHub Flow, RAGAS com juiz calibrado (κ de Cohen).

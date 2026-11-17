@@ -1,0 +1,107 @@
+"""API de perguntas (SAD-076) e auditoria de consultas (SAD-075): orquestrador falso, sem LLM nem modelos."""
+import hashlib
+import json
+
+import pytest
+
+pytest.importorskip("sqlite_vec")
+
+from app.application.agentes.especialistas import Parecer, RespostaF2  # noqa: E402
+from app.application.agentes.roteador import rotear  # noqa: E402
+from app.application.recuperacao.regras import TrechoRecuperado  # noqa: E402
+from app.application.respostas.f1 import RespostaF1  # noqa: E402
+from app.core.config import settings  # noqa: E402
+from app.infrastructure.sqlite.conexao import conectar  # noqa: E402
+from app.interfaces.api import perguntar as api  # noqa: E402
+from tests.helpers import HEADERS, anonymous_client, logged_client  # noqa: E402
+from tests.sadgd.test_api_linha_do_tempo import grafo  # noqa: E402, F401 - fixture reaproveitada
+
+TRECHO = TrechoRecuperado(10, 1, "O valor global do contrato é de R$ 1.200.000,00.", "contrato.txt",
+                          "sintetico/contrato.txt", "contrato 012/2023", "Cláusula 2ª", None, "contrato", "sintetico",
+                          "2023-03-01", False, None)
+
+
+class OrquestradorFalso:
+    def __init__(self, tracer):
+        self.tracer = tracer
+
+    def executar(self, pergunta):
+        decisao = rotear(pergunta)
+        with self.tracer.span("rotear"):
+            pass
+        if decisao.rota == "F2":
+            p = Parecer("gestor_publico", {"parecer": "Viável.", "confianca": 0.7}, True, True, tokens_entrada=100,
+                        tokens_saida=20)
+            r = RespostaF2("Recomenda-se prorrogar.", {"recomendacao": "Prorrogar", "confianca": 0.7}, [TRECHO], [p],
+                           True, tokens_entrada=200, tokens_saida=40)
+            return {"decisao": decisao, "resposta": r, "pareceres": [p], "tempos": [("relator", 5)]}
+        r = RespostaF1("O valor global é R$ 1.200.000,00 [T10].", "respondida", 0.9, [TRECHO], tokens_entrada=300,
+                       tokens_saida=30)
+        return {"decisao": decisao, "resposta": r, "pareceres": [], "tempos": [("responder_f1", 7)]}
+
+
+@pytest.fixture()
+def falso(db, monkeypatch):
+    monkeypatch.setitem(api._componentes, "fabrica_orquestrador", OrquestradorFalso)
+
+
+def _linhas(sql):
+    conn = conectar(settings.database_path, vetores=False)
+    try:
+        return [tuple(r) for r in conn.execute(sql)]
+    finally:
+        conn.close()
+
+
+def test_exige_login(falso):
+    with anonymous_client() as c:
+        assert c.post("/api/sadgd/perguntar", json={"pergunta": "Qual o valor?"}, headers=HEADERS).status_code == 401
+
+
+def test_f1_responde_com_fontes_e_registra_auditoria_sem_texto_da_pergunta(falso):
+    pergunta = "Qual o valor global do Contrato nº 012/2023?"
+    with logged_client() as c:
+        r = c.post("/api/sadgd/perguntar", json={"pergunta": pergunta}, headers=HEADERS)
+    assert r.status_code == 200
+    corpo = r.json()
+    assert corpo["rota"].startswith("F1") and corpo["fontes"][0]["trecho_id"] == 10 and corpo["aviso"]
+    cid = corpo["consulta_id"]
+    (h, rota, tin, tout, lat), = _linhas(f"SELECT pergunta_hash, rota, tokens_entrada, tokens_saida, latencia_ms "
+                                         f"FROM consultas WHERE id = {cid}")
+    assert h == hashlib.sha256(pergunta.encode()).hexdigest() and rota == corpo["rota"] and (tin, tout) == (300, 30)
+    assert lat is not None and _linhas(f"SELECT trecho_id FROM consulta_fontes WHERE consulta_id = {cid}") == [(10,)]
+    assert _linhas(f"SELECT acao FROM auditoria WHERE alvo = 'consulta:{cid}'") == [("consulta",)]
+    assert _linhas(f"SELECT no FROM spans WHERE consulta_id = {cid}") == [("rotear",)]
+    assert pergunta not in json.dumps(_linhas("SELECT * FROM consultas"))  # LGPD: só o hash
+
+
+def test_f2_devolve_pareceres_e_grava_pareceres(falso):
+    with logged_client() as c:
+        corpo = c.post("/api/sadgd/perguntar",
+                       json={"pergunta": "Devemos prorrogar o Contrato nº 012/2023? Recomende a melhor decisão."},
+                       headers=HEADERS).json()
+    assert corpo["rota"] == "F2" and corpo["pareceres"][0]["agente"] == "gestor_publico" and corpo["confianca"] == 0.7
+    assert _linhas(f"SELECT agente, valido FROM pareceres WHERE consulta_id = {corpo['consulta_id']}") == [
+        ("gestor_publico", 1)]
+    assert _linhas(f"SELECT tokens_entrada FROM consultas WHERE id = {corpo['consulta_id']}") == [(300,)]
+
+
+def test_falha_do_orquestrador_vira_503_e_fica_auditada(db, monkeypatch):
+    class Quebrado:
+        def __init__(self, tracer):
+            pass
+
+        def executar(self, pergunta):
+            raise RuntimeError("ollama fora")
+
+    monkeypatch.setitem(api._componentes, "fabrica_orquestrador", Quebrado)
+    with logged_client() as c:
+        r = c.post("/api/sadgd/perguntar", json={"pergunta": "Qual o valor?"}, headers=HEADERS)
+    assert r.status_code == 503 and "RuntimeError" in r.json()["detail"]
+    assert _linhas("SELECT count(*) FROM consultas WHERE latencia_ms IS NOT NULL") == [(1,)]
+
+
+def test_resumo_da_linha_do_tempo_para_f2(grafo):  # noqa: F811
+    texto = grafo.resumo({1})
+    assert texto.startswith("LINHA DO TEMPO") and "ruptura" in texto and "retomada" in texto
+    assert texto.index("2023-03-01") < texto.index("2023-10-10") and grafo.resumo(set()) == ""

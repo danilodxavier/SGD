@@ -139,6 +139,48 @@ def test_conflito_de_outro_campo_nao_interfere():
     assert r.classificacao == "fato" and llm.mensagens is not None  # pergunta sobre vigência; conflito é de valor
 
 
+class LLMSequencia(LLMFalso):
+    def __init__(self, saidas):
+        super().__init__(saidas[0])
+        self.saidas, self.chamadas = list(saidas), 0
+
+    def chat(self, mensagens, **kw):
+        self.saida = self.saidas[min(self.chamadas, len(self.saidas) - 1)]
+        self.chamadas += 1
+        return super().chat(mensagens, **kw)
+
+
+def test_verificador_pede_correcao_e_aceita_a_segunda_versao():
+    from app.application.agentes.verificador import verificar
+
+    ruim = saida(resposta="O valor global é R$ 1.300.000,00 [T11].")
+    boa = saida(resposta="O valor global é R$ 1.200.000,00 [T11].")
+    llm = LLMSequencia([ruim, boa])
+    r = ResponderF1(llm, verificador=verificar).responder("Qual o valor global?", TRECHOS)
+    assert llm.chamadas == 2 and "1.200.000,00" in r.resposta
+    assert "verificador_nova_tentativa" in r.observacoes
+    assert "1.300.000,00" in llm.mensagens[-1]["content"]  # o problema foi informado ao modelo
+
+
+def test_verificador_remove_frase_sem_suporte_se_persistir():
+    from app.application.agentes.verificador import verificar
+
+    ruim = saida(resposta="O contrato vale R$ 1.200.000,00 [T11]. A vigência termina em 31/12/2099 [T12].",
+                 fontes=["T11", "T12"])
+    llm = LLMSequencia([ruim, ruim])
+    r = ResponderF1(llm, verificador=verificar).responder("Qual o valor e a vigência?", TRECHOS)
+    assert "31/12/2099" not in r.resposta and "1.200.000,00" in r.resposta
+    assert "verificador_frases_removidas" in r.observacoes and r.confianca <= 0.6
+
+
+def test_verificador_sem_nada_aproveitavel_vira_ausencia():
+    from app.application.agentes.verificador import verificar
+
+    ruim = saida(resposta="A vigência termina em 31/12/2099 [T12].", fontes=["T12"])
+    r = ResponderF1(LLMSequencia([ruim, ruim]), verificador=verificar).responder("Vigência?", TRECHOS)
+    assert r.classificacao == "ausencia" and r.resposta == MENSAGEM_AUSENCIA
+
+
 def test_conflito_preserva_as_duas_fontes():
     s = saida(classificacao="conflito", resposta="Divergência: R$ 1,2 mi [T11] e outro valor [T12].",
               fontes=["T11", "T12"])

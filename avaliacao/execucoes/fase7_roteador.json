@@ -1,0 +1,29 @@
+{
+  "validacao": {
+    "n": 53,
+    "acuracia_F1_x_F2": 1.0,
+    "acuracia_3_rotas": 0.9245,
+    "agentes_precisao": 0.8571,
+    "agentes_recall": 0.6667,
+    "matriz": {
+      "F1_complexa->F1_complexa": 19,
+      "F1_complexa->F1_simples": 4,
+      "F1_simples->F1_simples": 24,
+      "F2->F2": 6
+    }
+  },
+  "teste": {
+    "n": 124,
+    "acuracia_F1_x_F2": 1.0,
+    "acuracia_3_rotas": 0.9355,
+    "agentes_precisao": 0.9737,
+    "agentes_recall": 0.8409,
+    "matriz": {
+      "F1_complexa->F1_complexa": 49,
+      "F1_complexa->F1_simples": 6,
+      "F1_simples->F1_complexa": 2,
+      "F1_simples->F1_simples": 52,
+      "F2->F2": 15
+    }
+  }
+}

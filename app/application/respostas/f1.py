@@ -71,6 +71,10 @@ def schema_f1() -> dict:
             "properties": {c: completo["properties"][c] for c in CAMPOS_F1}}
 
 
+def _frases(texto: str) -> list[str]:
+    return [f.strip() for f in re.split(r"(?<=[.!?])\s+(?=[A-ZÁÉÍÓÚÂÊÔÃÕÇ\[])", texto.strip()) if f.strip()]
+
+
 def montar_contexto(trechos) -> str:
     blocos = []
     for t in trechos:
@@ -97,9 +101,10 @@ class RespostaF1:
 
 class ResponderF1:
     def __init__(self, llm: LLMPort, *, max_tokens: int = 500, versao_prompt: int = 1,
-                 conflitos: ConflitosPort | None = None):
+                 conflitos: ConflitosPort | None = None, verificador=None):
         self.llm, self.max_tokens, self.versao = llm, max_tokens, versao_prompt
         self.conflitos = conflitos
+        self.verificador = verificador  # callable(resposta, citados, pergunta) -> Verificacao
 
     def responder(self, pergunta: str, trechos) -> RespostaF1:
         if not trechos:
@@ -114,7 +119,44 @@ class ResponderF1:
         ]
         r = self.llm.chat(mensagens, max_tokens=self.max_tokens, temperatura=0.0, json_livre=True)
         dados = r.json if isinstance(r.json, dict) else {}
-        return self._validar(dados, trechos, r)
+        resposta = self._validar(dados, trechos, r)
+        if self.verificador is None:
+            return resposta
+        return self._verificar(pergunta, trechos, mensagens, resposta)
+
+    def _verificar(self, pergunta, trechos, mensagens, resposta):
+        """RF-17: reprovada → uma nova tentativa com os problemas apontados; persistindo, remove as frases sem
+        suporte; se nada sustentado restar, responde ausência."""
+        v = self.verificador(resposta.resposta, resposta.fontes, pergunta)
+        if v.aprovada:
+            return resposta
+        problemas = "; ".join(f"{p.detalhe} (frase: \"{p.frase}\")" for p in v.problemas)
+        correcao = mensagens + [
+            {"role": "assistant", "content": json.dumps(resposta.bruto or {}, ensure_ascii=False)},
+            {"role": "user", "content": "VERIFICAÇÃO DE FONTES reprovou a resposta: " + problemas + ". Reescreva "
+             "usando SOMENTE valores, datas e situações que constam literalmente nos trechos. Se não constarem, "
+             "use classificacao \"ausencia\"."}]
+        r2 = self.llm.chat(correcao, max_tokens=self.max_tokens, temperatura=0.0, json_livre=True)
+        nova = self._validar(r2.json if isinstance(r2.json, dict) else {}, trechos, r2)
+        nova.tokens_entrada += resposta.tokens_entrada
+        nova.tokens_saida += resposta.tokens_saida
+        nova.latencia_ms += resposta.latencia_ms
+        nova.observacoes = resposta.observacoes + ["verificador_nova_tentativa"] + nova.observacoes
+        v2 = self.verificador(nova.resposta, nova.fontes, pergunta)
+        if v2.aprovada:
+            return nova
+        restantes = [f for f in _frases(nova.resposta) if f not in v2.frases_reprovadas]
+        citados = {f"T{n}" for f in restantes for n in RE_CITACAO.findall(f)}
+        fontes = [t for t in nova.fontes if t.rotulo in citados] or ([t for t in nova.fontes] if restantes else [])
+        if not restantes or not fontes:
+            return RespostaF1(MENSAGEM_AUSENCIA, Classificacao.AUSENCIA.value, 0.0, [], modelo=nova.modelo,
+                              tokens_entrada=nova.tokens_entrada, tokens_saida=nova.tokens_saida,
+                              latencia_ms=nova.latencia_ms,
+                              observacoes=nova.observacoes + ["verificador_sem_afirmacao_sustentada"])
+        nova.resposta = " ".join(restantes)
+        nova.fontes, nova.confianca = fontes, min(nova.confianca, 0.6)
+        nova.observacoes.append("verificador_frases_removidas")
+        return nova
 
     def _conflito(self, pergunta, trechos):
         """RF-09: se o grafo registra contradição entre documentos do contexto sobre o campo perguntado, responde
