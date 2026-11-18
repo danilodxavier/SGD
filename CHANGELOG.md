@@ -5,6 +5,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 ## [Não lançado] — Reestruturação SAD-GD
 
 ### Adicionado
+- Avaliação com documentos reais: `scripts/sadgd/avaliar_real.py` (modelo, executar, revisao, resumo — só métricas agregadas na tela; resultados em `avaliacao/real/`, fora do Git) e protocolo `docs/AVALIACAO_REAL.md`; 3 testes.
 - Fase 11: provedor Gemini (plano gratuito) para a F2 do corpus acadêmico, com reserva local e nova tentativa no próprio provedor quando o JSON vem cortado; avaliação da F2 no Gemini (p95 100 s, meta ≤ 120 s atendida); relatório de atividades e ferramentas; vídeo de apresentação com narração local (`scripts/video/`).
 - Fase 10: cache semântico calibrado (identificadores + versão do acervo + cosseno ≥ 0,93) com auditoria; faithfulness com LLM-juiz de outra família, calibração por corrupções controladas, κ de Cohen, Rogan–Gladen e adjudicação; experimentos de latência da F2; scripts `avaliar_fidelidade.py`, `calibrar_cache.py`, `medir_cache.py`; orquestrador com LLM separado para o relator.
 - Fase 9 (MVP): telas Perguntar (F1/F2 com fontes, pareceres, precedentes e RF-20), Acervo (upload e indexação no servidor), Linha do tempo (fases e evidências), Decisões e Painel do SAD-GD; perfil Gestor; API do acervo (painel, documentos, arquivo com CSP sandbox, trecho, busca, upload, indexação); serviço de indexação em segundo plano; caso de uso `construir_grafo`; migração 005; testes E2E no Edge com Playwright; 11 novos testes.

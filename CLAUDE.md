@@ -16,6 +16,7 @@
 | 2026-11-16 | Corpus acadêmico público/sintético para avaliação e demonstração; dados reais só locais, com LLM local | `docs/adr/ADR-002-corpus-academico.md` |
 | 2026-11-16 | Fase 1 aprovada; documentos, trechos e contratos do banco v1 **excluídos** (nova versão usará novos documentos); raiz documental = `corpus\` | `docs/fases/FASE_01.md` §7 |
 | 2026-11-16 | Fase 2 aprovada: ADR-003 a ADR-013 **aceitos**; autorização para **substituir o que for necessário do projeto antigo** para entregar o novo projeto na íntegra | `docs/fases/FASE_02.md` §8 |
+| 2026-11-18 | **Acervo real**: índice dos 186 documentos de teste e das 30 decisões fictícias excluído (backup `BACKUP\backup_20261118_095229.zip`); raiz = compartilhamento de rede da STI (caminho só no `.env`/banco, nunca no Git); `AI_ALLOW_REMOTE=false`, `SADGD_LLM_F2=local`, `AUTO_INDEX=false`. O agente não lê conteúdo real: só contagens e métricas agregadas | `docs/AVALIACAO_REAL.md` |
 | 2026-11-17 | **Fase 11 aprovada — projeto encerrado** (após a publicação do Kanban: 52 issues em Done no Project #2). Entregas: F2 no Gemini (p95 100 s), relatório técnico, manuais, README, demonstração, lições aprendidas | `docs/fases/FASE_11.md` |
 | 2026-11-17 | Fase 10 aprovada: tabelas v1 apagadas (migração 006, backup); **F2 no Gemini (plano gratuito)** só com contexto 100% acadêmico, anonimizado, AI_ALLOW_REMOTE=true e chave no `.env`; reserva local | `docs/fases/FASE_10.md` §6 |
 | 2026-11-17 | Fase 9 aprovada (exclusão do código v1 aprovada com backup; identidade MT/SEMA mantida); Fase 10 entregue (cache semântico, faithfulness 0,964 adjudicada, F2 limitada pelo hardware) | `docs/fases/FASE_10.md` |
@@ -73,6 +74,7 @@ Variáveis de ambiente que forçam caches para dentro do projeto (definidas em `
 - CI: falhas de teste viram anotações públicas (`/check-runs/{id}/annotations`). A API pública do GitHub tem limite de 60 req/h sem login: consultar o CI com intervalos ≥ 40 s.
 - Antes de apagar dados, contar as linhas: as tabelas v1 tinham dados apesar de terem sido esvaziadas na Fase 1.
 - Juiz LLM local (Llama 3.1 8B) tem muitos falsos alarmes em respostas com datas/cabeçalhos longos: nunca publicar a métrica do juiz sem calibração e adjudicação.
+- Acervo real (desde 2026-11-18): nunca imprimir nomes de arquivo, títulos ou trechos reais na saída das ferramentas (filtrar para contagens); avaliação real via `scripts\sadgd\avaliar_real.py` com resultados em `avaliacao\real\` (fora do Git). Métricas acadêmicas exigem reindexar `corpus\` num banco separado (`DATABASE_PATH`).
 - Testes E2E usam o Microsoft Edge do sistema via Playwright (`channel="msedge"`) — não baixar navegadores.
 - Ollama do projeto: `scripts\sadgd\ollama.ps1 -Acao iniciar|parar|status`; Tesseract: `scripts\sadgd\tesseract.ps1`.
 

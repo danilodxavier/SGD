@@ -283,6 +283,7 @@ O provedor usado e o motivo vêm na resposta da API (`provedor_f2`) e nos result
 | F2 ponta a ponta | `avaliar_f2.py --rotulo <r> [--provedor-f2 gemini] --max-minutos 4`; `--resumo` | `fase<r>\f2_resumo.json` |
 | Faithfulness (juiz calibrado) | `avaliar_fidelidade.py calibrar|medir|resumo` | `fase10\` |
 | Cache semântico | `calibrar_cache.py`, `medir_cache.py` | `fase10\` |
+| Documentos reais (julgamento humano) | `scripts\sadgd\avaliar_real.py modelo|executar|revisao|resumo` | `avaliacao\real\` (fora do Git) — ver `docs/AVALIACAO_REAL.md` |
 | Relatório consolidado | `scripts\sadgd\avaliar.py relatorio` | `docs\AVALIACAO.md` (manual) |
 
 Todos são **retomáveis**: rode novamente até "[OK]". Avaliações com LLM rodam em **primeiro plano** em ciclos de

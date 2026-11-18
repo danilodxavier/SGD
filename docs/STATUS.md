@@ -4,12 +4,12 @@
 
 | Campo | Valor |
 |---|---|
-| Atualizado em | 2026-11-17 |
-| Fase atual | **Projeto encerrado** (Fase 11 aprovada) |
-| Situação da fase | ✅ Fase 11 aprovada em 2026-11-17 |
-| Última tarefa concluída | **Kanban publicado** (https://github.com/users/danilodxavier/projects/2, 52 issues em Done) e **aprovação da Fase 11**. Suíte: 320 testes passando, CI verde |
-| Próxima tarefa exata | Nenhuma obrigatória. Pendências do responsável: confirmar as adjudicações de faithfulness (`avaliacao/execucoes/fase10/fidelidade_adjudicacao*.json`) e ensaiar a demonstração (`docs/DEMONSTRACAO.md`). Trabalhos futuros: `docs/RELATORIO_TECNICO.md` §10 |
-| Bloqueios | Nenhum |
+| Atualizado em | 2026-11-18 |
+| Fase atual | Projeto encerrado (Fase 11 aprovada) · **Pós-entrega: avaliação com documentos reais** |
+| Situação da fase | Indexação do acervo real em andamento (processo independente; `data\logs\indexacao_real_pid.txt`) |
+| Última tarefa concluída | Índice de teste e decisões fictícias excluídos (backup `BACKUP\backup_20261118_095229.zip`); `.env` protegido (sem nuvem, origem real, sem indexação automática); raiz = compartilhamento da STI (6.010 arquivos suportados); 1º ciclo: 112 arquivos sem falhas; `avaliar_real.py` + `docs/AVALIACAO_REAL.md` |
+| Próxima tarefa exata | (1) acompanhar a indexação até o fim (contagem em `documentos`; se o processo cair, relançar `scripts\sadgd\indexar.py` — retoma); (2) `construir_grafo.py`; (3) a equipe preenche `avaliacao\real\perguntas.csv`; (4) `avaliar_real.py executar` → `revisao` (julgamento humano) → `resumo`; (5) registrar os números em `docs/AVALIACAO_REAL.md` §6 |
+| Bloqueios | Perguntas reais e julgamento dependem da equipe (o agente não lê conteúdo real) |
 
 ## Histórico de fases
 
