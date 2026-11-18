@@ -4,14 +4,14 @@
 
 ## Publicação no GitHub Projects (Kanban)
 
-Pendente de autenticação (decisão D5). Quando o `gh` estiver instalado e autenticado:
+**Publicado em 2026-11-17:** [https://github.com/users/danilodxavier/projects/2](https://github.com/users/danilodxavier/projects/2) — 52 issues (`#1`–`#52`), todas em **Done** e fechadas com comentário apontando a evidência (`docs/fases/FASE_XX.md`); labels `fase-X`, `epico:*`, `prioridade:*` e milestones "Fase 1"–"Fase 11".
+
+Para reproduzir ou atualizar (o `gh` portátil fica em `ferramentas\gh`, fora do Git; credencial no Gerenciador de Credenciais do Windows):
 
 ```powershell
-winget install GitHub.cli
-gh auth login
-gh auth refresh -s project            # permissão para Projects
-gh project create --owner "@me" --title "SAD-GD"
-powershell -ExecutionPolicy Bypass -File scripts\github\criar_backlog.ps1 -ProjectNumber <N>
+$env:GH_CONFIG_DIR = "$PWD\ferramentas\gh\config"; $env:PATH = "$PWD\ferramentas\gh\bin;$env:PATH"
+gh auth login --web --scopes project          # autorização no navegador (código de uso único)
+powershell -ExecutionPolicy Bypass -File scripts\github\criar_backlog.ps1 -ProjectNumber 2 -Owner danilodxavier
 ```
 
 O script é idempotente: cria labels `fase-X`, `epico:*`, `prioridade:*`, milestones "Fase X" e uma issue por item (ignora as já existentes pelo prefixo `[SAD-XXX]`). Use `-DryRun` para simular.

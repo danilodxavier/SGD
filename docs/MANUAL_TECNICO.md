@@ -192,6 +192,7 @@ Variáveis fixadas pelo próprio sistema para manter caches no projeto: `HF_HOME
 | Usuários | `usuarios.bat listar | criar | redefinir-senha | desbloquear | ativar` |
 | Ollama | `powershell -ExecutionPolicy Bypass -File scripts\sadgd\ollama.ps1 -Acao iniciar|parar|status|instalar|modelo` |
 | Tesseract | `powershell -ExecutionPolicy Bypass -File scripts\sadgd\tesseract.ps1 -Acao instalar` |
+| GitHub (Kanban/issues) | `$env:GH_CONFIG_DIR = "$PWD\ferramentas\gh\config"` e depois `ferramentas\gh\bin\gh.exe ...` — ver `docs/projeto/BACKLOG.md` |
 | Traces (opcional) | `.\.venv\Scripts\python.exe -m phoenix.server.main serve` → http://127.0.0.1:6006 |
 
 **Início automático:** crie uma tarefa no Agendador de Tarefas do Windows "Ao fazer logon" executando

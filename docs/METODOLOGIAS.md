@@ -14,7 +14,7 @@
 | Cronograma com caminho crítico (Gantt) | Planejamento | `docs/projeto/CRONOGRAMA.md` | 1 |
 | Engenharia de requisitos: RF/RNF, MoSCoW, critérios verificáveis | Escopo | `docs/projeto/ESCOPO_E_REQUISITOS.md` | 1 |
 | Scrum: fase = sprint, DoR/DoD, revisão = aprovação do responsável | Todo o projeto | `docs/projeto/BACKLOG.md`, `docs/fases/` | 1– |
-| Kanban (GitHub Projects) | Gestão do fluxo | `scripts/github/criar_backlog.ps1` (publicação pendente) | 1– |
+| Kanban (GitHub Projects) | Gestão do fluxo | [https://github.com/users/danilodxavier/projects/2](https://github.com/users/danilodxavier/projects/2) (52 issues), gerado por `scripts/github/criar_backlog.ps1` | 1–11 |
 | Objetivos SMART | TAP | `TERMO_DE_ABERTURA.md` §2 | 1 |
 
 | Modelo C4 (contexto, contêiner, componente) + diagrama de sequência e implantação | Arquitetura | `docs/arquitetura/C4.md` | 2 |

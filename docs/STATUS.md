@@ -5,11 +5,11 @@
 | Campo | Valor |
 |---|---|
 | Atualizado em | 2026-11-17 |
-| Fase atual | **Fase 11 — Entrega acadêmica** |
-| Situação da fase | ⏳ **Aguardando aprovação** |
-| Última tarefa concluída | **Fase 11 entregue**: F2 no Gemini (p95 100 s), relatório técnico, manuais, README, roteiro de demonstração validado ao vivo, lições aprendidas; correção da API `perguntar` (`bead9a7`). Ver `docs/fases/FASE_11.md` |
-| Próxima tarefa exata | Aguardar a aprovação da Fase 11 pelo responsável (encerramento do projeto). Pendências do responsável: confirmar adjudicações de faithfulness; `gh auth login` para o Kanban; ensaiar a demonstração |
-| Bloqueios | Nenhum. Kanban (SAD-003) depende do `gh` |
+| Fase atual | **Projeto encerrado** (Fase 11 aprovada) |
+| Situação da fase | ✅ Fase 11 aprovada em 2026-11-17 |
+| Última tarefa concluída | **Kanban publicado** (https://github.com/users/danilodxavier/projects/2, 52 issues em Done) e **aprovação da Fase 11**. Suíte: 320 testes passando, CI verde |
+| Próxima tarefa exata | Nenhuma obrigatória. Pendências do responsável: confirmar as adjudicações de faithfulness (`avaliacao/execucoes/fase10/fidelidade_adjudicacao*.json`) e ensaiar a demonstração (`docs/DEMONSTRACAO.md`). Trabalhos futuros: `docs/RELATORIO_TECNICO.md` §10 |
+| Bloqueios | Nenhum |
 
 ## Histórico de fases
 
@@ -26,7 +26,7 @@
 | 8 — Apoio à decisão (F2) | ✅ Aprovada em 2026-11-17 | `docs/fases/FASE_08.md` |
 | 9 — MVP completo | ✅ Aprovada em 2026-11-17 | `docs/fases/FASE_09.md` |
 | 10 — Otimização e avaliação final | ✅ Aprovada em 2026-11-17 | `docs/fases/FASE_10.md` |
-| 11 — Entrega acadêmica | ⏳ Aguardando aprovação | `docs/fases/FASE_11.md` |
+| 11 — Entrega acadêmica | ✅ Aprovada em 2026-11-17 | `docs/fases/FASE_11.md` |
 
 ## Fatos-chave para retomada
 

@@ -316,7 +316,6 @@ caem no Qwen local; JSON cortado é repetido no próprio provedor com orçamento
 4. **Precedentes em F2 longas:** 8/21 precedentes top-1 fracos (R17); recalibrar com dados de validação maiores.
 5. **Anonimização heurística** (lista de prenomes); por isso o envio remoto só aceita corpus acadêmico.
 6. **Implantação:** apenas local; Vercel/VPS ficam como perfil futuro já previsto pelas portas e adaptadores.
-7. **Kanban no GitHub Projects** depende da instalação/autenticação do `gh`.
 
 ---
 

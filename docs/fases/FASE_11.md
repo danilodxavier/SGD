@@ -4,7 +4,7 @@
 |---|---|
 | Período | 2026-11-17 |
 | Executor | Claude Code (`claude-opus-5-5`) |
-| Situação | ⏳ **Aguardando aprovação** |
+| Situação | ✅ **Aprovada** em 2026-11-17 — projeto encerrado |
 
 ## 1. Escopo
 
@@ -24,6 +24,7 @@ Relatório técnico, documentação final (README, manuais do usuário e técnic
 | README final | Visão, resultados × metas, arquitetura, como rodar e avaliar, corpus, documentação (conteúdo v1 removido) | `README.md` | ✅ |
 | Roteiro de demonstração ao vivo | 8 cenas com perguntas **validadas ao vivo** no banco real (resultados e tempos), preparação, plano B e perguntas prováveis da banca | `docs/DEMONSTRACAO.md` | ✅ |
 | Lições aprendidas | 22 lições (avaliação, arquitetura, testes, governança) com evidência e prática adotada | `docs/projeto/LICOES_APRENDIDAS.md` | ✅ |
+| Kanban (SAD-003) | GitHub Project #2 com as 52 issues do backlog (labels, milestones, Status **Done**, comentário de evidência); `gh` 2.103.3 portátil (checksum SHA-256 conferido) autorizado pelo responsável no navegador; 2 defeitos do script corrigidos (barra invertida final em argumento nativo do PS 5.1; `-like` com colchetes) | https://github.com/users/danilodxavier/projects/2, `scripts/github/criar_backlog.ps1` | ✅ |
 
 ## 3. F2 no Gemini — resultados (2026-11-17)
 
@@ -58,13 +59,12 @@ Evidências: `avaliacao/execucoes/fase11/f2_sadgd-qwen2.5-7b__f2_gemini.jsonl`, 
 | 11.0.4 Lições aprendidas | Consolidadas das retrospectivas, com evidência | ✅ 22 lições |
 | Decisão da Fase 10 | F2 no Gemini avaliada e comparada com a Fase 8 | ✅ p95 100 s; relator 1,00 |
 
-Testes: **316 passando + 4 E2E** no Edge, ruff limpo.
+Testes: **320 passando** (316 + 4 E2E no Edge), ruff limpo; CI verde. Único aviso: `DeprecationWarning` de `langchain-community` importado pela biblioteca `ragas` (terceiros, sem efeito no sistema).
 
 ## 6. Pendências (fora do escopo desta fase ou dependentes do responsável)
 
 1. Confirmação humana das adjudicações de faithfulness (`avaliacao/execucoes/fase10/fidelidade_adjudicacao*.json`).
-2. Kanban no GitHub Projects (SAD-003) — depende da instalação do `gh` e de `gh auth login` pelo responsável.
-3. Ensaio da demonstração pelo responsável (`docs/DEMONSTRACAO.md` §1); o vídeo já está em `data/video/`.
+2. Ensaio da demonstração pelo responsável (`docs/DEMONSTRACAO.md` §1); o vídeo já está em `data/video/`.
 
 ## 7. Retrospectiva
 
@@ -74,4 +74,4 @@ Testes: **316 passando + 4 E2E** no Edge, ruff limpo.
 
 ## 8. Aprovação
 
-- [ ] Aguardando aprovação do responsável.
+- [x] Aprovado pelo responsável em 2026-11-17 ("Após incluir o Kanban. Está aprovada a fase 11"); Kanban publicado antes do registro da aprovação.

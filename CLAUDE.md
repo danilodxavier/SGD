@@ -16,6 +16,7 @@
 | 2026-11-16 | Corpus acadêmico público/sintético para avaliação e demonstração; dados reais só locais, com LLM local | `docs/adr/ADR-002-corpus-academico.md` |
 | 2026-11-16 | Fase 1 aprovada; documentos, trechos e contratos do banco v1 **excluídos** (nova versão usará novos documentos); raiz documental = `corpus\` | `docs/fases/FASE_01.md` §7 |
 | 2026-11-16 | Fase 2 aprovada: ADR-003 a ADR-013 **aceitos**; autorização para **substituir o que for necessário do projeto antigo** para entregar o novo projeto na íntegra | `docs/fases/FASE_02.md` §8 |
+| 2026-11-17 | **Fase 11 aprovada — projeto encerrado** (após a publicação do Kanban: 52 issues em Done no Project #2). Entregas: F2 no Gemini (p95 100 s), relatório técnico, manuais, README, demonstração, lições aprendidas | `docs/fases/FASE_11.md` |
 | 2026-11-17 | Fase 10 aprovada: tabelas v1 apagadas (migração 006, backup); **F2 no Gemini (plano gratuito)** só com contexto 100% acadêmico, anonimizado, AI_ALLOW_REMOTE=true e chave no `.env`; reserva local | `docs/fases/FASE_10.md` §6 |
 | 2026-11-17 | Fase 9 aprovada (exclusão do código v1 aprovada com backup; identidade MT/SEMA mantida); Fase 10 entregue (cache semântico, faithfulness 0,964 adjudicada, F2 limitada pelo hardware) | `docs/fases/FASE_10.md` |
 | 2026-11-17 | Fase 8 aprovada; Fase 9 entregue (MVP: Perguntar/Acervo/Linha do tempo/Decisões/Painel, perfil Gestor, upload com indexação no servidor, E2E no Edge) | `docs/fases/FASE_09.md` |
@@ -58,14 +59,15 @@ Variáveis de ambiente que forçam caches para dentro do projeto (definidas em `
 - Shell principal PowerShell 5.1; `.bat` chamados com caminho completo entre aspas.
 - O caminho do projeto contém espaço (`GESTAO_ CONTRATO`): sempre usar aspas.
 - `.ps1` para PS 5.1 precisam de UTF-8 com BOM.
-- Repositório remoto: **https://github.com/danilodxavier/SGD** (público, decisão do responsável em 2026-11-16). Push via Git Credential Manager; `gh` CLI ainda não instalado (necessário para Issues/Projects).
+- Repositório remoto: **https://github.com/danilodxavier/SGD** (público, decisão do responsável em 2026-11-16). Push via Git Credential Manager. `gh` 2.103.3 portátil em `ferramentas\gh` (definir `GH_CONFIG_DIR=<projeto>\ferramentas\gh\config`; token no Gerenciador de Credenciais do Windows, escopo `project`). Kanban: https://github.com/users/danilodxavier/projects/2 (52 issues).
 - RAM livre baixa (1–2 GB): o Claude Code encerra processos longos em segundo plano. Indexar com `scripts\sadgd\indexar.py --max-minutos 7.5` em primeiro plano (retoma de onde parou).
 - bge-m3: usar float32 (fp16 é 5× mais lento na GTX 1660 SUPER) e `HF_DEACTIVATE_ASYNC_LOAD=1` (já no config).
 - O portal da legislação federal só aceita o cliente HTTP do Windows com agente padrão (ver coletor).
 - LLM local com saída JSON: NÃO usar schema estrito no Ollama (chaves em ordem alfabética → recusas indevidas); usar `json_livre=True` com a ordem dos campos no prompt (FASE_05 §4).
 - Nunca encadear `scripts\sadgd\ollama.ps1 -Acao iniciar` com `| Out-Null`: o `ollama serve` herda o pipe e o comando não termina.
 - Métricas sintéticas perfeitas exigem verificação externa (corpus público) antes de qualquer conclusão.
-- Nunca editar caminhos Windows com `sed` (as barras invertidas são consumidas); usar PowerShell `[IO.File]` ou Python.
+- Nunca editar caminhos Windows com `sed` (as barras invertidas são consumidas); usar PowerShell `[IO.File]` ou Python (com strings *raw* `r'...'`: `\f`, `\b` viram caracteres de controle).
+- PS 5.1 chamando executável nativo: argumento com espaço e barra invertida final (`modelos\`) quebra o comando — escapar como em `ConvertTo-ArgNativo` (`scripts\github\criar_backlog.ps1`); `-like '[SAD-001]*'` trata colchetes como curinga (usar `.StartsWith`).
 - Avaliações longas com LLM (F2 ≈ 4–6 min/item) só em primeiro plano, em ciclos `--max-minutos 4` (o segundo plano é encerrado por falta de memória).
 - Dentro de `corpus/` só `publico/`, `sintetico/` e os manifestos vão ao Git; `corpus/enviados/` (uploads) pode ter dados reais.
 - CI: falhas de teste viram anotações públicas (`/check-runs/{id}/annotations`). A API pública do GitHub tem limite de 60 req/h sem login: consultar o CI com intervalos ≥ 40 s.

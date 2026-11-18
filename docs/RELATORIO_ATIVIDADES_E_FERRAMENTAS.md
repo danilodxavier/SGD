@@ -58,7 +58,7 @@ Números de base: 186 documentos, 5.691 trechos vetorizados, 96 normas, 316 test
   4. **portão de cobertura** mínima das camadas domínio/aplicação (RNF-09);
   5. **avaliação de regressão de qualidade** (BM25 no corpus sintético com piso calibrado).
 - Testes que falham viram **anotações públicas** do check run, permitindo diagnóstico sem login.
-- Backlog preparado para **GitHub Projects (Kanban)** em `scripts/github/criar_backlog.ps1` — publicação pendente da instalação do `gh` CLI e autenticação do responsável (`gh auth login`).
+- **GitHub Projects (Kanban)** publicado em https://github.com/users/danilodxavier/projects/2: 52 issues do backlog com labels por fase/épico/prioridade, milestones por fase e comentário de evidência em cada item, geradas por `scripts/github/criar_backlog.ps1` com o `gh` portátil (`ferramentas/gh`), autorizado pelo responsável no navegador.
 
 **Relevância** — Para o curso: prática real de MLOps/LLMOps (qualidade de IA verificada automaticamente, não só código). Para o sistema: nenhuma mudança entra sem testes e sem varredura de credenciais; tudo é auditável e reversível.
 
@@ -186,7 +186,7 @@ PMBOK 7 (termo de abertura, EAP, riscos, partes interessadas, lições aprendida
 - Latência da F2 local (p50 ≈ 5 min) limitada pela GPU de 6 GB; mitigação: cache semântico (5 ms em repetições) e opção Gemini para o corpus acadêmico, que levou a F2 a p50 30 s / p95 100 s (meta ≤ 120 s) sem perda de qualidade estrutural (`docs/AVALIACAO.md`, Fase 11).
 - Alucinação por frase 5,4% (meta 5%) — margem pequena, adjudicação pendente de confirmação humana.
 - F1 = 1,00 nas relações do corpus sintético indica sobreajuste declarado; no corpus público, 10/10 relações oficiais.
-- Kanban no GitHub Projects e conectores OAuth aguardam autenticação do responsável.
+- Conectores OAuth do plugin `engineering` (Slack, Notion etc.) não foram autorizados — não eram necessários ao projeto.
 - Vercel/VPS não implantados (decisão ADR-001/008).
 
 ---

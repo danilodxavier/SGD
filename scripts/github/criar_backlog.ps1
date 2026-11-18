@@ -24,8 +24,17 @@ if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
 gh auth status | Out-Null
 if ($LASTEXITCODE -ne 0) { Write-Host "[ERRO] Execute 'gh auth login' primeiro." ; exit 1 }
 
+# PowerShell 5.1 envolve em aspas os argumentos com espaco sem escapar barras/aspas: uma barra invertida
+# final (ex.: "modelos\") escaparia a aspa de fechamento e partiria o comando. Escapa no padrao do Windows.
+function ConvertTo-ArgNativo([string]$a) {
+    if ($a -notmatch '[\s"]') { return $a }
+    $a = [regex]::Replace($a, '(\\*)"', { param($m) ($m.Groups[1].Value * 2) + '\"' })
+    return [regex]::Replace($a, '(\\+)$', { param($m) $m.Groups[1].Value * 2 })
+}
+
 function Invoke-Gh([string[]]$ghArgs) {
     if ($DryRun) { Write-Host "gh $($ghArgs -join ' ')" ; return "" }
+    $ghArgs = @($ghArgs | ForEach-Object { ConvertTo-ArgNativo $_ })
     $out = & gh @ghArgs 2>&1
     return $out
 }
@@ -56,7 +65,7 @@ $open = @()
 if (-not $DryRun) { $open = gh issue list --state all --limit 500 --json title --jq ".[].title" }
 foreach ($i in $items) {
     $title = "[$($i.id)] $($i.titulo)"
-    if ($open | Where-Object { $_ -like "[$($i.id)]*" }) { Write-Host "[OK] ja existe: $title" ; continue }
+    if ($open | Where-Object { $_.StartsWith("[$($i.id)]") }) { Write-Host "[OK] ja existe: $title" ; continue }
     $body = "**Epico:** $($i.epico)`n**Fase:** $($i.fase)`n**Prioridade (MoSCoW):** $($i.prioridade)`n**Pontos:** $($i.pontos)`n**Requisitos:** $($i.requisitos)`n`n### Criterio de aceite`n$($i.criterio_aceite)`n`n_Gerado de docs/projeto/backlog.csv_"
     $url = Invoke-Gh @("issue", "create", "--title", $title, "--body", $body,
         "--label", "fase-$($i.fase)", "--label", "epico:$($i.epico)", "--label", "prioridade:$($i.prioridade)",
