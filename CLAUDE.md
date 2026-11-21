@@ -76,6 +76,7 @@ Variáveis de ambiente que forçam caches para dentro do projeto (definidas em `
 - Juiz LLM local (Llama 3.1 8B) tem muitos falsos alarmes em respostas com datas/cabeçalhos longos: nunca publicar a métrica do juiz sem calibração e adjudicação.
 - Acervo real (desde 2026-11-18): nunca imprimir nomes de arquivo, títulos ou trechos reais na saída das ferramentas (filtrar para contagens); avaliação real via `scripts\sadgd\avaliar_real.py` com resultados em `avaliacao\real\` (fora do Git). Métricas acadêmicas exigem reindexar `corpus\` num banco separado (`DATABASE_PATH`).
 - Desempenho (2026-11-20): reranker na GPU (`SADGD_DISPOSITIVO_RERANKER=auto`) e compressão do contexto (`SADGD_CONTEXTO_MAX_CHARS=1200`). Ao medir latência do LLM, descarregar o modelo antes (`keep_alive: 0`): o Ollama reaproveita o cache de prompts idênticos e falseia a medição. Banco acadêmico separado para regressões: `DATABASE_PATH=<projeto>/data/database/sadgd_academico.db`.
+- Ollama após horas de avaliação: o `llama-server` pode acumular >13 GB de memória comprometida e o reranker falha com "arquivo de paginação muito pequeno"/CUDA OOM — reiniciar com `ollama.ps1 -Acao parar` e `iniciar`. Contexto (2026-11-21): ficha do documento em todo trecho, `SADGD_ABERTURAS=3` e 2ª leitura nas recusas (`AVALIACAO_REAL.md` §8).
 - Testes E2E usam o Microsoft Edge do sistema via Playwright (`channel="msedge"`) — não baixar navegadores.
 - Ollama do projeto: `scripts\sadgd\ollama.ps1 -Acao iniciar|parar|status`; Tesseract: `scripts\sadgd\tesseract.ps1`.
 

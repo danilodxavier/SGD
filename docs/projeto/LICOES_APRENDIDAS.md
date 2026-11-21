@@ -27,6 +27,7 @@ domínio adquiridos estão em `docs/HABILIDADES.md`.
 | L10 | **Schema estrito pode piorar o LLM local** | No Ollama, o schema estrito ordena as chaves alfabeticamente e induz recusas | `FASE_05.md` §4 | JSON livre com a ordem dos campos no prompt + validação no Python |
 | L11 | **Medir antes de assumir o "óbvio"** | fp16 era 5× mais lento que fp32 na GTX 1660 SUPER | `FASE_04.md` | Benchmark curto antes de fixar configuração de desempenho |
 | L12 | **Hardware limita a F2; a nuvem resolve só onde a política permite** | Local: p95 387 s. Gemini (corpus acadêmico): p95 100 s. Dados reais continuam locais | `FASE_10.md`, `FASE_11.md` | Política por origem do trecho + reserva local automática |
+| L23 | **Recorte sem identificação vira recusa** | No acervo real, o LLM recusava "Qual o contrato do <fornecedor de software>?" (R05) com 8 trechos certos: cláusulas do meio não dizem número, partes nem objeto; o número estava no nome da pasta | `AVALIACAO_REAL.md` §8 | Ficha do documento em todo trecho; abertura do documento quando a ficha não identifica; diagnosticar com códigos fechados pedidos ao próprio LLM local quando não se pode ler o conteúdo |
 
 ## 3. Testes e qualidade
 

@@ -69,6 +69,8 @@ julgue se a recomendação é coerente com os documentos e se alternativas, risc
 | 2026-11-18 | 1º ciclo: 112 arquivos, 571 trechos, 0 falhas (24% com OCR) | — | — | Indexação completa estimada em ≈ 7 h |
 | 2026-11-18/20 | **6.011 documentos**, 51.510 trechos e vetores (8,6 h); 1.101 com OCR; 2 corrompidos, 8 sem texto, 1 digitalizado sem OCR útil | — | Grafo: 4.131 grupos, só 21 com 2+ documentos; 13 processos de contrato; 3.330 relações; 0 contradições | 2 defeitos corrigidos (`022a053`): data ausente e chave de grupo duplicada |
 | 2026-11-20 | A1 + A3 aplicados (§7.1, §7.2): `outro` 88% → 22%; 168 processos de contrato; F1 60,5 s → 17,3 s | — | — | Precisão dos tipos depende da amostra conferida pela equipe |
+| 2026-11-21 | Rodada 1 das perguntas da equipe (`perguntas.csv`, 12) | 12 | 7 respostas, **5 recusas**, 0 erros; F1 15–66 s, F2 173 s | Recusa da R05 com 8 trechos do contrato certo → §8 |
+| 2026-11-21 | Rodada 2 (após §8) | 12 | 9 respostas, **3 recusas** (confirmadas pela 2ª leitura), 0 erros; F1 21–85 s, F2 195 s | R05 (contrato do fornecedor) e R10 (fiscal de um contrato) passaram a ser respondidos; julgamento humano pendente (`revisao.csv`) |
 | 2026-11-20 | Fumaça (4 perguntas sem conteúdo real na saída) | 4 | Ausência → recusa correta; F1 com 4 fontes; F2 local, válida, 6 elementos — **mas 0 trechos citados** | F1 aquecida ≈ 30 s (rerank 18–27 s) |
 
 ## 7. Achados estruturais (somente contagens)
@@ -156,3 +158,43 @@ não veio do cache).
 
 Ordem recomendada: **medir o baseline real primeiro** (perguntas da equipe, §3–§5) e só então aplicar A1–A4, medindo o ganho contra esse baseline.
 
+## 8. Recortes sem identificação do documento — recusa da R05 (2026-11-21)
+
+**Sintoma (rodada 1):** "Qual o contrato do <fornecedor de software>?" (R05) foi recusada, embora os 8 trechos recuperados fossem de contratos e
+todos citassem o fornecedor (922 documentos sobre ele no índice). Diagnóstico feito só com contagens, booleanos e códigos
+fechados devolvidos pelo próprio LLM local (nenhum conteúdo real na saída):
+
+| Etapa | Achado |
+|---|---|
+| Busca | Correta: 8/8 trechos sobre o assunto; mas de só 3 documentos, com cópias idênticas ocupando vagas (1.371 documentos duplicados no acervo, mesmo arquivo em várias pastas) |
+| Contexto | Cada trecho ia ao LLM só com título/dispositivo/página: cláusulas do meio do contrato **sem número, partes nem objeto**. O número e o fornecedor estavam no **nome da pasta** e o campo `numero` está vazio em 84% dos documentos reais (acadêmico: 4%) |
+| LLM | Perguntado de forma neutra, respondia "informação presente, 7 trechos úteis"; com o prompt da F1, recusava. Motivo declarado em código: `trechos_nao_dizem_o_objeto` |
+| Verificador | Não aceitava como suporte nada além do corpo, título, dispositivo e data: um número tirado da pasta seria removido |
+
+**Correções (para F1 e para todos os especialistas da F2):**
+
+1. **Ficha do documento** no cabeçalho de cada trecho: tipo, nº, processo e pasta (`montar_contexto`); o verificador
+   passa a aceitar a ficha como suporte; regra 11 nas regras comuns v2 ("a ficha também é evidência").
+2. **Cópias idênticas** removidas antes do rerank (`sem_duplicatas`).
+3. **Abertura do documento** (`SADGD_ABERTURAS=3`): para os 3 documentos mais relevantes **sem número na ficha**, o
+   contexto leva o início do documento e a cláusula do objeto (texto literal, cortes "[…]", ≤ ≈ 1.000 caracteres).
+4. **Segunda leitura** só quando a 1ª recusa: o modelo lista antes as evidências; se listar evidências e ainda recusar,
+   recebe a contradição de volta (correção dirigida) e pode manter a recusa explicando a lacuna.
+
+Experimentos descartados (registrados para não repetir): só ficha + instrução (recusa mantida); pedir evidências em
+**toda** pergunta (acadêmico: classificação 0,936 → 0,830 por excesso de "conflito", p50 9,5 → 17,9 s); abertura para
+todos os documentos (p50 23 s, p95 54 s, sem ganho de exatidão no acadêmico).
+
+**Regressão acadêmica** (validação, 47 F1, LLM local, `avaliacao/execucoes/fase11_abertura2/` × `fase11_ctx1200/`):
+exatidão 0,923 = 0,923; classificação 0,936 → **0,957**; recusa correta 1,00 = 1,00; conflito 1,00 = 1,00; citação
+correta 0,907 → **0,930**; precisão de citações 0,850 → 0,857; alucinação numérica 0 → 0,023 (1 item: data de
+prorrogação calculada pelo modelo — avaliação sem verificador, como a referência; em produção o verificador remove);
+p50 9,5 → 16,5 s; p95 17,9 → 44,4 s (a 2ª leitura nas perguntas sem resposta custa ≈ 50 s).
+
+**Acervo real (rodada 2):** R05 respondida em 3/3 execuções já na 1ª leitura, com número do contrato e 2 fontes
+aprovadas pelo verificador; recusas 5 → 3 (as 3 passaram pela 2ª leitura); F1 mais lenta (mediana ≈ 40 s × ≈ 22 s).
+Exatidão real depende do julgamento da equipe em `avaliacao/real/revisao.csv`.
+
+**Incidente de ambiente:** a 1ª tentativa da rodada 2 falhou em 12/12 com "arquivo de paginação muito pequeno" /
+CUDA OOM ao carregar o reranker: o `llama-server` do Ollama tinha acumulado 13,6 GB de memória comprometida após horas
+de avaliações (modelo de 5,4 GB). Reiniciar o Ollama (`ollama.ps1 -Acao parar/iniciar`) liberou 13,6 GB.

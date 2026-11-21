@@ -45,18 +45,28 @@ CAMPOS_F1 = ("resposta", "classificacao", "confianca", "fontes", "lacunas")
 INSTRUCAO_F1 = ("Modo F1: responda somente à pergunta, em 1 a 4 frases, citando os trechos no texto como [T<id>] "
                 "e listando os mesmos ids em \"fontes\". Se a informação não estiver nos trechos, use "
                 "classificacao \"ausencia\". Se os trechos divergirem sobre o fato perguntado, use \"conflito\" e "
-                "apresente o conteúdo de cada fonte.")
+                "apresente o conteúdo de cada fonte. A ficha entre parênteses de cada trecho (tipo, nº, processo, "
+                "pasta) faz parte dos trechos: use-a para identificar o documento, o contrato e o fornecedor.")
 # A ordem importa: com schema estrito o Ollama emite as chaves em ordem alfabética e o modelo "decide" a
 # classificação antes de redigir a resposta — recusas indevidas (validação: 17/27 factuais viraram ausência).
 # Pedir JSON livre com a resposta primeiro corrigiu o comportamento (FASE_05 §4).
 ORDEM_SAIDA = ("Responda SOMENTE com um objeto JSON com as chaves nesta ordem: \"resposta\" (texto com citações "
                "[T<id>]), \"fontes\" (lista de ids), \"classificacao\" (fato|inferencia|conflito|ausencia), "
                "\"confianca\" (0 a 1), \"lacunas\" (lista).")
-VERSAO_INSTRUCAO = 2
+# v3 (acervo real): começando pela resposta, o modelo às vezes escreve a frase de recusa antes de examinar os trechos
+# (R05, "Qual o contrato do <fornecedor>?": 8 trechos do contrato certo, 6 ids declarados em "fontes" e recusa).
+# Só quando a 1ª leitura recusa, uma 2ª leitura lista antes as evidências. Usar essa ordem em toda pergunta custava
+# classificação (0,936 → 0,830: mais "conflito") e latência (p50 9,5 → 17,9 s) no corpus acadêmico.
+ORDEM_EVIDENCIAS = ("Responda SOMENTE com um objeto JSON com as chaves nesta ordem: \"evidencias\" (lista dos ids "
+                    "dos trechos que tratam do assunto da pergunta, incluindo a ficha), \"resposta\" (texto com "
+                    "citações [T<id>] baseado nas evidências), \"fontes\" (lista de ids), \"classificacao\" "
+                    "(fato|inferencia|conflito|ausencia — ausencia só se \"evidencias\" estiver vazia), "
+                    "\"confianca\" (0 a 1), \"lacunas\" (lista).")
+VERSAO_INSTRUCAO = 3
 
 
 @cache
-def carregar_prompt(nome: str, versao: int = 1, versao_regras: int = 1) -> str:
+def carregar_prompt(nome: str, versao: int = 1, versao_regras: int = 2) -> str:
     def corpo(arquivo):
         texto = (PROMPTS / arquivo).read_text(encoding="utf-8")
         return texto.split("---", 2)[2].strip() if texto.startswith("---") else texto.strip()
@@ -115,12 +125,24 @@ def comprimir(texto: str, pergunta: str | None, max_chars: int) -> str:
 
 
 def montar_contexto(trechos, pergunta: str | None = None, max_chars: int | None = None) -> str:
+    """Cada trecho leva a ficha do documento (tipo, número, processo, pasta): um recorte do meio de um contrato
+    não diz de qual contrato é — no acervo real o número e o fornecedor costumam estar só no nome da pasta."""
     blocos = []
     for t in trechos:
-        meta = " | ".join(str(x) for x in (t.titulo, t.dispositivo, f"pág. {t.pagina}" if t.pagina else None,
-                                           t.data_documento, f"origem: {t.corpus_origem}") if x)
+        numero, processo, pasta = getattr(t, "numero", None), getattr(t, "processo", None), getattr(t, "pasta", None)
+        meta = " | ".join(str(x) for x in (
+            t.titulo, f"tipo: {t.tipo_documental}" if t.tipo_documental else None,
+            f"nº {numero}" if numero else None, f"processo: {processo}" if processo else None,
+            t.dispositivo, f"pág. {t.pagina}" if t.pagina else None, t.data_documento,
+            f"pasta: {pasta}" if pasta else None, f"origem: {t.corpus_origem}") if x)
         blocos.append(f"[{t.rotulo}] ({meta})\n{comprimir(t.texto, pergunta, max_chars or 0)}")
     return "\n\n".join(blocos)
+
+
+def _rotulo(f) -> str:
+    """Tolera formatos de id ("T12", "[T12]", 12, "12")."""
+    rotulo = str(f).strip().strip("[]").strip()
+    return f"T{rotulo}" if rotulo.isdigit() else rotulo
 
 
 @dataclass
@@ -152,15 +174,41 @@ class ResponderF1:
                               observacoes=["sem_trechos_recuperados"])
         if self.conflitos is not None and (resposta := self._conflito(pergunta, trechos)):
             return resposta
-        mensagens = [
-            {"role": "system", "content": carregar_prompt("relator", self.versao) + "\n\n" + INSTRUCAO_F1 + "\n"
-                + ORDEM_SAIDA},
-            {"role": "user", "content": f"PERGUNTA: {pergunta}\n\nTRECHOS:\n"
-                                        f"{montar_contexto(trechos, pergunta, self.contexto_max_chars)}"},
-        ]
+        usuario = {"role": "user", "content": f"PERGUNTA: {pergunta}\n\nTRECHOS:\n"
+                                              f"{montar_contexto(trechos, pergunta, self.contexto_max_chars)}"}
+        sistema = carregar_prompt("relator", self.versao) + "\n\n" + INSTRUCAO_F1 + "\n"
+        mensagens = [{"role": "system", "content": sistema + ORDEM_SAIDA}, usuario]
         r = self.llm.chat(mensagens, max_tokens=self.max_tokens, temperatura=0.0, json_livre=True)
-        dados = r.json if isinstance(r.json, dict) else {}
-        resposta = self._validar(dados, trechos, r)
+        resposta = self._validar(r.json if isinstance(r.json, dict) else {}, trechos, r)
+        if resposta.classificacao == Classificacao.AUSENCIA.value:
+            segunda = [{"role": "system", "content": sistema + ORDEM_EVIDENCIAS}, usuario]
+            r2 = self.llm.chat(segunda, max_tokens=self.max_tokens, temperatura=0.0, json_livre=True)
+            dados2 = r2.json if isinstance(r2.json, dict) else {}
+            nova = self._validar(dados2, trechos, r2)
+            evidencias = [e for e in (_rotulo(x) for x in dados2.get("evidencias") or []) if e in
+                          {t.rotulo for t in trechos}]
+            if nova.classificacao == Classificacao.AUSENCIA.value and evidencias:
+                # contradição: apontou trechos sobre o assunto e recusou (oscila com o LLM local)
+                segunda = segunda + [
+                    {"role": "assistant", "content": json.dumps(dados2, ensure_ascii=False)},
+                    {"role": "user", "content": "Você listou " + ", ".join(evidencias) + " como trechos que tratam "
+                     "do assunto da pergunta, mas classificou \"ausencia\". Responda à pergunta com base nesses "
+                     "trechos e na ficha deles, citando-os. Se ainda assim não for possível responder, mantenha "
+                     "\"ausencia\" e diga em \"lacunas\" o que falta."}]
+                r3 = self.llm.chat(segunda, max_tokens=self.max_tokens, temperatura=0.0, json_livre=True)
+                terceira = self._validar(r3.json if isinstance(r3.json, dict) else {}, trechos, r3)
+                terceira.tokens_entrada += nova.tokens_entrada
+                terceira.tokens_saida += nova.tokens_saida
+                terceira.latencia_ms += nova.latencia_ms
+                terceira.observacoes = nova.observacoes + ["evidencias_contradizem_recusa"] + terceira.observacoes
+                nova = terceira
+            nova.tokens_entrada += resposta.tokens_entrada
+            nova.tokens_saida += resposta.tokens_saida
+            nova.latencia_ms += resposta.latencia_ms
+            nova.observacoes = resposta.observacoes + ["segunda_leitura_evidencias"] + nova.observacoes
+            resposta = nova
+            if nova.classificacao != Classificacao.AUSENCIA.value:
+                mensagens = segunda
         if self.verificador is None:
             return resposta
         return self._verificar(pergunta, trechos, mensagens, resposta)
@@ -230,10 +278,7 @@ class ResponderF1:
             else Classificacao.FATO.value
         texto = str(dados.get("resposta") or "").strip()
         # tolera formatos ("T12", "[T12]", 12, "12"); o id continua obrigado a existir no contexto
-        declarados = []
-        for f in dados.get("fontes") or []:
-            rotulo = str(f).strip().strip("[]").strip()
-            declarados.append(f"T{rotulo}" if rotulo.isdigit() else rotulo)
+        declarados = [_rotulo(f) for f in dados.get("fontes") or []]
         no_texto = [f"T{n}" for n in RE_CITACAO.findall(texto)]
         citados = list(dict.fromkeys(declarados + no_texto))
         validos = [c for c in citados if c in por_rotulo]

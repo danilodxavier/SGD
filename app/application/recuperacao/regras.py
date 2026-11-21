@@ -71,6 +71,14 @@ class TrechoRecuperado:
     pontuacao: float = 0.0
     caminho: str | None = None
     subdispositivos: list = field(default_factory=list)
+    numero: str | None = None
+    processo: str | None = None
+
+    @property
+    def pasta(self) -> str | None:
+        """Pastas do caminho relativo (sem o arquivo): no acervo real identificam o contrato e o fornecedor."""
+        partes = str(self.caminho_relativo or "").replace("\\", "/").split("/")[:-1]
+        return "/".join(p for p in partes if p) or None
 
     @property
     def rotulo(self) -> str:

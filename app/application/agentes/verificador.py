@@ -38,8 +38,9 @@ class Verificacao:
 
 
 def suporte(t) -> str:
-    """O que o modelo viu de um trecho citado: corpo + metadados extraídos do próprio documento."""
-    return " ".join(str(x) for x in (t.texto, t.titulo, t.dispositivo, t.data_documento) if x)
+    """O que o modelo viu de um trecho citado: corpo + ficha do documento (a mesma de `montar_contexto`)."""
+    return " ".join(str(x) for x in (t.texto, t.titulo, t.dispositivo, t.data_documento, getattr(t, "numero", None),
+                                      getattr(t, "processo", None), getattr(t, "pasta", None)) if x)
 
 
 def frases(texto: str) -> list[str]:

@@ -52,3 +52,12 @@ def test_negacao_de_vigencia_nao_e_problema():
 def test_mensagem_de_ausencia_e_aprovada_sem_citacao():
     v = verificar("Não localizei essa informação nos documentos disponibilizados.", [], "x")
     assert v.aprovada
+
+
+def test_numero_que_so_consta_da_ficha_do_documento_e_aceito():
+    t = TrechoRecuperado(30, 1, "O suporte técnico será prestado em regime integral.", "a.pdf",
+                         "contratos/CT 012-2023 EMPRESA X/a.pdf", "CONTRATO", None, 1, "contrato", "real", None, False,
+                         None,
+                         numero="012/2023")
+    assert verificar("Trata-se do contrato 012/2023 [T30].", [t]).aprovada
+    assert verificar("Trata-se do contrato 012-2023 [T30].", [t]).aprovada  # número escrito como na pasta

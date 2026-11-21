@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from typing import Protocol
 
 from app.application.portas import EmbeddingPort, RerankerPort, ResultadoBusca, VectorStorePort
+from app.application.recuperacao.aberturas import com_aberturas
 from app.application.recuperacao.regras import (
     TrechoRecuperado,
     consulta_fts,
@@ -38,10 +39,12 @@ class ResultadoRecuperacao:
 class RecuperadorHibrido:
     def __init__(self, lexical: BuscaLexicalPort, repositorio: RepositorioTrechosPort,
                  embedder: EmbeddingPort | None = None, vetores: VectorStorePort | None = None,
-                 reranker: RerankerPort | None = None, *, candidatos: int = 50, para_rerank: int = 24):
+                 reranker: RerankerPort | None = None, *, candidatos: int = 50, para_rerank: int = 24,
+                 aberturas: int = 0):
         self.lexical, self.repo = lexical, repositorio
         self.embedder, self.vetores, self.reranker = embedder, vetores, reranker
         self.candidatos, self.para_rerank = candidatos, para_rerank
+        self.aberturas = aberturas  # nº de documentos que levam a abertura junto (0 = só os trechos)
 
     def recuperar(self, pergunta: str, k: int = 8, modo: str = "hibrido_rerank",
                   incluir_historico: bool = False) -> ResultadoRecuperacao:
@@ -68,6 +71,7 @@ class RecuperadorHibrido:
         for t in trechos:
             t.pontuacao = pontos.get(t.id, 0.0)
         trechos.sort(key=lambda t: -t.pontuacao)
+        trechos = sem_duplicatas(trechos)
         tempos["leitura"] = _ms(t0)
         atuais, historico = (trechos, []) if incluir_historico else filtrar_vigencia(trechos)
         if modo == "hibrido_rerank" and self.reranker and atuais:
@@ -78,7 +82,22 @@ class RecuperadorHibrido:
                 t.pontuacao = float(nota)
             atuais = sorted(topo, key=lambda t: -t.pontuacao) + atuais[self.para_rerank:]
             tempos["rerank"] = _ms(t0)
-        return ResultadoRecuperacao(pergunta, atuais[:k], historico[:k], termos, tempos)
+        selecionados = atuais[:k]
+        if self.aberturas and selecionados and hasattr(self.repo, "iniciais"):
+            selecionados = com_aberturas(selecionados, self.repo, self.aberturas)
+        return ResultadoRecuperacao(pergunta, selecionados, historico[:k], termos, tempos)
+
+
+def sem_duplicatas(trechos):
+    """Mantém só a primeira ocorrência (a de maior pontuação) de cada texto: no acervo real o mesmo arquivo aparece
+    em várias pastas e as cópias ocupavam metade das vagas do contexto."""
+    vistos, saida = set(), []
+    for t in trechos:
+        chave = " ".join(t.texto.split()).lower()
+        if chave not in vistos:
+            vistos.add(chave)
+            saida.append(t)
+    return saida
 
 
 def _texto_rerank(t: TrechoRecuperado) -> str:

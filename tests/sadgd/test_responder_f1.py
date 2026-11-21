@@ -58,7 +58,43 @@ def test_citacao_inexistente_e_descartada_e_sem_fonte_vira_ausencia():
     r = ResponderF1(LLMFalso(saida(resposta="O valor é R$ 9,99 [T999].", fontes=["T999"]))).responder("pergunta",
                                                                                                      TRECHOS)
     assert r.classificacao == "ausencia" and r.resposta == MENSAGEM_AUSENCIA and r.fontes == []
-    assert r.observacoes == ["citacoes_invalidas_descartadas", "resposta_factual_sem_citacao_valida"]
+    assert r.observacoes == ["citacoes_invalidas_descartadas", "resposta_factual_sem_citacao_valida",
+                             "segunda_leitura_evidencias", "citacoes_invalidas_descartadas",
+                             "resposta_factual_sem_citacao_valida"]
+
+
+class LLMLeituras(LLMFalso):
+    def __init__(self, *saidas):
+        super().__init__(None)
+        self.saidas, self.todas = list(saidas), []
+
+    def chat(self, mensagens, **kw):
+        self.saida = self.saidas.pop(0)
+        self.todas.append(mensagens)
+        return super().chat(mensagens, **kw)
+
+
+def test_recusa_na_primeira_leitura_ganha_segunda_leitura_pelas_evidencias():
+    llm = LLMLeituras(saida(classificacao="ausencia", resposta="Não localizei.", fontes=["T11", "T12"]),
+                       {"evidencias": ["T11"], **saida()})
+    r = ResponderF1(llm).responder("Qual o valor global?", TRECHOS)
+    assert r.classificacao == "fato" and [t.id for t in r.fontes] == [11]
+    assert "segunda_leitura_evidencias" in r.observacoes and r.tokens_entrada == 240
+    primeira, segunda = (m[0]["content"].split("nesta ordem:")[1] for m in llm.todas)
+    assert primeira.lstrip().startswith('"resposta"')
+    assert segunda.index('"evidencias"') < segunda.index('"resposta"')
+
+
+def test_resposta_na_primeira_leitura_nao_paga_segunda_chamada():
+    llm = LLMLeituras(saida())
+    assert ResponderF1(llm).responder("Qual o valor global?", TRECHOS).classificacao == "fato"
+    assert len(llm.todas) == 1
+
+
+def test_recusa_confirmada_na_segunda_leitura_continua_recusa():
+    llm = LLMLeituras(saida(classificacao="ausencia", fontes=[]), saida(classificacao="ausencia", fontes=[]))
+    r = ResponderF1(llm).responder("Qual a multa?", TRECHOS)
+    assert r.resposta == MENSAGEM_AUSENCIA and r.fontes == [] and len(llm.todas) == 2
 
 
 def test_ausencia_declarada_pelo_modelo_usa_mensagem_institucional():
@@ -214,3 +250,31 @@ def test_sem_termo_da_pergunta_mantem_o_inicio():
     t = tr(10, LONGO)
     corpo = montar_contexto([t], pergunta="xyzzy", max_chars=300).split("\n", 1)[1]
     assert corpo.startswith("O presente termo") and len(corpo) <= 310
+
+
+
+def test_ficha_do_documento_vai_no_cabecalho_do_trecho():
+    t = tr(20, "O suporte técnico será prestado em regime 24x7.",
+           arquivo="contratos/CT 012-2023 EMPRESA X/aditivos/a.pdf")
+    t.numero, t.processo = "012/2023", "PROC-77"
+    cabecalho = montar_contexto([t]).split("\n", 1)[0]
+    assert "tipo: contrato" in cabecalho and "nº 012/2023" in cabecalho and "processo: PROC-77" in cabecalho
+    assert "pasta: contratos/CT 012-2023 EMPRESA X/aditivos" in cabecalho
+    assert "a.pdf" not in cabecalho.split("pasta:")[1]
+
+
+def test_evidencias_listadas_com_recusa_geram_correcao_dirigida():
+    llm = LLMLeituras(saida(classificacao="ausencia", fontes=[]),
+                      {"evidencias": ["T11"], **saida(classificacao="ausencia", fontes=["T11"])},
+                      saida())
+    r = ResponderF1(llm).responder("Qual o valor global?", TRECHOS)
+    assert r.classificacao == "fato" and len(llm.todas) == 3
+    assert "evidencias_contradizem_recusa" in r.observacoes and r.tokens_entrada == 360
+    assert "T11" in llm.todas[2][-1]["content"] and llm.todas[2][-2]["role"] == "assistant"
+
+
+def test_evidencia_com_id_inexistente_nao_gera_correcao():
+    llm = LLMLeituras(saida(classificacao="ausencia", fontes=[]),
+                      {"evidencias": ["T999"], **saida(classificacao="ausencia", fontes=[])})
+    assert ResponderF1(llm).responder("Qual a multa?", TRECHOS).resposta == MENSAGEM_AUSENCIA
+    assert len(llm.todas) == 2

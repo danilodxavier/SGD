@@ -41,6 +41,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 - Especificação v1 (`AGENTS.md`), `ARQUITETURA.md` e `CONFORMIDADE.md` movidos para `docs/legado/`.
 
 ### Corrigido
+- Recusas indevidas no acervo real ("Qual o contrato do <fornecedor de software>?" (R05) com 8 trechos do contrato certo): cada trecho leva a ficha do documento (tipo, nº, processo, pasta), aceita também pelo verificador (regras comuns v2, regra 11); cópias idênticas saem antes do rerank; abertura (início + objeto) dos 3 documentos mais relevantes sem número (`SADGD_ABERTURAS`); 2ª leitura com evidências só quando a 1ª recusa, com correção dirigida se o modelo listar evidências e recusar.
 - F2 no acervo real: prompts dos especialistas estouravam o contexto de 8.192 tokens (instruções cortadas, todas as afirmações removidas pelo verificador, recomendação sem fontes); a compressão do contexto (`SADGD_CONTEXTO_MAX_CHARS`) agora vale também para especialistas e relator.
 - Grafo: documento que cita dois contratos não funde mais os processos (só substituição direta entre contratos).
 - `scripts/github/criar_backlog.ps1`: argumentos com barra invertida final quebravam a chamada ao `gh` no PowerShell 5.1; reexecução falhava com `-like` e colchetes. Kanban publicado (GitHub Project #2, 52 issues).

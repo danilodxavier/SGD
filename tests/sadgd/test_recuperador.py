@@ -94,3 +94,14 @@ def test_reranker_reordena_e_metadados_vem_completos(recuperador):
 def test_modo_invalido(recuperador):
     with pytest.raises(ValueError):
         recuperador().recuperar("x", modo="magico")
+
+
+def test_textos_identicos_de_copias_ocupam_uma_vaga_so():
+    from app.application.recuperacao.hibrida import sem_duplicatas
+    from app.application.recuperacao.regras import TrechoRecuperado
+
+    def t(id_, texto):
+        return TrechoRecuperado(id_, id_, texto, "a.pdf", f"p{id_}/a.pdf", None, None, None, None, "real", None,
+                                False, None)
+    saida = sem_duplicatas([t(1, "Cláusula 1. Objeto."), t(2, "Cláusula  1.\nObjeto."), t(3, "Cláusula 2. Prazo.")])
+    assert [x.id for x in saida] == [1, 3]  # mantém a primeira (maior pontuação); espaços não contam

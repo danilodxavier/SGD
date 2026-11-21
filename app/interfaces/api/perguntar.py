@@ -79,7 +79,8 @@ def construir_orquestrador(tracer=None):
         embedder, reranker = _modelos_recuperacao()
         _componentes["recuperador"] = RecuperadorHibrido(
             BuscaLexicalSqlite(_fabrica), RepositorioTrechosSqlite(_fabrica), embedder, SqliteVecStore(_fabrica),
-            reranker, para_rerank=int(os.environ.get("SADGD_PARA_RERANK", "24")))
+            reranker, para_rerank=int(os.environ.get("SADGD_PARA_RERANK", "24")),
+            aberturas=int(os.environ.get("SADGD_ABERTURAS", "3")))  # abertura dos 3 documentos mais relevantes
     rec, memoria = _componentes["recuperador"], memoria_decisoes()
     llm = OpenAICompativelAdapter("ollama", settings.ollama_url + "/v1", settings.llm_modelo_padrao, timeout=300)
     grafo = RepositorioGrafoSqlite(_fabrica_sem_vetores)
