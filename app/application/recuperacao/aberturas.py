@@ -3,7 +3,8 @@
 A busca devolve recortes: cláusulas do meio de um contrato raramente repetem número, partes e objeto, e o modelo
 recusava perguntas como "Qual o contrato do <fornecedor>?" (R05) com 8 trechos do contrato certo ("os trechos
 não dizem o objeto"). Para os documentos mais relevantes, o contexto passa a levar também o início do documento e a
-cláusula do objeto — texto literal, cortes marcados com "[…]", tamanho limitado para caber no contexto dos especialistas.
+cláusula do objeto — texto literal, cortes marcados com "[…]", tamanho limitado para caber no contexto dos
+especialistas.
 """
 import re
 from dataclasses import replace
