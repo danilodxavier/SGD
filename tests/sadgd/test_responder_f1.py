@@ -278,3 +278,12 @@ def test_evidencia_com_id_inexistente_nao_gera_correcao():
                       {"evidencias": ["T999"], **saida(classificacao="ausencia", fontes=[])})
     assert ResponderF1(llm).responder("Qual a multa?", TRECHOS).resposta == MENSAGEM_AUSENCIA
     assert len(llm.todas) == 2
+
+
+def test_detalhes_sem_citacao_ou_repetidos_sao_descartados():
+    from app.application.respostas.f1 import _com_detalhes
+    texto = _com_detalhes("O valor global é R$ 1.200.000,00 [T11].",
+                          ["O valor global é R$ 1.200.000,00 [T11].", "A vigência é de 12 meses [T12].",
+                           "Vigência de 12 meses.", "Pagamento mensal [T999].", "a vigência é de 12 meses [t12]"],
+                          {"T11", "T12"})
+    assert texto == "O valor global é R$ 1.200.000,00 [T11]. A vigência é de 12 meses [T12]."

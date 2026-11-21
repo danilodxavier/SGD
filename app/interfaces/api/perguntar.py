@@ -86,7 +86,7 @@ def construir_orquestrador(tracer=None):
     grafo = RepositorioGrafoSqlite(_fabrica_sem_vetores)
     contexto = int(os.environ.get("SADGD_CONTEXTO_MAX_CHARS", "1200"))  # compressão na F1 e na F2 (A3)
     f1 = ResponderF1(llm, conflitos=grafo, verificador=verificar, contexto_max_chars=contexto)
-    return Orquestrador(lambda p, k: rec.recuperar(p, k=k).trechos, f1, llm, linha_do_tempo=grafo.resumo,
+    return Orquestrador(lambda p, k, **kw: rec.recuperar(p, k=k, **kw).trechos, f1, llm, linha_do_tempo=grafo.resumo,
                         precedentes=lambda p, docs: memoria.precedentes(p, documento_ids=docs), tracer=tracer,
                         llm_f2_remoto=llm_f2_remoto(), envio_externo_permitido=settings.ai_allow_remote,
                         contexto_max_chars=contexto)

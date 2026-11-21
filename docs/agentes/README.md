@@ -4,7 +4,7 @@ Framework: LangGraph [ADR-003]. Modelos: [ADR-004]. Os **prompts de sistema vers
 `app/application/agentes/prompts/<agente>.v<N>.md` (front-matter com metadados + texto do prompt) e os **schemas JSON** em
 `app/application/agentes/schemas/`. Toda alteração de prompt gera nova versão (`v2`, `v3`…) e nova linha em `docs/AVALIACAO.md`.
 
-Todos os prompts começam com o bloco comum `_regras_comuns.v1.md` (mesmo prefixo → aproveita *prompt caching* quando o provedor oferecer e garante regras anti-alucinação idênticas).
+Todos os prompts começam com o bloco comum `_regras_comuns.v2.md` (v1 + regra 11, "ficha do documento", 2026-11-21; v1 mantida para reprodutibilidade) (mesmo prefixo → aproveita *prompt caching* quando o provedor oferecer e garante regras anti-alucinação idênticas).
 
 ## 1. Catálogo
 
@@ -15,6 +15,7 @@ Todos os prompts começam com o bloco comum `_regras_comuns.v1.md` (mesmo prefix
 | Verificador de Fontes | orquestração | Confere se cada afirmação tem trecho de suporte; rejeita o resto | `verificador.v1.json` | `verificador_fontes.v1.md` |
 | Relator / Sintetizador | orquestração | Consolida pareceres (consensos/divergências), redige a resposta final (v1: F1) | `relator.v1.json` | `relator.v1.md` |
 | Relator F2 (Fase 8) | orquestração | Recomendação F2 com os 6 elementos de RF-20; base legal e precedentes montados pelo sistema | `relator.v2.json` | `relator.v2.md` |
+| Relator F1 v3 (2026-11-21) | orquestração | Resposta F1 completa (resposta direta + detalhes citados + lacunas), em vez de "1–4 frases"; campos `resposta` e `detalhes` montados pelo código; modos lista e histórico (linha do tempo) | `relator.v1.json` | `relator.v3.md` |
 | Procurador do Estado | especialista | Legalidade, constitucionalidade, competência, riscos jurídicos ao ente | `parecer_especialista.v1.json` | `procurador_estado.v1.md` |
 | Advogado | especialista | Interpretação contratual, direitos/obrigações, rescisão, litígio | idem | `advogado.v1.md` |
 | Controlador-Geral do Estado | especialista | Conformidade, controle interno, improbidade, TCE/TCU/CGU | idem | `controlador_geral.v1.md` |

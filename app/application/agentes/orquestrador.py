@@ -19,6 +19,9 @@ from app.application.agentes.politica_llm import LLMComReserva, LLMProtegido
 from app.application.agentes.roteador import rotear
 from app.domain.politicas import avaliar_envio_externo
 
+MAX_TRECHOS_F1 = 12  # trechos + aberturas que chegam à F1 (compressão de 1.200 caracteres mantém o prompt < contexto)
+K_LISTA = 16  # perguntas de lista: documentos distintos (2 trechos/documento, 700 caracteres por trecho)
+
 
 class Estado(TypedDict, total=False):
     pergunta: str
@@ -86,10 +89,23 @@ class Orquestrador:
         return {"decisao": rotear(s["pergunta"])}
 
     def _recuperar_no(self, s):
+        if getattr(s.get("decisao"), "lista", False):
+            try:  # pergunta de lista: mais documentos distintos (no máximo 2 trechos de cada)
+                return {"trechos": self._recuperar(s["pergunta"], K_LISTA, max_por_documento=2)}
+            except TypeError:  # recuperador sem diversificação (avaliações antigas)
+                pass
         return {"trechos": self._recuperar(s["pergunta"], self._k)}
 
     def _responder_f1(self, s):
-        return {"resposta": self._f1.responder(s["pergunta"], s["trechos"][:6])}
+        """Até 12 trechos (antes 6: com as aberturas na frente, trechos relevantes ficavam de fora); perguntas de
+        situação/histórico e de lista recebem a linha do tempo do grafo dos documentos recuperados."""
+        decisao, trechos = s["decisao"], s["trechos"]
+        lista = getattr(decisao, "lista", False)
+        resumo = ""
+        if self._tl and (decisao.rota == "F1_complexa" or lista):
+            resumo = self._tl({t.documento_id for t in trechos}) or ""
+        limite = K_LISTA if lista else MAX_TRECHOS_F1
+        return {"resposta": self._f1.responder(s["pergunta"], trechos[:limite], linha_do_tempo=resumo, lista=lista)}
 
     def _contexto_f2(self, s):
         documentos = {t.documento_id for t in s["trechos"]}

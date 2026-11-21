@@ -277,3 +277,36 @@ def test_f2_comprime_os_trechos_dos_especialistas_e_do_relator():
     f2 = [u for s, u in llm.usuarios if "Papel: RELATOR" not in s or "Modo F2" in s]
     assert f2 and all("[…]" in u and "prorrogada por mais 12 meses" in u for u in f2)
     assert all(u.count("Cláusula genérica") < 10 for u in f2)  # o trecho longo chegou comprimido
+
+
+class LLMRegistraTudo(LLMRoteiro):
+    def __init__(self):
+        super().__init__()
+        self.chamadas = []
+
+    def chat(self, mensagens, **kw):
+        self.chamadas.append(mensagens)
+        return super().chat(mensagens, **kw)
+
+
+def test_pergunta_de_lista_pede_documentos_distintos_e_responde_em_topicos():
+    pedidos = []
+
+    def recuperar(pergunta, k, **kw):
+        pedidos.append((k, kw))
+        return TRECHOS
+
+    llm = LLMRegistraTudo()
+    orq = Orquestrador(recuperar, ResponderF1(llm, verificador=verificar), llm, linha_do_tempo=lambda docs: "LT")
+    estado = orq.executar("Quais contratos têm valor global registrado?")
+    assert estado["decisao"].lista and pedidos == [(16, {"max_por_documento": 2})]
+    sistema, usuario = llm.chamadas[0][0]["content"], llm.chamadas[0][1]["content"]
+    assert "RELAÇÃO" in sistema and "LINHA DO TEMPO (grafo documental):\nLT" in usuario
+
+
+def test_pergunta_simples_nao_recebe_linha_do_tempo_nem_modo_lista():
+    llm = LLMRegistraTudo()
+    orq = Orquestrador(lambda p, k: TRECHOS, ResponderF1(llm, verificador=verificar), llm,
+                       linha_do_tempo=lambda docs: "LT")
+    orq.executar("Qual o valor global do Contrato nº 012/2023?")
+    assert "RELAÇÃO" not in llm.chamadas[0][0]["content"] and "LINHA DO TEMPO" not in llm.chamadas[0][1]["content"]

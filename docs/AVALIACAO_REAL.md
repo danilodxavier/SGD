@@ -71,6 +71,8 @@ julgue se a recomendação é coerente com os documentos e se alternativas, risc
 | 2026-11-20 | A1 + A3 aplicados (§7.1, §7.2): `outro` 88% → 22%; 168 processos de contrato; F1 60,5 s → 17,3 s | — | — | Precisão dos tipos depende da amostra conferida pela equipe |
 | 2026-11-21 | Rodada 1 das perguntas da equipe (`perguntas.csv`, 12) | 12 | 7 respostas, **5 recusas**, 0 erros; F1 15–66 s, F2 173 s | Recusa da R05 com 8 trechos do contrato certo → §8 |
 | 2026-11-21 | Rodada 2 (após §8) | 12 | 9 respostas, **3 recusas** (confirmadas pela 2ª leitura), 0 erros; F1 21–85 s, F2 195 s | R05 (contrato do fornecedor) e R10 (fiscal de um contrato) passaram a ser respondidos; julgamento humano pendente (`revisao.csv`) |
+| 2026-11-21 | Rodada 3 (modos lista/histórico, até 12 trechos) | 12 | 10 respostas, 2 recusas; 37 documentos distintos citados (rodada 2: 21); resposta mediana 177 caracteres; F1 mediana 66 s | Equipe: "as 12 respostas precisam ser melhoradas" → §9 |
+| 2026-11-21 | Rodada 4 (respostas completas, §9) | 12 | 10 respostas, 2 recusas; 37 documentos citados; resposta mediana **282 caracteres** (rodada 1: 124); listas com 3–4 itens; F1 mediana 89 s | Julgamento humano pendente (`revisao.csv`) |
 | 2026-11-20 | Fumaça (4 perguntas sem conteúdo real na saída) | 4 | Ausência → recusa correta; F1 com 4 fontes; F2 local, válida, 6 elementos — **mas 0 trechos citados** | F1 aquecida ≈ 30 s (rerank 18–27 s) |
 
 ## 7. Achados estruturais (somente contagens)
@@ -198,3 +200,34 @@ Exatidão real depende do julgamento da equipe em `avaliacao/real/revisao.csv`.
 **Incidente de ambiente:** a 1ª tentativa da rodada 2 falhou em 12/12 com "arquivo de paginação muito pequeno" /
 CUDA OOM ao carregar o reranker: o `llama-server` do Ollama tinha acumulado 13,6 GB de memória comprometida após horas
 de avaliações (modelo de 5,4 GB). Reiniciar o Ollama (`ollama.ps1 -Acao parar/iniciar`) liberou 13,6 GB.
+
+## 9. Respostas completas em vez de recortes (2026-11-21)
+
+**Pedido da equipe:** as 12 respostas "precisam ser melhoradas" — o sistema deve responder com base nos documentos,
+não apresentar recortes. Diagnóstico (somente contagens): o LLM escrevia 1–2 frases (mediana 124–177 caracteres) e
+gastava o resto da saída na lista de fontes; o prompt do relator ainda dizia "1–4 frases"; a rota `F1_complexa` era
+idêntica à simples; só 6 trechos chegavam à F1; perguntas de lista recebiam 3 trechos do mesmo documento.
+
+| Mudança | Onde |
+|---|---|
+| Resposta em dois campos: `resposta` (direta) + `detalhes` (até 5 frases, cada uma com a citação do trecho que contém o fato); o código monta o texto, descarta detalhe sem citação válida e repetições (Jaccard ≥ 0,6) | `f1.py`, `relator.v3.md` |
+| Verificador por frase: número de frase com citação própria precisa estar no trecho que ela cita; itens "- " são frases | `verificador.py` |
+| Instrução: não deduzir o fato perguntado de outro fato (data de publicação ≠ data de início) | `f1.py` |
+| Perguntas de situação/histórico (`F1_complexa`: encerrado, renovação, pendência, OS aberta…) recebem a linha do tempo do grafo (com o tipo de cada documento) | `orquestrador.py`, `roteador.py`, `repositorio_grafo.py` |
+| Perguntas de lista ("quais…", "algum…"): 16 trechos, no máximo 2 por documento, 700 caracteres por trecho, resposta em itens | `roteador.py`, `hibrida.py` (`diversificar`), `f1.py` |
+| Até 12 trechos na F1 (antes 6) | `orquestrador.py` |
+
+**Descartado no caminho:** detalhes sem disciplina de citação — validação sem verificador com alucinação numérica
+0,023 → **0,231** e recusa correta 1,00 → 0,75 (o modelo deduziu a data de publicação da data de início).
+
+**Regressão acadêmica — configuração de produção** (validação, 47 F1, com verificador,
+`avaliacao/execucoes/fase11_respostas_completas/`): exatidão 0,923 (= referência; 2 pioraram, 2 melhoraram); recusa
+correta 1,00; conflito 1,00; **alucinação numérica 0**; citação correta 0,907; classificação 0,915 (ref. 0,936);
+precisão de citações 0,757 (mais citações por resposta); resposta mediana 129 → **273 caracteres**; p50 23 s, p95 50 s.
+
+**Acervo real (rodada 4 × rodada 1):** recusas 5 → 2; documentos distintos citados 23 → 37; resposta mediana 124 →
+282 caracteres; listas com 3–4 itens. Custos e pontos abertos: F1 mediana 22 s → 89 s (mais trechos, saída ≈ 250
+tokens, 2ª leitura e nova tentativa do verificador); R07 ("há pendência em algum contrato?") oscilou para recusa; R05
+continua com resposta curta. A qualidade real depende do julgamento da equipe em `avaliacao/real/revisao.csv`.
+
+Operação: o `llama-server` voltou a acumular 13,7 GB após as avaliações; reiniciar o Ollama antes de rodadas longas.

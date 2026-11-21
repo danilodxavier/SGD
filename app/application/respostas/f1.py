@@ -42,27 +42,49 @@ PROMPTS = Path(__file__).resolve().parents[1] / "agentes" / "prompts"
 SCHEMAS = Path(__file__).resolve().parents[1] / "agentes" / "schemas"
 RE_CITACAO = re.compile(r"\bT(\d+)\b")
 CAMPOS_F1 = ("resposta", "classificacao", "confianca", "fontes", "lacunas")
-INSTRUCAO_F1 = ("Modo F1: responda somente à pergunta, em 1 a 4 frases, citando os trechos no texto como [T<id>] "
+# v4 (acervo real, 2026-11-21): "1 a 4 frases" produzia respostas secas, "recortes"; a equipe pediu respostas que
+# expliquem o que os documentos dizem. Agora: resposta direta primeiro e, em seguida, os detalhes que a sustentam.
+INSTRUCAO_F1 = ("Modo F1: comece pela resposta direta à pergunta e, em seguida, apresente os detalhes dos documentos "
+                "que a sustentam e que interessam à gestão (documento e nº, partes, objeto, datas, prazos, valores, "
+                "situação) no campo \"detalhes\", citando os trechos no texto como [T<id>] "
                 "e listando os mesmos ids em \"fontes\". Se a informação não estiver nos trechos, use "
-                "classificacao \"ausencia\". Se os trechos divergirem sobre o fato perguntado, use \"conflito\" e "
+                "classificacao \"ausencia\"; não deduza o fato perguntado de outro fato (ex.: data de publicação a "
+                "partir da data de assinatura ou de início). Se os trechos divergirem sobre o fato perguntado, use "
+                "\"conflito\" e "
                 "apresente o conteúdo de cada fonte. A ficha entre parênteses de cada trecho (tipo, nº, processo, "
                 "pasta) faz parte dos trechos: use-a para identificar o documento, o contrato e o fornecedor.")
+INSTRUCAO_LISTA = ("A pergunta pede uma RELAÇÃO: em \"detalhes\", ponha um item por documento ou contrato dos "
+                   "trechos que atende ao critério perguntado (examine TODOS os trechos), com nº, data e o que consta, "
+                   "citando [T<id>] em cada item; na \"resposta\", diga quantos encontrou e que a relação se limita "
+                   "aos documentos recuperados para a pergunta.")
+INSTRUCAO_HISTORICO = ("A pergunta é sobre situação ou histórico: use a LINHA DO TEMPO (grafo documental) para ordenar "
+                       "os documentos e explique a situação atual (vigente, prorrogado, encerrado, pendente etc.), "
+                       "citando os trechos [T<id>] que comprovam cada passo; a linha do tempo orienta, mas a citação "
+                       "deve ser de trecho.")
 # A ordem importa: com schema estrito o Ollama emite as chaves em ordem alfabética e o modelo "decide" a
 # classificação antes de redigir a resposta — recusas indevidas (validação: 17/27 factuais viraram ausência).
 # Pedir JSON livre com a resposta primeiro corrigiu o comportamento (FASE_05 §4).
-ORDEM_SAIDA = ("Responda SOMENTE com um objeto JSON com as chaves nesta ordem: \"resposta\" (texto com citações "
-               "[T<id>]), \"fontes\" (lista de ids), \"classificacao\" (fato|inferencia|conflito|ausencia), "
-               "\"confianca\" (0 a 1), \"lacunas\" (lista).")
+# v5 (acervo real): com só "resposta", o modelo escrevia 1 frase e gastava o resto em "fontes"; um campo próprio
+# para os detalhes (lista) rende respostas completas. O texto final = resposta + detalhes (montado em `_validar`).
+# Detalhe sem citação válida é descartado no código e cada número precisa constar do trecho citado na mesma frase
+# (validação: sem essa disciplina a alucinação numérica foi de 0,023 para 0,231).
+DETALHES = ("\"detalhes\" (lista de até 5 frases curtas que ajudam a responder à pergunta — documento e nº, partes, "
+            "objeto, datas, prazos, valores, situação —, cada uma terminando com a citação [T<id>] do trecho que "
+            "contém literalmente aquele fato; não repita a resposta; lista vazia se for ausência)")
+ORDEM_SAIDA = ("Responda SOMENTE com um objeto JSON com as chaves nesta ordem: \"resposta\" (a resposta direta, "
+               "com citações [T<id>]), " + DETALHES + ", \"fontes\" (lista de ids), \"classificacao\" "
+               "(fato|inferencia|conflito|ausencia), \"confianca\" (0 a 1), \"lacunas\" (lista).")
 # v3 (acervo real): começando pela resposta, o modelo às vezes escreve a frase de recusa antes de examinar os trechos
 # (R05, "Qual o contrato do <fornecedor>?": 8 trechos do contrato certo, 6 ids declarados em "fontes" e recusa).
 # Só quando a 1ª leitura recusa, uma 2ª leitura lista antes as evidências. Usar essa ordem em toda pergunta custava
 # classificação (0,936 → 0,830: mais "conflito") e latência (p50 9,5 → 17,9 s) no corpus acadêmico.
 ORDEM_EVIDENCIAS = ("Responda SOMENTE com um objeto JSON com as chaves nesta ordem: \"evidencias\" (lista dos ids "
-                    "dos trechos que tratam do assunto da pergunta, incluindo a ficha), \"resposta\" (texto com "
-                    "citações [T<id>] baseado nas evidências), \"fontes\" (lista de ids), \"classificacao\" "
+                    "dos trechos que tratam do assunto da pergunta, incluindo a ficha), \"resposta\" (a resposta "
+                    "direta, com citações [T<id>], baseada nas evidências), " + DETALHES + ", \"fontes\" (lista de "
+                    "ids), \"classificacao\" "
                     "(fato|inferencia|conflito|ausencia — ausencia só se \"evidencias\" estiver vazia), "
                     "\"confianca\" (0 a 1), \"lacunas\" (lista).")
-VERSAO_INSTRUCAO = 3
+VERSAO_INSTRUCAO = 5
 
 
 @cache
@@ -139,6 +161,39 @@ def montar_contexto(trechos, pergunta: str | None = None, max_chars: int | None 
     return "\n\n".join(blocos)
 
 
+def _com_detalhes(resposta: str, detalhes, rotulos_validos=None) -> str:
+    """Resposta direta + detalhes; itens que já começam com "- " (relação) ficam um por linha. Detalhe sem citação
+    a um trecho do contexto é descartado, assim como repetições (da resposta ou entre si)."""
+    itens, vistos = [], {_norm_frase(resposta)}
+    for d in detalhes if isinstance(detalhes, list) else []:
+        item = str(d).strip()
+        citados = {f"T{n}" for n in RE_CITACAO.findall(item)}
+        if not item or (rotulos_validos is not None and not citados & rotulos_validos):
+            continue
+        chave = _norm_frase(item)
+        if chave and not any(_parecidas(chave, v) for v in vistos if v):
+            vistos.add(chave)
+            itens.append(item)
+    if not itens:
+        return resposta
+    if len(itens) >= 2 or any(i.startswith("- ") for i in itens):
+        return (resposta + "\n" if resposta else "") + "\n".join(i if i.startswith("- ") else "- " + i for i in itens)
+    return (resposta + " " + itens[0]).strip()
+
+
+def _norm_frase(texto: str) -> str:
+    """Frase sem citações, pontuação e caixa — para reconhecer o mesmo fato escrito duas vezes."""
+    return " ".join(re.sub(r"\[?T\d+\]?|[^\w\s]", " ", texto.lower()).split())
+
+
+def _parecidas(a: str, b: str, limiar: float = 0.6) -> bool:
+    """Mesmo fato com outras palavras (validação: o detalhe repetia a resposta direta reescrita)."""
+    if a in b or b in a:
+        return True
+    pa, pb = set(a.split()), set(b.split())
+    return bool(pa and pb) and len(pa & pb) / len(pa | pb) >= limiar
+
+
 def _rotulo(f) -> str:
     """Tolera formatos de id ("T12", "[T12]", 12, "12")."""
     rotulo = str(f).strip().strip("[]").strip()
@@ -161,22 +216,29 @@ class RespostaF1:
 
 
 class ResponderF1:
-    def __init__(self, llm: LLMPort, *, max_tokens: int = 500, versao_prompt: int = 1,
+    def __init__(self, llm: LLMPort, *, max_tokens: int = 700, versao_prompt: int = 3,
                  conflitos: ConflitosPort | None = None, verificador=None, contexto_max_chars: int = 0):
         self.llm, self.max_tokens, self.versao = llm, max_tokens, versao_prompt
         self.contexto_max_chars = contexto_max_chars  # 0 = trechos inteiros (compressão desligada)
         self.conflitos = conflitos
         self.verificador = verificador  # callable(resposta, citados, pergunta) -> Verificacao
 
-    def responder(self, pergunta: str, trechos) -> RespostaF1:
+    def responder(self, pergunta: str, trechos, *, linha_do_tempo: str = "", lista: bool = False) -> RespostaF1:
+        """`linha_do_tempo`: resumo do grafo para perguntas de situação/histórico; `lista`: pergunta que pede uma
+        relação de documentos (resposta em tópicos, trechos mais curtos para caber mais documentos)."""
         if not trechos:
             return RespostaF1(MENSAGEM_AUSENCIA, Classificacao.AUSENCIA.value, 0.0, [],
                               observacoes=["sem_trechos_recuperados"])
         if self.conflitos is not None and (resposta := self._conflito(pergunta, trechos)):
             return resposta
-        usuario = {"role": "user", "content": f"PERGUNTA: {pergunta}\n\nTRECHOS:\n"
-                                              f"{montar_contexto(trechos, pergunta, self.contexto_max_chars)}"}
-        sistema = carregar_prompt("relator", self.versao) + "\n\n" + INSTRUCAO_F1 + "\n"
+        max_chars = min(self.contexto_max_chars or 700, 700) if lista else self.contexto_max_chars
+        conteudo = f"PERGUNTA: {pergunta}\n\nTRECHOS:\n{montar_contexto(trechos, pergunta, max_chars)}"
+        if linha_do_tempo:
+            conteudo += f"\n\nLINHA DO TEMPO (grafo documental):\n{linha_do_tempo}"
+        usuario = {"role": "user", "content": conteudo}
+        instrucao = INSTRUCAO_F1 + (" " + INSTRUCAO_LISTA if lista else "") + \
+            (" " + INSTRUCAO_HISTORICO if linha_do_tempo else "")
+        sistema = carregar_prompt("relator", self.versao) + "\n\n" + instrucao + "\n"
         mensagens = [{"role": "system", "content": sistema + ORDEM_SAIDA}, usuario]
         r = self.llm.chat(mensagens, max_tokens=self.max_tokens, temperatura=0.0, json_livre=True)
         resposta = self._validar(r.json if isinstance(r.json, dict) else {}, trechos, r)
@@ -276,7 +338,7 @@ class ResponderF1:
         observacoes = []
         classificacao = dados.get("classificacao") if dados.get("classificacao") in {c.value for c in Classificacao} \
             else Classificacao.FATO.value
-        texto = str(dados.get("resposta") or "").strip()
+        texto = _com_detalhes(str(dados.get("resposta") or "").strip(), dados.get("detalhes"), set(por_rotulo))
         # tolera formatos ("T12", "[T12]", 12, "12"); o id continua obrigado a existir no contexto
         declarados = [_rotulo(f) for f in dados.get("fontes") or []]
         no_texto = [f"T{n}" for n in RE_CITACAO.findall(texto)]

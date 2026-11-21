@@ -41,6 +41,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 - Especificação v1 (`AGENTS.md`), `ARQUITETURA.md` e `CONFORMIDADE.md` movidos para `docs/legado/`.
 
 ### Corrigido
+- Respostas F1 secas ("recortes"): resposta direta + detalhes citados (relator v3, campo `detalhes`, sem detalhe sem citação ou repetido); verificador confere o número de cada frase contra o trecho que ela cita; perguntas de histórico recebem a linha do tempo do grafo; perguntas de lista buscam mais documentos distintos e respondem em itens; até 12 trechos na F1.
 - Recusas indevidas no acervo real ("Qual o contrato do <fornecedor de software>?" (R05) com 8 trechos do contrato certo): cada trecho leva a ficha do documento (tipo, nº, processo, pasta), aceita também pelo verificador (regras comuns v2, regra 11); cópias idênticas saem antes do rerank; abertura (início + objeto) dos 3 documentos mais relevantes sem número (`SADGD_ABERTURAS`); 2ª leitura com evidências só quando a 1ª recusa, com correção dirigida se o modelo listar evidências e recusar.
 - F2 no acervo real: prompts dos especialistas estouravam o contexto de 8.192 tokens (instruções cortadas, todas as afirmações removidas pelo verificador, recomendação sem fontes); a compressão do contexto (`SADGD_CONTEXTO_MAX_CHARS`) agora vale também para especialistas e relator.
 - Grafo: documento que cita dois contratos não funde mais os processos (só substituição direta entre contratos).

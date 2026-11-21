@@ -61,3 +61,11 @@ def test_numero_que_so_consta_da_ficha_do_documento_e_aceito():
                          numero="012/2023")
     assert verificar("Trata-se do contrato 012/2023 [T30].", [t]).aprovada
     assert verificar("Trata-se do contrato 012-2023 [T30].", [t]).aprovada  # número escrito como na pasta
+
+
+def test_numero_de_frase_com_citacao_propria_precisa_estar_no_trecho_que_ela_cita():
+    a = tr(1, "A vigência é de 12 meses, a partir de 01/09/2023.")
+    b = tr(2, "O valor global é de R$ 500.000,00.")
+    assert verificar("O valor global é de R$ 500.000,00 [T2]. A vigência começa em 01/09/2023 [T1].", [a, b]).aprovada
+    v = verificar("O valor global é de R$ 500.000,00 [T1].", [a, b])  # valor está no T2, não no T1 citado
+    assert not v.aprovada and v.problemas[0].tipo == "numero_sem_suporte"

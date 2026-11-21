@@ -15,7 +15,11 @@ DECISAO = re.compile(
 HISTORIA = re.compile(
     r"\b(ainda esta|esta vigente|vigente|continua vigente|em vigor|revog\w*|substitu\w*|alterad\w*|apos o|"
     r"historic\w*|o que mudou|ultimo|retomad\w*|suspens\w*|paralis\w*|interrup\w*|houve|atualmente|"
-    r"quais .{0,30}(leis|hipoteses|sancoes)|reajuste)\b")
+    r"quais .{0,30}(leis|hipoteses|sancoes)|reajuste|encerrad\w*|encerrament\w*|renova\w*|pendenc\w*|em fase|"
+    r"aberta|emitid\w*|realizad\w*|situacao)\b")
+# Pergunta que pede uma relação de documentos/contratos (acervo real: "quais contratos…", "há pendência em algum…"):
+# precisa de mais documentos distintos no contexto e de resposta em lista, não de 3 trechos do mesmo documento.
+LISTA = re.compile(r"^(quais|quantos|quantas|liste|listar|relacione)\b|\b(algum|alguma|alguns|algumas|quais)\b")
 ANALISE = re.compile(r"^(e|sao) (legal|ilegal|licit\w*|permitid\w*|possivel|obrigatori\w*|nul\w*)\b|"
                      r"\b(cabe|cabem|admite-se|exige-se|e necessario)\b")
 MATRIZ = {
@@ -45,6 +49,7 @@ class DecisaoRota:
     justificativa: str = ""
     metodo: str = "regras"
     ambiguo: bool = False
+    lista: bool = False
 
 
 def _norm(s):
@@ -69,6 +74,7 @@ def rotear(pergunta: str) -> DecisaoRota:
         candidatos = sorted((a for a, p in pontos.items() if p > 0), key=lambda a: (-pontos[a], a))[:2]
         motivo = ("análise de legalidade/cabimento" if ANALISE.search(texto)
                   else "pergunta sobre histórico, vigência ou relação entre documentos")
-        return DecisaoRota("F1_complexa", candidatos, [pergunta], filtros, motivo)
+        return DecisaoRota("F1_complexa", candidatos, [pergunta], filtros, motivo, lista=bool(LISTA.search(texto)))
     ambiguo = len(texto.split()) > 25 and not re.match(r"^(qual|quais|quando|quem|onde|o que|em que|a |o )", texto)
-    return DecisaoRota("F1_simples", [], [pergunta], filtros, "fato pontual", ambiguo=ambiguo)
+    return DecisaoRota("F1_simples", [], [pergunta], filtros, "fato pontual", ambiguo=ambiguo,
+                       lista=bool(LISTA.search(texto)))

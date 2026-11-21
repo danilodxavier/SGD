@@ -171,6 +171,8 @@ entrada. O benefício decisivo está no acervo real, onde os trechos longos esto
 | 2026-11-17 | fase10_cache | golden set | Limiar do cache semântico | maior par diferente 0,883 → limiar 0,93 |
 | 2026-11-17 | fase10_fidelidade | validação (calibração) + teste | LLM-juiz Llama 3.1 8B | κ 0,71; faithfulness 0,964 adjudicada; alucinação 5,4% |
 | 2026-11-17 | fase11 (F2 Gemini v1) | validação + teste (21) | Especialistas e relator no Gemini 3.5 Flash-Lite | schema relator 0,333 (`consensos` em objeto); p95 213 s |
+| 2026-11-21 | fase11_respostas_completas | validação (47 F1, **com verificador**) | Resposta direta + detalhes citados; verificador por frase; modos lista/histórico | Exatidão 0,923 =; recusa 1,00; aluc. num. 0; citação 0,907; resposta 129 → 273 caracteres; p50 23 s / p95 50 s. Ver `AVALIACAO_REAL.md` §9 |
+| 2026-11-21 | fase11_detalhes / fase11_detalhes_verif | validação (47 F1) | Descartados: detalhes sem disciplina de citação | Aluc. num. 0,231 (sem verificador); recusa 0,75 |
 | 2026-11-21 | fase11_abertura2 | validação (47 F1) | Ficha do documento + sem cópias + 2ª leitura nas recusas + abertura (docs sem nº) | Exatidão 0,923 =; classificação 0,936 → 0,957; recusa 1,00 =; citação correta 0,907 → 0,930; aluc. num. 0 → 0,023 (1 item, sem verificador); p50 9,5 → 16,5 s. Ver `AVALIACAO_REAL.md` §8 |
 | 2026-11-21 | fase11_ficha / fase11_abertura | validação (47 F1) | Descartados: evidências em toda pergunta / abertura para todos | Classificação 0,830 e p50 17,9 s / p95 54 s sem ganho de exatidão |
 | 2026-11-21 | fase11_f2ctx | teste (15 F2) | Compressão 1.200 na F2 × Fase 8 | Recall docs 0,822 = 0,822; RF-20 1,00; relator 1,00; p50 334 → 288 s; precisão docs 0,466 → 0,439 |

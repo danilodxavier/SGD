@@ -13,6 +13,7 @@ from app.application.avaliacao.metricas import normalizar
 from app.application.avaliacao.metricas_resposta import numeros_nao_suportados
 from app.domain.politicas import MENSAGEM_AUSENCIA
 
+RE_CITACAO_FRASE = re.compile(r"\bT(\d+)\b")
 RE_FRASE = re.compile(r"(?<=[.!?])\s+(?=[A-ZÁÉÍÓÚÂÊÔÃÕÇ\[])")
 AFIRMA_VIGENCIA = re.compile(r"(?<!nao )(?<!nao esta )(?<!nao mais )\b(?:ainda )?(?:esta|continua|permanece|segue|"
                              r"encontra-se)\s+(?:em vigor|vigente)\b|^(?!.*\bnao\b).*\be vigente\b")
@@ -44,7 +45,8 @@ def suporte(t) -> str:
 
 
 def frases(texto: str) -> list[str]:
-    return [f.strip() for f in RE_FRASE.split(texto.strip()) if f.strip()]
+    """Frases por pontuação e por linha (itens "- " de uma relação são frases distintas)."""
+    return [f.strip() for linha in texto.strip().splitlines() for f in RE_FRASE.split(linha) if f.strip()]
 
 
 def verificar(resposta: str, citados, pergunta: str = "") -> Verificacao:
@@ -52,10 +54,13 @@ def verificar(resposta: str, citados, pergunta: str = "") -> Verificacao:
         return Verificacao(True)
     problemas = []
     suportes = [suporte(t) for t in citados]
+    por_rotulo = {t.rotulo: suporte(t) for t in citados}
     fontes_revogam = any(t.revogado or t.situacao_norma == "revogada" or FONTE_REVOGADA.search(normalizar(t.texto))
                          for t in citados)
     for frase in frases(resposta):
-        for numero in numeros_nao_suportados(frase, suportes, pergunta):
+        # frase com citação própria: o número precisa estar nos trechos que ELA cita (respostas com detalhes)
+        proprios = [por_rotulo[f"T{n}"] for n in RE_CITACAO_FRASE.findall(frase) if f"T{n}" in por_rotulo]
+        for numero in numeros_nao_suportados(frase, proprios or suportes, pergunta):
             problemas.append(Problema("numero_sem_suporte", f"'{numero}' não consta dos trechos citados", frase))
         norm = normalizar(frase)
         afirma = AFIRMA_VIGENCIA.search(norm)

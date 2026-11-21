@@ -79,7 +79,9 @@ class RepositorioGrafoSqlite:
                 rels = conn.execute(
                     "SELECT origem_id, destino_id, tipo FROM relacoes WHERE tipo != 'fundamenta' AND origem_id IN "
                     "(SELECT documento_id FROM documento_processo WHERE processo_id = ?)", (pid,)).fetchall()
-                linhas = [f"LINHA DO TEMPO ({p[0]} {p[1]}):"] + [f"- {d[1] or 's/d'}: {titulos[d[0]]}" for d in docs]
+                linhas = [f"LINHA DO TEMPO ({p[0]} {p[1]}):"] + [
+                    f"- {d[1] or 's/d'}: {'[' + d[3] + '] ' if d[3] and d[3] != 'outro' else ''}{titulos[d[0]]}"
+                    for d in docs]
                 linhas += [f"  · {titulos.get(o, o)} → {titulos.get(dd, dd)}: {t}" for o, dd, t in rels
                            if o in titulos and dd in titulos][:max_eventos]
                 partes.append("\n".join(linhas))

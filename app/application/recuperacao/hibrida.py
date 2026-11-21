@@ -47,7 +47,7 @@ class RecuperadorHibrido:
         self.aberturas = aberturas  # nº de documentos que levam a abertura junto (0 = só os trechos)
 
     def recuperar(self, pergunta: str, k: int = 8, modo: str = "hibrido_rerank",
-                  incluir_historico: bool = False) -> ResultadoRecuperacao:
+                  incluir_historico: bool = False, max_por_documento: int = 0) -> ResultadoRecuperacao:
         if modo not in MODOS:
             raise ValueError(f"Modo desconhecido: {modo}")
         tempos, listas = {}, []
@@ -82,10 +82,23 @@ class RecuperadorHibrido:
                 t.pontuacao = float(nota)
             atuais = sorted(topo, key=lambda t: -t.pontuacao) + atuais[self.para_rerank:]
             tempos["rerank"] = _ms(t0)
-        selecionados = atuais[:k]
+        selecionados = diversificar(atuais, k, max_por_documento) if max_por_documento else atuais[:k]
         if self.aberturas and selecionados and hasattr(self.repo, "iniciais"):
             selecionados = com_aberturas(selecionados, self.repo, self.aberturas)
         return ResultadoRecuperacao(pergunta, selecionados, historico[:k], termos, tempos)
+
+
+def diversificar(trechos, k, max_por_documento):
+    """Top-k com no máximo `max_por_documento` trechos de cada documento (perguntas de lista: mais documentos
+    distintos no contexto em vez de vários trechos do mesmo)."""
+    contagem, saida = {}, []
+    for t in trechos:
+        if contagem.get(t.documento_id, 0) < max_por_documento:
+            contagem[t.documento_id] = contagem.get(t.documento_id, 0) + 1
+            saida.append(t)
+            if len(saida) == k:
+                break
+    return saida
 
 
 def sem_duplicatas(trechos):

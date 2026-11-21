@@ -7,8 +7,8 @@
 | Atualizado em | 2026-11-20 |
 | Fase atual | Projeto encerrado (Fase 11 aprovada) · **Pós-entrega: avaliação com documentos reais** |
 | Situação da fase | Acervo real indexado; A1 (tipos) e A3 (latência) aplicados; aguardando perguntas reais e conferência da amostra de tipos pela equipe |
-| Última tarefa concluída | Perguntas reais da equipe (12, `avaliacao/real/perguntas.csv`): rodada 1 com 5 recusas; correção da recusa da R05 (ficha do documento, sem cópias, abertura, 2ª leitura) → rodada 2 com 3 recusas; regressão acadêmica sem perda (classificação 0,957, citação 0,930). Ver `docs/AVALIACAO_REAL.md` §8 |
-| Próxima tarefa exata | (1) equipe julga `avaliacao/real/revisao.csv` (C/P/I/A e fontes S/N) e diz se R03, R11 e R12 existem no acervo → `avaliar_real.py resumo`; (2) perguntas de lista (R06–R08) precisam de consulta aos metadados — avaliar após o julgamento; (3) equipe confere `amostra_tipos.csv`; (4) A2 (níveis de pasta: o 1º nível parece identificar contrato e fornecedor) |
+| Última tarefa concluída | Respostas completas (rodada 4 das perguntas reais): resposta direta + detalhes citados, linha do tempo nas perguntas de histórico, modo lista; recusas 5 → 2, resposta mediana 124 → 282 caracteres; acadêmico em produção sem perda (exatidão 0,923, recusa 1,00, alucinação 0). Ver `docs/AVALIACAO_REAL.md` §8–§9 |
+| Próxima tarefa exata | (1) equipe julga `avaliacao/real/revisao.csv` (rodada 4) e aponta o que falta em cada resposta; (2) latência F1 real (mediana 89 s): avaliar reduzir trechos/saída conforme o julgamento; (3) R07 oscila para recusa; (4) `amostra_tipos.csv` e A2 (níveis de pasta) |
 | Bloqueios | Perguntas reais e julgamento dependem da equipe (o agente não lê conteúdo real) |
 
 ## Histórico de fases
