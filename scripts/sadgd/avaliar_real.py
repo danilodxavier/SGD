@@ -224,12 +224,69 @@ def resumo(a):
     return 0
 
 
+AMOSTRA_TIPOS = PASTA / "amostra_tipos.csv"
+
+
+def amostra_tipos(a):
+    """Amostra estratificada (até --por-tipo documentos de cada tipo, semente fixa) para a equipe conferir o tipo."""
+    import random
+    import sqlite3
+
+    from app.core.config import settings
+
+    if AMOSTRA_TIPOS.exists():
+        print(f"[OK] Já existe: {AMOSTRA_TIPOS.relative_to(RAIZ)} (não sobrescrito; apague para sortear de novo)")
+        return 0
+    conn = sqlite3.connect(str(settings.database_path))
+    docs = conn.execute("SELECT id, caminho_relativo, tipo_documental, numero, titulo FROM documentos "
+                        "WHERE status IN ('COM_TEXTO', 'COM_OCR')").fetchall()
+    conn.close()
+    por_tipo = {}
+    for d in docs:
+        por_tipo.setdefault(d[2], []).append(d)
+    rnd, linhas = random.Random(20261120), []  # noqa: S311 - amostragem reprodutível, não criptografia
+    for tipo in sorted(por_tipo):
+        for d in rnd.sample(por_tipo[tipo], min(a.por_tipo, len(por_tipo[tipo]))):
+            linhas.append({"documento_id": d[0], "arquivo": d[1], "tipo_atribuido": d[2],
+                           "numero_atribuido": d[3] or "", "titulo_detectado": (d[4] or "")[:120],
+                           "tipo_correto": "", "numero_correto": ""})
+    PASTA.mkdir(parents=True, exist_ok=True)
+    _gravar_csv(AMOSTRA_TIPOS, list(linhas[0].keys()), linhas)
+    print(f"[OK] {AMOSTRA_TIPOS.relative_to(RAIZ)}: {len(linhas)} documentos de {len(por_tipo)} tipos. Preencha "
+          f"'tipo_correto' (repita o tipo se estiver certo) e, se houver, 'numero_correto'.")
+    return 0
+
+
+def medir_tipos(_a):
+    linhas = [ln for ln in _ler_csv(AMOSTRA_TIPOS) if ln.get("tipo_correto", "").strip()]
+    if not linhas:
+        print("[ERRO] Nenhuma linha conferida em amostra_tipos.csv")
+        return 1
+    por_tipo = {}
+    for ln in linhas:
+        por_tipo.setdefault(ln["tipo_atribuido"], []).append(_norm(ln["tipo_correto"]) == _norm(ln["tipo_atribuido"]))
+    num = [_norm(ln["numero_correto"]) == _norm(ln["numero_atribuido"]) for ln in linhas
+           if ln.get("numero_correto", "").strip()]
+    saida = {"conferidos": len(linhas), "precisao_geral": _pct([x for v in por_tipo.values() for x in v]),
+             "precisao_por_tipo": {t: {"n": len(v), "precisao": _pct(v)} for t, v in sorted(por_tipo.items())},
+             "numero_correto": _pct(num), "n_numero_conferido": len(num)}
+    (PASTA / "resumo_tipos.json").write_text(json.dumps(saida, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(json.dumps(saida, ensure_ascii=False, indent=2))
+    return 0
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    p.add_argument("acao", choices=["modelo", "executar", "revisao", "resumo"])
+    p.add_argument("acao", choices=["modelo", "executar", "revisao", "resumo", "amostra-tipos", "medir-tipos"])
     p.add_argument("--max-minutos", type=float, default=None)
     p.add_argument("--k", type=int, default=5)
+    p.add_argument("--por-tipo", type=int, default=8)
     a = p.parse_args()
+    if a.acao in ("amostra-tipos", "medir-tipos"):
+        if a.acao == "medir-tipos" and not AMOSTRA_TIPOS.exists():
+            print("[ERRO] Gere a amostra primeiro: avaliar_real.py amostra-tipos")
+            return 1
+        return amostra_tipos(a) if a.acao == "amostra-tipos" else medir_tipos(a)
     if a.acao != "modelo" and not PERGUNTAS.exists():
         print("[ERRO] Crie primeiro as perguntas: python scripts/sadgd/avaliar_real.py modelo")
         return 1

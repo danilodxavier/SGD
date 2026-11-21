@@ -76,3 +76,19 @@ def test_executar_recusa_envio_remoto_com_documentos_reais(mod, monkeypatch):
     _preparar(mod)
     monkeypatch.setattr(settings, "ai_allow_remote", True)
     assert mod.executar(Args) == 1
+
+
+def test_precisao_dos_tipos_pela_amostra_conferida(mod, monkeypatch):
+    monkeypatch.setattr(mod, "AMOSTRA_TIPOS", mod.PASTA / "amostra_tipos.csv")
+    campos = ["documento_id", "arquivo", "tipo_atribuido", "numero_atribuido", "titulo_detectado", "tipo_correto",
+              "numero_correto"]
+    mod._gravar_csv(mod.AMOSTRA_TIPOS, campos, [
+        {"documento_id": 1, "tipo_atribuido": "nota_fiscal", "tipo_correto": "nota_fiscal"},
+        {"documento_id": 2, "tipo_atribuido": "nota_fiscal", "tipo_correto": "certidao"},
+        {"documento_id": 3, "tipo_atribuido": "contrato", "numero_atribuido": "045/2022", "tipo_correto": "contrato",
+         "numero_correto": "045/2022"},
+        {"documento_id": 4, "tipo_atribuido": "outro", "tipo_correto": ""}])  # não conferido: ignorado
+    assert mod.medir_tipos(Args) == 0
+    r = json.loads((mod.PASTA / "resumo_tipos.json").read_text(encoding="utf-8"))
+    assert r["conferidos"] == 3 and r["precisao_geral"] == round(2 / 3, 3)
+    assert r["precisao_por_tipo"]["nota_fiscal"] == {"n": 2, "precisao": 0.5} and r["numero_correto"] == 1.0
