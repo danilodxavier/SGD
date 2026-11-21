@@ -52,11 +52,13 @@ def create_app(auto_index=True):
     from app.interfaces.api import decisoes as api_decisoes  # SAD-GD (Fase 8)
     from app.interfaces.api import linha_do_tempo as api_linha_do_tempo  # SAD-GD (Fase 6)
     from app.interfaces.api import perguntar as api_perguntar  # SAD-GD (Fase 7)
+    from app.interfaces.api import voz as api_voz  # pergunta por voz, transcrição local (2026-11-21)
 
     app.include_router(api_linha_do_tempo.router)
     app.include_router(api_perguntar.router)
     app.include_router(api_decisoes.router)
     app.include_router(api_acervo.router)
+    app.include_router(api_voz.router)
 
     @app.exception_handler(StarletteHTTPException)
     async def http_error(request: Request, exc: StarletteHTTPException):

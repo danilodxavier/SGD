@@ -5,6 +5,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 ## [Não lançado] — Reestruturação SAD-GD
 
 ### Adicionado
+- Fase 12 (implantação na rede): fila de consultas com posição/etapa (`/api/sadgd/consultas`), chat por texto e **voz** na tela Perguntar (transcrição local com faster-whisper, `/api/sadgd/transcrever`), instalação/validação do certificado da STI (`scripts/rede/instalar_certificado.py`) e publicação com firewall e início automático (`scripts/rede/publicar_rede.ps1`).
 - A1 (acervo real): segundo nível de classificação com 15 novos tipos e uso do nome do arquivo; `reclassificar.py`; amostra de tipos para conferência humana (`avaliar_real.py amostra-tipos|medir-tipos`).
 - A3 (latência): reranker na GPU por padrão (`SADGD_DISPOSITIVO_RERANKER=auto`) e compressão do contexto orientada pela pergunta (`SADGD_CONTEXTO_MAX_CHARS=1200`); F1 no acervo real 60,5 s → 17,3 s, exatidão na validação inalterada (0,923).
 - Avaliação com documentos reais: `scripts/sadgd/avaliar_real.py` (modelo, executar, revisao, resumo — só métricas agregadas na tela; resultados em `avaliacao/real/`, fora do Git) e protocolo `docs/AVALIACAO_REAL.md`; 3 testes.

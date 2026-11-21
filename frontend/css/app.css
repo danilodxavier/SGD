@@ -391,3 +391,19 @@ dialog::backdrop { background: var(--color-overlay); }
 .sg-relacao { font-size: var(--text-sm); margin-top: 6px; padding: 6px 10px; background: var(--color-surface-alt);
   border-radius: 4px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 @media (max-width: 640px) { .sg-evento { grid-template-columns: 1fr; gap: 2px; } }
+
+/* Conversa por texto ou voz (implantação na rede, 2026-11-21) */
+.ask-form .btn.mic { display: inline-flex; align-items: center; gap: 6px; }
+.ask-form .btn.mic.recording { background: var(--color-danger-bg); border-color: var(--color-danger); color: var(--color-danger); }
+.ask-form .btn.mic.recording svg { animation: sg-pulso 1s ease-in-out infinite; }
+@keyframes sg-pulso { 50% { opacity: .35; } }
+#sg-resultado { display: flex; flex-direction: column; gap: 18px; margin-top: 16px; }
+.turn { display: flex; flex-direction: column; gap: 8px; scroll-margin-top: 12px; }
+.turn-question { align-self: flex-end; max-width: 80%; background: var(--color-info-bg); border-radius: var(--radius-lg); padding: 8px 14px; }
+.turn-question p { margin: 2px 0 0; }
+.panel.loading { display: flex; align-items: center; gap: 10px; }
+.spinner { width: 16px; height: 16px; border: 2px solid var(--color-border-strong); border-top-color: var(--color-primary); border-radius: 50%; animation: sg-gira .8s linear infinite; flex-shrink: 0; }
+@keyframes sg-gira { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner, .ask-form .btn.mic.recording svg { animation: none; } }
+@media (max-width: 640px) { .ask-form { flex-wrap: wrap; } .ask-form input { flex-basis: 100%; } .turn-question { max-width: 100%; } }
+.panel.note.err { color: var(--color-danger); background: var(--color-danger-bg); }

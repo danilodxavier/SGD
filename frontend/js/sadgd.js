@@ -172,32 +172,129 @@ function sgRender(pergunta, r) {
     </div>`;
 }
 
+/* Conversa: cada pergunta entra numa fila no servidor (um LLM local por vez); a tela acompanha posição, etapa e
+   tempo decorrido e mostra a resposta quando fica pronta. Várias perguntas podem ser enviadas em sequência. */
+const sgEspera = (s) => (s.posicao > 1 ? `Na fila — ${s.posicao - 1} pergunta(s) à frente`
+  : s.etapa_descricao || (s.estado === "fila" ? "Na fila" : "Analisando os documentos"));
+
 async function sgPerguntar(pergunta) {
   pergunta = pergunta.trim();
   if (pergunta.length < 3) return;
-  const out = $("#sg-resultado");
-  const botao = $("#sg-enviar");
-  botao.disabled = true;
-  const inicio = Date.now();
-  out.innerHTML = `<div class="panel loading" id="sg-aguarde">Analisando os documentos…</div>`;
-  const relogio = setInterval(() => {
-    const s = Math.round((Date.now() - inicio) / 1000);
-    const el = $("#sg-aguarde");
-    if (el) el.textContent = `Analisando os documentos… ${s} s${s > 20 ? " — perguntas de decisão acionam os agentes especialistas e podem levar alguns minutos no computador local." : ""}`;
-  }, 1000);
+  $("#sg-pergunta").value = "";
+  const conversa = $("#sg-resultado");
+  const turno = document.createElement("div");
+  turno.className = "turn";
+  turno.innerHTML = `<div class="turn-question"><span class="muted">Você</span><p>${esc(pergunta)}</p></div>
+    <div class="panel loading" role="status"><span class="spinner" aria-hidden="true"></span>
+      <span class="sg-etapa">Enviando…</span> <span class="muted sg-tempo"></span></div>`;
+  conversa.appendChild(turno);
+  turno.scrollIntoView({ behavior: "smooth", block: "start" });
+  const status = turno.querySelector(".panel.loading");
   try {
-    const r = await API.post("/api/sadgd/perguntar", { pergunta });
-    out.innerHTML = sgRender(pergunta, r);
+    let s = await API.post("/api/sadgd/consultas", { pergunta });
+    while (s.estado === "fila" || s.estado === "processando") {
+      status.querySelector(".sg-etapa").textContent = sgEspera(s);
+      status.querySelector(".sg-tempo").textContent = `${Math.round(s.decorrido_s)} s`;
+      await new Promise((ok) => setTimeout(ok, 1000));
+      s = await API.get(`/api/sadgd/consultas/${s.id}`);
+    }
+    if (s.estado === "erro") throw new Error(s.erro || "Falha ao processar a pergunta.");
+    status.outerHTML = sgRender(pergunta, s.resultado);
   } catch (e) {
-    out.innerHTML = "";
-    toast(e.message, true);
-  } finally {
-    clearInterval(relogio);
-    botao.disabled = false;
+    status.outerHTML = `<div class="panel note err">${esc(e.message)}</div>`;
   }
 }
 
 $("#sg-form").addEventListener("submit", (ev) => { ev.preventDefault(); sgPerguntar($("#sg-pergunta").value); });
+
+/* Pergunta por voz: grava no navegador, converte para WAV 16 kHz mono e transcreve NO SERVIDOR (Whisper local) —
+   o áudio não vai para serviços externos. O texto volta para a caixa para conferência antes do envio. */
+const SgVoz = {
+  gravando: false, contexto: null, fonte: null, processador: null, fluxo: null, blocos: [], limite: null,
+  async alternar() { return this.gravando ? this.parar() : this.iniciar(); },
+  async iniciar() {
+    if (!navigator.mediaDevices || !window.isSecureContext) {
+      toast("O microfone só funciona em conexão segura (https) ou no próprio computador do servidor.", true);
+      return;
+    }
+    try {
+      this.fluxo = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, noiseSuppression: true, echoCancellation: true } });
+    } catch (e) {
+      toast("Permita o uso do microfone no navegador para perguntar por voz.", true);
+      return;
+    }
+    this.contexto = new (window.AudioContext || window.webkitAudioContext)();
+    this.fonte = this.contexto.createMediaStreamSource(this.fluxo);
+    this.processador = this.contexto.createScriptProcessor(4096, 1, 1);
+    this.blocos = [];
+    this.processador.onaudioprocess = (ev) => this.blocos.push(new Float32Array(ev.inputBuffer.getChannelData(0)));
+    this.fonte.connect(this.processador);
+    this.processador.connect(this.contexto.destination);
+    this.gravando = true;
+    this.limite = setTimeout(() => this.parar(), 60000);
+    this.botao(true);
+  },
+  async parar() {
+    clearTimeout(this.limite);
+    this.gravando = false;
+    this.botao(false, "Transcrevendo…");
+    this.processador.disconnect(); this.fonte.disconnect();
+    this.fluxo.getTracks().forEach((t) => t.stop());
+    const taxa = this.contexto.sampleRate;
+    await this.contexto.close();
+    const wav = this.wav(this.reamostrar(this.blocos, taxa, 16000), 16000);
+    try {
+      const resp = await fetch("/api/sadgd/transcrever", { method: "POST", body: wav,
+        headers: { "X-Requested-With": "AgenteDocumental", "Content-Type": "audio/wav" } });
+      const dados = await resp.json().catch(() => ({}));
+      if (resp.status === 401) Auth.expired(dados.detail);
+      if (!resp.ok) throw new Error(dados.detail || `Erro ${resp.status}`);
+      if (!dados.texto) throw new Error("Não foi possível entender o áudio. Tente novamente, mais perto do microfone.");
+      const campo = $("#sg-pergunta");
+      campo.value = dados.texto;
+      campo.focus();
+      toast("Confira a pergunta transcrita e clique em Perguntar.");
+    } catch (e) {
+      toast(e.message, true);
+    } finally {
+      this.botao(false);
+    }
+  },
+  reamostrar(blocos, de, para) {
+    const total = blocos.reduce((n, b) => n + b.length, 0);
+    const todos = new Float32Array(total);
+    let pos = 0;
+    blocos.forEach((b) => { todos.set(b, pos); pos += b.length; });
+    if (de === para) return todos;
+    const razao = de / para, n = Math.floor(total / razao), saida = new Float32Array(n);
+    for (let i = 0; i < n; i++) {  // média da janela: reamostragem com filtro passa-baixa simples
+      const ini = Math.floor(i * razao), fim = Math.min(total, Math.floor((i + 1) * razao));
+      let soma = 0;
+      for (let j = ini; j < fim; j++) soma += todos[j];
+      saida[i] = soma / Math.max(1, fim - ini);
+    }
+    return saida;
+  },
+  wav(amostras, taxa) {
+    const buf = new ArrayBuffer(44 + amostras.length * 2), v = new DataView(buf);
+    const txt = (o, s) => [...s].forEach((c, i) => v.setUint8(o + i, c.charCodeAt(0)));
+    txt(0, "RIFF"); v.setUint32(4, 36 + amostras.length * 2, true); txt(8, "WAVE"); txt(12, "fmt ");
+    v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, taxa, true);
+    v.setUint32(28, taxa * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); txt(36, "data");
+    v.setUint32(40, amostras.length * 2, true);
+    amostras.forEach((a, i) => v.setInt16(44 + i * 2, Math.max(-1, Math.min(1, a)) * 0x7fff, true));
+    return new Blob([buf], { type: "audio/wav" });
+  },
+  botao(gravando, texto) {
+    const b = $("#sg-voz");
+    b.classList.toggle("recording", gravando);
+    b.disabled = Boolean(texto);
+    b.setAttribute("aria-pressed", String(gravando));
+    b.querySelector(".sg-voz-rotulo").textContent = texto || (gravando ? "Parar" : "Falar");
+    b.title = gravando ? "Clique para encerrar a gravação" : "Perguntar por voz";
+  },
+};
+$("#sg-voz").addEventListener("click", () => SgVoz.alternar());
 $("#sg-exemplos").innerHTML = SG_EXEMPLOS.map((q) => `<button class="chip" type="button">${esc(q)}</button>`).join("");
 $("#sg-exemplos").addEventListener("click", (ev) => {
   if (!ev.target.classList.contains("chip")) return;

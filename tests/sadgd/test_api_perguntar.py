@@ -146,3 +146,22 @@ def test_construir_orquestrador_entrega_lista_de_trechos_ao_grafo(monkeypatch):
     orq = api.construir_orquestrador()
     trechos = orq._recuperar_no({"pergunta": "Qual o valor global do contrato 012/2023?"})["trechos"]
     assert isinstance(trechos, list) and trechos[0].id == TRECHO.id
+
+
+def test_consulta_pela_fila_devolve_numero_na_hora_e_resultado_ao_dono(falso):
+    import time
+
+    with logged_client() as c:
+        r = c.post("/api/sadgd/consultas", json={"pergunta": "Qual o valor global do Contrato nº 012/2023?",
+                                                 "usar_cache": False}, headers=HEADERS)
+        assert r.status_code == 202 and r.json()["estado"] in ("fila", "processando", "concluida")
+        cid = r.json()["id"]
+        for _ in range(200):
+            s = c.get(f"/api/sadgd/consultas/{cid}").json()
+            if s["estado"] in ("concluida", "erro"):
+                break
+            time.sleep(0.02)
+    assert s["estado"] == "concluida" and s["resultado"]["rota"].startswith("F1")
+    assert s["resultado"]["fontes"][0]["trecho_id"] == 10 and s["resultado"]["consulta_id"]
+    with logged_client("outro.gestor", "consulta") as outro:
+        assert outro.get(f"/api/sadgd/consultas/{cid}").status_code == 404

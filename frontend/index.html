@@ -173,7 +173,14 @@
       </header>
       <form class="ask-form" id="sg-form">
         <label class="sr-only" for="sg-pergunta">Pergunta</label>
-        <input type="text" id="sg-pergunta" placeholder="Digite sua pergunta…" autocomplete="off" maxlength="2000">
+        <input type="text" id="sg-pergunta" placeholder="Digite ou fale sua pergunta…" autocomplete="off" maxlength="2000">
+        <button class="btn mic" type="button" id="sg-voz" title="Perguntar por voz" aria-pressed="false">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 10v1a7 7 0 0 0 14 0v-1"></path>
+            <line x1="12" y1="18" x2="12" y2="22"></line></svg>
+          <span class="sg-voz-rotulo">Falar</span>
+        </button>
         <button class="btn primary" type="submit" id="sg-enviar">Perguntar</button>
       </form>
       <div class="chips" id="sg-exemplos"></div>

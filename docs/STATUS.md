@@ -5,11 +5,11 @@
 | Campo | Valor |
 |---|---|
 | Atualizado em | 2026-11-20 |
-| Fase atual | Projeto encerrado (Fase 11 aprovada) · **Pós-entrega: avaliação com documentos reais** |
+| Fase atual | **Fase 12 — implantação na rede interna (chat por texto e voz)** — em execução; aguarda DNS e certificado da STI |
 | Situação da fase | Acervo real indexado; A1 (tipos) e A3 (latência) aplicados; aguardando perguntas reais e conferência da amostra de tipos pela equipe |
-| Última tarefa concluída | Respostas completas (rodada 4 das perguntas reais): resposta direta + detalhes citados, linha do tempo nas perguntas de histórico, modo lista; recusas 5 → 2, resposta mediana 124 → 282 caracteres; acadêmico em produção sem perda (exatidão 0,923, recusa 1,00, alucinação 0). Ver `docs/AVALIACAO_REAL.md` §8–§9 |
-| Próxima tarefa exata | (1) equipe julga `avaliacao/real/revisao.csv` (rodada 4) e aponta o que falta em cada resposta; (2) latência F1 real (mediana 89 s): avaliar reduzir trechos/saída conforme o julgamento; (3) R07 oscila para recusa; (4) `amostra_tipos.csv` e A2 (níveis de pasta) |
-| Bloqueios | Perguntas reais e julgamento dependem da equipe (o agente não lê conteúdo real) |
+| Última tarefa concluída | Fase 12: fila de consultas com etapas, chat e voz local (Whisper small, 1,3 s/pergunta) na tela Perguntar, instalador do certificado e script de publicação (firewall só rede interna, início automático); 403 testes + fumaça HTTPS local. Ver `docs/fases/FASE_12.md` |
+| Próxima tarefa exata | (1) STI: DNS `sistemasad.sema.mt.gov.br` → <IP da estação> (IP fixo) e certificado (`docs/implantacao/PEDIDO_STI.md`) → `instalar_certificado.py` + `publicar_rede.ps1 -Acao publicar`; (2) testar voz real com os gestores; (3) equipe julga `avaliacao/real/revisao.csv` (rodada 4); (4) aprovar ADR-014 |
+| Bloqueios | DNS e certificado da STI para o acesso pela rede; julgamento humano das respostas reais |
 
 ## Histórico de fases
 
