@@ -209,9 +209,25 @@ def agrupar(documentos, relacoes):
             x = pai[x]
         return x
 
+    # cada componente guarda os contratos que contém: um documento que cita dois contratos (portaria de fiscais,
+    # relatório consolidado) não pode fundir processos distintos — no acervo real isso encadeava 15 contratos
+    contratos_de = {}
+    for d in documentos:
+        if d.tipo == "contrato" and (chave := chave_documento(d.tipo, d.numero)):
+            contratos_de[d.id] = {chave}
+    tipo_de = {d.id: d.tipo for d in documentos}
     for r in relacoes:
         if r.tipo != "fundamenta" and r.origem in pai and r.destino in pai:
-            pai[raiz(r.origem)] = raiz(r.destino)
+            a, b = raiz(r.origem), raiz(r.destino)
+            ca, cb = contratos_de.get(a, set()), contratos_de.get(b, set())
+            # contratos diferentes só se unem por SUBSTITUIÇÃO direta entre eles (novo contrato que substitui o
+            # anterior); a simples menção a outro contrato, mesmo num documento-contrato, não funde processos
+            direta = r.tipo == "substituicao" and tipo_de[r.origem] == tipo_de[r.destino] == "contrato"
+            if a == b or (ca and cb and ca != cb and not direta):
+                continue
+            pai[a] = b
+            if ca | cb:
+                contratos_de[b] = ca | cb
     por_raiz = defaultdict(list)
     for d in documentos:
         por_raiz[raiz(d.id)].append(d)

@@ -1,6 +1,7 @@
 """Extração de metadados documentais por regras (SAD-044, RF-04): tipo, número, data, órgão, processo,
 vigência e situação de normas. Tudo é extraído do texto do próprio documento — sem conhecimento externo."""
 import re
+import unicodedata
 from dataclasses import dataclass
 from datetime import date
 
@@ -61,6 +62,105 @@ RE_REVOGACAO_DOC = re.compile(r"\(\s*(Revogad[oa]\s+pel[oa]\s+[^)]{3,120})\)", r
 RE_PRIMEIRO_ARTIGO = re.compile(r"^\s*Art\.\s*1\s*(?:º|°|o)?\b", re.M)
 
 
+# --------------------------------------------------------------------------------------------------------------
+# 2º nível (A1, acervo real): só é usado quando as regras estritas acima deixam o documento como "outro".
+# Os documentos reais de execução contratual raramente começam a linha com "CONTRATO Nº": trazem "CONTRATO DE
+# PRESTAÇÃO DE SERVIÇOS Nº …", "TERMO ADITIVO Nº 03 AO CONTRATO …", notas de empenho, DANFE, certidões etc.
+# Os padrões rodam sobre a linha SEM acentos e em maiúsculas (_sem_acento); o título guardado é a linha original.
+ORDINAIS_EXT = {"PRIMEIRO": 1, "SEGUNDO": 2, "TERCEIRO": 3, "QUARTO": 4, "QUINTO": 5, "SEXTO": 6, "SETIMO": 7,
+                "OITAVO": 8, "NONO": 9, "DECIMO": 10}
+NUM2 = r"N\s*\.?\s*[º°O]?\s*\.?\s*"  # Nº, N.º, No, N. — já sem acento e em maiúsculas
+RE_NUMERO_ATO = re.compile(r"(\d{1,6}(?:\.\d{3})*/\d{2,4})")
+RE_CONTRATO_NUM = re.compile(r"CONTRATO\b[^\n]{0,80}?\b" + NUM2 + r"(\d{1,6}/\d{2,4})")
+REGRAS_SEGUNDO_NIVEL = [  # (tipo, padrão na linha, ancorado no início da linha?) — do mais específico ao genérico
+    ("aditivo", re.compile(r"^(?:(\d{1,2})\s*[º°O]?\s*|(" + "|".join(ORDINAIS_EXT) + r")\s+)?TERMO\s+ADITIVO\b"), True),
+    ("apostilamento", re.compile(r"^(?:TERMO\s+DE\s+)?APOSTILA(?:MENTO)?\b"), True),
+    ("extrato_publicacao", re.compile(r"^EXTRATO\s+D[OEA]\b"), True),
+    ("nota_empenho", re.compile(r"\bNOTA\s+DE\s+EMPENHO\b"), False),
+    ("nota_fiscal", re.compile(r"\bDANFE\b|\bNOTA\s+FISCAL\b|\bNFS-?E\b"), False),
+    ("pagamento", re.compile(r"\bORDEM\s+BANCARIA\b|\bNOTA\s+DE\s+LIQUIDACAO\b|\bLIQUIDACAO\s+D[AE]\s+DESPESA\b|"
+                             r"\bREQUISICAO\s+DE\s+PAGAMENTO\b|\bCOMPROVANTE\s+DE\s+PAGAMENTO\b|"
+                             r"\bPROCESSO\s+DE\s+PAGAMENTO\b"), False),
+    ("certidao", re.compile(r"^CERTIDAO\b|\bCERTIFICADO\s+DE\s+REGULARIDADE\b"), False),
+    ("termo_recebimento", re.compile(r"^TERMO\s+DE\s+RECEBIMENTO\b|^ATESTADO\s+DE\s+(?:RECEBIMENTO|EXECUCAO)\b|"
+                                     r"^ATESTO\b"), False),
+    ("relatorio_fiscalizacao", re.compile(r"^RELATORIO\b[^\n]{0,30}\bFISCAL(?:IZACAO)?\b"), True),
+    ("relatorio", re.compile(r"^RELATORIO\b"), True),
+    ("ata_registro_precos", re.compile(r"^ATA\s+DE\s+REGISTRO\s+DE\s+PRECOS?\b"), True),
+    ("estudo_tecnico_preliminar", re.compile(r"\bESTUDO\s+TECNICO\s+PRELIMINAR\b"), False),
+    ("termo_referencia", re.compile(r"^TERMO\s+DE\s+REFERENCIA\b"), True),
+    ("proposta", re.compile(r"^PROPOSTA\s+(?:COMERCIAL|DE\s+PRECOS?|DE\s+FORNECIMENTO)\b"), True),
+    ("garantia", re.compile(r"\bAPOLICE\b|\bSEGURO[\s-]+GARANTIA\b|\bCARTA\s+FIANCA\b"), False),
+    ("portaria", re.compile(r"^PORTARIA\b"), True),
+    ("oficio", re.compile(r"^OFICIO\b"), True),
+    ("despacho", re.compile(r"^DESPACHO\b"), True),
+    ("notificacao", re.compile(r"^NOTIFICACAO\b"), True),
+    ("parecer_juridico", re.compile(r"^PARECER\b[^\n]{0,40}\bJURIDICO\b"), True),
+    ("parecer", re.compile(r"^PARECER\b"), True),
+    ("contrato", re.compile(r"^CONTRATO\b[^\n]{0,80}?\b" + NUM2 + r"\d{1,6}/\d{2,4}"), True),
+]
+COM_NUMERO = {"apostilamento", "extrato_publicacao", "portaria", "oficio", "ata_registro_precos", "contrato",
+              "notificacao", "parecer", "parecer_juridico", "despacho"}
+# pistas no NOME do arquivo (último recurso, sem acento e em maiúsculas)
+REGRAS_NOME = [
+    ("aditivo", re.compile(r"\bADITIVO\b|\bT\.?A\.?\s*\d")),
+    ("apostilamento", re.compile(r"APOSTILA")),
+    ("nota_empenho", re.compile(r"\bEMPENHO|\bNE\b|\d{4}NE\d")),
+    ("nota_fiscal", re.compile(r"\bNF[SE]?\b|\bNFS-?E\b|NOTA\s+FISCAL|DANFE")),
+    ("pagamento", re.compile(r"PAGAMENTO|LIQUIDACAO|\bOB\b|\d{4}OB\d")),
+    ("certidao", re.compile(r"CERTID|\bCND\b|\bCNDT\b|\bCRF\b|REGULARIDADE")),
+    ("termo_recebimento", re.compile(r"ATESTO|RECEBIMENTO")),
+    ("relatorio_fiscalizacao", re.compile(r"RELATORIO[^/\\]{0,25}FISCAL")),
+    ("relatorio", re.compile(r"RELATORIO")),
+    ("portaria", re.compile(r"PORTARIA")),
+    ("proposta", re.compile(r"PROPOSTA")),
+    ("garantia", re.compile(r"GARANTIA|APOLICE")),
+    ("termo_referencia", re.compile(r"TERMO\s+DE\s+REFERENCIA|\bTR\b")),
+    ("oficio", re.compile(r"OFICIO")),
+    ("contrato", re.compile(r"\bCONTRATO\b")),
+]
+EXTENSOES_PLANILHA = {".xlsx", ".xls", ".ods", ".csv"}
+
+
+def _sem_acento(texto):
+    return unicodedata.normalize("NFKD", texto).encode("ascii", "ignore").decode().upper()
+
+
+def _segundo_nivel(linhas):
+    """(tipo, numero, titulo) pelo 2º nível, ou None. Considera as 25 primeiras linhas não vazias."""
+    for linha in linhas[:25]:
+        norm = _sem_acento(linha).lstrip(" -–—•*:.")
+        for tipo, padrao, _ancorado in REGRAS_SEGUNDO_NIVEL:
+            m = padrao.search(norm)
+            if not m:
+                continue
+            numero = None
+            if tipo == "aditivo":
+                n = m.group(1) or ORDINAIS_EXT.get(m.group(2) or "")
+                if not n and (mn := re.search(r"ADITIVO\s+" + NUM2 + r"(\d{1,2})\b", norm)):
+                    n = mn.group(1)
+                contrato = RE_CONTRATO_NUM.search(norm)
+                if n and contrato:
+                    numero = f"{int(n)}º TA ao Contrato {contrato.group(1)}"
+            elif tipo == "extrato_publicacao":
+                if c := RE_CONTRATO_NUM.search(norm):
+                    numero = c.group(1)
+            elif tipo == "contrato":
+                numero = RE_CONTRATO_NUM.search(norm).group(1)
+            elif tipo in COM_NUMERO and (mn := RE_NUMERO_ATO.search(norm)):
+                numero = mn.group(1)
+            return tipo, numero, linha
+    return None
+
+
+def _pelo_nome(nome_arquivo, extensao):
+    base = _sem_acento(re.split(r"[\\/]", nome_arquivo or "")[-1].rsplit(".", 1)[0]).replace("_", " ")
+    for tipo, padrao in REGRAS_NOME:
+        if base and padrao.search(base):
+            return tipo
+    return "planilha" if (extensao or "").lower() in EXTENSOES_PLANILHA else None
+
+
 @dataclass
 class Metadados:
     tipo_documental: str = "outro"
@@ -93,11 +193,20 @@ def _data_br(texto):
         return None
 
 
-def extrair_metadados(texto: str) -> Metadados:
+def extrair_metadados(texto: str, nome_arquivo: str | None = None, extensao: str | None = None) -> Metadados:
     md = Metadados()
     inicio = texto[:6000]
     linhas = [ln.strip() for ln in inicio.splitlines() if ln.strip()][:40]
+    _titulo_estrito(md, linhas)
+    if md.tipo_documental == "outro":
+        if achado := _segundo_nivel(linhas):
+            md.tipo_documental, md.numero, md.titulo = achado
+        elif tipo := _pelo_nome(nome_arquivo, extensao):
+            md.tipo_documental = tipo
+    return _complementar(md, texto, inicio)
 
+
+def _titulo_estrito(md, linhas):
     for linha in linhas:
         for tipo, padrao, grupo in REGRAS_TITULO:
             m = padrao.search(linha) if tipo == "aditivo" else padrao.match(linha)
@@ -118,6 +227,8 @@ def extrair_metadados(texto: str) -> Metadados:
         if md.titulo:
             break
 
+
+def _complementar(md, texto, inicio):
     if md.tipo_documental == "constituicao" and not md.numero:
         md.numero = "1988"
     especie = ESPECIE.get(md.tipo_documental)

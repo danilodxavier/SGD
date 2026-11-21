@@ -90,3 +90,73 @@ def test_nota_de_revogacao_de_artigo_nao_revoga_a_lei_inteira():
 def test_documento_sem_titulo_reconhecivel():
     m = extrair_metadados("Anotações diversas sem identificação formal.\n")
     assert m.tipo_documental == "outro" and m.numero is None
+
+
+# ------------------------------------------------- 2º nível: formatos do acervo real (A1, 2026-11-20)
+# Cabeçalhos INVENTADOS no formato usual de documentos de execução contratual (nenhum dado real).
+CABECALHO_REAL = "GOVERNO DO ESTADO\nSECRETARIA DE ESTADO\nCOORDENADORIA DE CONTRATOS\n"
+
+
+@pytest.mark.parametrize("titulo,tipo,numero", [
+    ("CONTRATO DE PRESTAÇÃO DE SERVIÇOS Nº 045/2022/SEXX", "contrato", "045/2022"),
+    ("CONTRATO N.º 012/2023", "contrato", "012/2023"),
+    ("2º TERMO ADITIVO AO CONTRATO DE PRESTAÇÃO DE SERVIÇOS Nº 045/2022", "aditivo", "2º TA ao Contrato 045/2022"),
+    ("TERMO ADITIVO Nº 03 AO CONTRATO Nº 045/2022", "aditivo", "3º TA ao Contrato 045/2022"),
+    ("TERCEIRO TERMO ADITIVO", "aditivo", None),
+    ("TERMO DE APOSTILAMENTO Nº 02/2024", "apostilamento", "02/2024"),
+    ("NOTA DE EMPENHO", "nota_empenho", None),
+    ("DANFE - DOCUMENTO AUXILIAR DA NOTA FISCAL ELETRÔNICA", "nota_fiscal", None),
+    ("NOTA FISCAL DE SERVIÇOS ELETRÔNICA - NFS-e", "nota_fiscal", None),
+    ("ORDEM BANCÁRIA", "pagamento", None),
+    ("NOTA DE LIQUIDAÇÃO", "pagamento", None),
+    ("CERTIDÃO NEGATIVA DE DÉBITOS TRABALHISTAS", "certidao", None),
+    ("Certificado de Regularidade do FGTS - CRF", "certidao", None),
+    ("TERMO DE RECEBIMENTO DEFINITIVO", "termo_recebimento", None),
+    ("ATESTADO DE RECEBIMENTO E EXECUÇÃO", "termo_recebimento", None),
+    ("RELATÓRIO MENSAL DE FISCALIZAÇÃO", "relatorio_fiscalizacao", None),
+    ("RELATÓRIO DE ATIVIDADES", "relatorio", None),
+    ("PORTARIA Nº 345/2023/GAB", "portaria", "345/2023"),
+    ("PROPOSTA COMERCIAL", "proposta", None),
+    ("APÓLICE DE SEGURO GARANTIA", "garantia", None),
+    ("OFÍCIO CIRCULAR Nº 15/2024/CC", "oficio", "15/2024"),
+    ("TERMO DE REFERÊNCIA", "termo_referencia", None),
+    ("ESTUDO TÉCNICO PRELIMINAR", "estudo_tecnico_preliminar", None),
+    ("ATA DE REGISTRO DE PREÇOS Nº 010/2023", "ata_registro_precos", "010/2023"),
+    ("EXTRATO DO CONTRATO Nº 045/2022", "extrato_publicacao", "045/2022"),
+    ("DESPACHO", "despacho", None),
+])
+def test_segundo_nivel_formatos_reais(titulo, tipo, numero):
+    m = extrair_metadados(CABECALHO_REAL + titulo + "\nCorpo do documento.\n")
+    assert (m.tipo_documental, m.numero) == (tipo, numero)
+    assert m.titulo
+
+
+def test_mencao_ao_contrato_no_corpo_nao_vira_contrato():
+    texto = CABECALHO_REAL + "Prezados,\nEncaminhamos a documentação referente ao Contrato nº 045/2022.\n"
+    assert extrair_metadados(texto).tipo_documental == "outro"
+
+
+@pytest.mark.parametrize("arquivo,extensao,tipo", [
+    ("pasta/NE 2024NE000123.pdf", ".pdf", "nota_empenho"),
+    ("pasta/Nota de empenho - março.pdf", ".pdf", "nota_empenho"),
+    ("pasta/NF 1234 empresa.pdf", ".pdf", "nota_fiscal"),
+    ("pasta/CND federal.pdf", ".pdf", "certidao"),
+    ("pasta/Certidões.pdf", ".pdf", "certidao"),
+    ("pasta/2º Termo Aditivo.pdf", ".pdf", "aditivo"),
+    ("pasta/Apostilamento reajuste.pdf", ".pdf", "apostilamento"),
+    ("pasta/Relatório do fiscal - jan.pdf", ".pdf", "relatorio_fiscalizacao"),
+    ("pasta/OB 2024OB01234.pdf", ".pdf", "pagamento"),
+    ("pasta/Processo de pagamento 03.pdf", ".pdf", "pagamento"),
+    ("pasta/Controle de medições.xlsx", ".xlsx", "planilha"),
+    ("pasta/digitalizado_0001.pdf", ".pdf", "outro"),
+])
+def test_nome_do_arquivo_quando_o_texto_nao_identifica(arquivo, extensao, tipo):
+    m = extrair_metadados(CABECALHO_REAL + "texto sem título reconhecível\n", nome_arquivo=arquivo, extensao=extensao)
+    assert m.tipo_documental == tipo
+
+
+def test_texto_prevalece_sobre_o_nome_e_regras_estritas_prevalecem():
+    m = extrair_metadados(AVISO + "\nCONTRATO Nº 012/2023\n", nome_arquivo="pasta/NF 99.pdf", extensao=".pdf")
+    assert (m.tipo_documental, m.numero) == ("contrato", "012/2023")
+    m = extrair_metadados(CABECALHO_REAL + "NOTA DE EMPENHO\n", nome_arquivo="pasta/contrato.pdf", extensao=".pdf")
+    assert m.tipo_documental == "nota_empenho"

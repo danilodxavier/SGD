@@ -148,7 +148,9 @@ class IndexarCorpus:
     def _processar(self, arquivo: ArquivoFonte):
         r = self.extrair(arquivo.caminho)
         texto = "".join(p.texto for p in r.paginas)
-        md = extrair_metadados(texto) if texto.strip() else Metadados()
+        # o nome do arquivo é a última pista do tipo (2º nível) quando o texto não traz título reconhecível
+        md = (extrair_metadados(texto, arquivo.relativo, arquivo.caminho.suffix) if texto.strip()
+              else extrair_metadados("", arquivo.relativo, arquivo.caminho.suffix))
         trechos = dividir(r.paginas) if r.status in STATUS_PESQUISAVEIS else []
         doc = DocumentoIndexado(arquivo, self.calcular_hash(arquivo.caminho), r.status,
                                 origem_por_caminho(arquivo.relativo, self.origem_padrao), md, r.num_paginas,

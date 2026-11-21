@@ -220,3 +220,20 @@ def test_copias_da_mesma_norma_sem_relacao_formam_um_unico_grupo():
     assert len(chaves) == len(set(chaves))
     assert sorted(i for g in grupos if 20 in g.documentos for i in g.documentos) == [20, 21]
     assert sorted(i for g in grupos for i in g.documentos) == [20, 21, 22]  # nenhum documento perdido
+
+
+def test_documento_que_cita_dois_contratos_nao_funde_os_processos():
+    """Regressão (acervo real, 2026-11-20): portarias/relatórios que citam vários contratos encadeavam processos
+    distintos (1.279 documentos de 15 contratos num único grupo). Dois contratos diferentes nunca se fundem."""
+    outro = doc(30, "contrato", "031/2023", "2023-05-01", "CONTRATO Nº 031/2023\nO valor global do contrato é de "
+                "R$ 500.000,00.")
+    aditivo_outro = doc(31, "aditivo", "1º TA ao Contrato 031/2023", "2024-04-20", "Fica prorrogada a vigência do "
+                        "Contrato nº 031/2023 por 12 meses.")
+    portaria = doc(32, "portaria", "200/2024", "2024-01-10", "Designa fiscais para o Contrato nº 012/2023 e para o "
+                   "Contrato nº 031/2023.")
+    docs = [CONTRATO, ADITIVO, outro, aditivo_outro, portaria]
+    grupos = {g.chave: sorted(g.documentos) for g in agrupar(docs, classificar_relacoes(docs))}
+    assert {1, 2} <= set(grupos[("contrato", "012/2023")])
+    assert {30, 31} <= set(grupos[("contrato", "031/2023")])
+    assert not set(grupos[("contrato", "012/2023")]) & set(grupos[("contrato", "031/2023")])
+    assert sum(32 in g for g in grupos.values()) == 1  # a portaria fica em um único processo
