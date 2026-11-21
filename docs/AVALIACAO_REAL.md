@@ -68,6 +68,7 @@ julgue se a recomendação é coerente com os documentos e se alternativas, risc
 |---|---|---|---|---|
 | 2026-11-18 | 1º ciclo: 112 arquivos, 571 trechos, 0 falhas (24% com OCR) | — | — | Indexação completa estimada em ≈ 7 h |
 | 2026-11-18/20 | **6.011 documentos**, 51.510 trechos e vetores (8,6 h); 1.101 com OCR; 2 corrompidos, 8 sem texto, 1 digitalizado sem OCR útil | — | Grafo: 4.131 grupos, só 21 com 2+ documentos; 13 processos de contrato; 3.330 relações; 0 contradições | 2 defeitos corrigidos (`022a053`): data ausente e chave de grupo duplicada |
+| 2026-11-20 | A1 + A3 aplicados (§7.1, §7.2): `outro` 88% → 22%; 168 processos de contrato; F1 60,5 s → 17,3 s | — | — | Precisão dos tipos depende da amostra conferida pela equipe |
 | 2026-11-20 | Fumaça (4 perguntas sem conteúdo real na saída) | 4 | Ausência → recusa correta; F1 com 4 fontes; F2 local, válida, 6 elementos — **mas 0 trechos citados** | F1 aquecida ≈ 30 s (rerank 18–27 s) |
 
 ## 7. Achados estruturais (somente contagens)
@@ -78,6 +79,55 @@ julgue se a recomendação é coerente com os documentos e se alternativas, risc
 | A2 | **Processos não reconstruídos** | 13 processos de contrato para 402 contratos e 181 aditivos; 21 grupos com 2+ documentos | Tela Linha do tempo pouco útil no acervo real | Usar a hierarquia de pastas (24 pastas de 1º nível, mediana 72 documentos; 165 de 2º nível) como sinal de processo — **depende de a equipe confirmar o que cada nível representa** |
 | A3 | **Latência da F1 ≈ 30 s** (acadêmico 14,6 s) | Rerank 18–27 s: trechos reais com mediana de 2.374 caracteres (no limite de 2.400) porque PDFs reais não têm estrutura de artigos | Experiência de uso | Reranquear 12 em vez de 24 e/ou trechos menores para texto sem estrutura — decidir com o baseline real |
 | A4 | **F2 sem trecho citado** na fumaça | 1 de 1 recomendação com `fontes=0` | Recomendação sem lastro documental | Conferir no julgamento humano; se recorrente, exigir citação mínima no relator |
+
+### 7.1 A1 — classificação de tipos (feito em 2026-11-20, `c3866e9`)
+
+| Indicador (acervo real) | Antes | Depois |
+|---|---|---|
+| Documentos `outro` | 5.307 (88%) | **1.326 (22%)** |
+| Tipos distintos | 10 | 26 (novos: termo de recebimento/atesto 990, nota fiscal 541, certidão 539, nota de empenho 496, relatório 344, pagamento 307, extrato 148, apostilamento 118…) |
+| Processos de contrato | 13 | **168** (maiores grupos: 97–100% numa única pasta de 1º nível) |
+| Fidelidade da reclassificação (texto reconstruído dos trechos) | — | 1,00 nos 704 já classificados |
+| Corpus acadêmico (regressão) | tipo/número 1,00 | tipo/número **1,00**; F1 relações 1,00; pureza 0,966 / inversa 0,983 |
+
+Ao reclassificar apareceu uma **fusão indevida de processos**: documentos que citam dois contratos encadeavam 15
+contratos num único grupo de 1.279 documentos. Corrigido: contratos diferentes só se unem por substituição direta.
+**Precisão ainda não medida** — a equipe confere a amostra `avaliacao/real/amostra_tipos.csv` (168 documentos,
+26 tipos) e roda `avaliar_real.py medir-tipos`.
+
+### 7.2 A3 — latência (feito em 2026-11-20)
+
+| Configuração (mesmas 4 perguntas, LLM descarregado no início) | F1 mediana | Reranking | Geração |
+|---|---|---|---|
+| A — anterior: reranker na CPU, trechos inteiros | 60,5 s | 16,6 s | 44,9 s |
+| E0 — reranker na GPU | 53,0 s | 4,0 s | 49,9 s |
+| **E1 — GPU + compressão do contexto a 1.200 caracteres (adotada)** | **19,9 s** (padrão novo, reconfirmado: **17,3 s**) | 3,8 s | 14,5 s |
+| E2 — GPU + compressão a 800 caracteres | 15,8 s | 3,7 s | 12,0 s |
+| Rejeitadas: reranquear 12 trechos ou cortar a 256 tokens | — | −1 s | ranking diferente (1–4 de 5 trechos em comum) |
+
+Diagnóstico: (1) o cross-encoder rodava na CPU por padrão e disputava núcleos com as camadas do LLM; na GPU o
+ranking é **idêntico** (5/5 trechos, mesma ordem); (2) o gargalo real é a **leitura do prompt** pelo LLM local
+(≈ 130 tokens/s com 21% das camadas na CPU): trechos reais têm ≈ 600 tokens cada. *Flash attention* e cache KV
+`q8_0` não ajudaram. A compressão mantém, na ordem original, as frases do trecho que compartilham termos com a
+pergunta (texto literal; cortes marcados com "[…]").
+
+Qualidade na **validação acadêmica** (47 perguntas F1, verificador ligado):
+
+| Compressão | Exatidão | Classificação | Cita a fonte esperada | Precisão das citações | Alucinação numérica | p50 / p95 |
+|---|---|---|---|---|---|---|
+| desligada | 0,923 | 0,957 | 0,907 | 0,861 | 0% | 14,9 s / 24,8 s |
+| **1.200** | **0,923** | 0,936 | 0,907 | 0,850 | 0% | 9,5 s / 17,5 s |
+| 800 | 0,923 | 0,957 | 0,907 | 0,851 | 0% | 11,6 s / 15,1 s |
+
+Escolha de 1.200 × 800: qualidade igual no acadêmico; no acervo real o corte de 800 atinge 87% dos trechos (1.200:
+81%) — com qualidade idêntica, preferiu-se o corte menos agressivo (4 s de diferença). Configuração no `.env`:
+`SADGD_DISPOSITIVO_RERANKER=auto`, `SADGD_CONTEXTO_MAX_CHARS=1200`.
+
+**Cuidado de medição:** o Ollama reaproveita o cache de prompts idênticos; uma primeira leitura de "9,6 s" de
+geração era esse artefato. Todas as medições acima partem do LLM descarregado.
+
+**Pendente:** a F2 ainda envia os trechos inteiros aos especialistas; aplicar a compressão nela exige reavaliar as
+21 perguntas F2.
 
 Ordem recomendada: **medir o baseline real primeiro** (perguntas da equipe, §3–§5) e só então aplicar A1–A4, medindo o ganho contra esse baseline.
 

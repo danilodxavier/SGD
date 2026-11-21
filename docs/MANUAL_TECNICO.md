@@ -169,6 +169,8 @@ O `.env` fica na raiz, **fora do Git**. Valores principais (lista completa e com
 | `OCR_ENABLED` / `OCR_ENGINE` | `true` / `auto` | `auto` = Tesseract, depois Windows OCR |
 | `OLLAMA_URL` / `OLLAMA_EXE` / `OLLAMA_MODELS` | `127.0.0.1:11434` / `ferramentas\ollama` / `modelos\ollama` | LLM local do projeto |
 | `LLM_MODELO_PADRAO` | `sadgd-qwen2.5-7b` | Modelo de redação, especialistas e relator |
+| `SADGD_DISPOSITIVO_RERANKER` | `auto` | Reranker na GPU quando houver (`cpu`/`cuda` forçam). Na CPU, a consulta fica ≈ 3× mais lenta |
+| `SADGD_CONTEXTO_MAX_CHARS` | `1200` | Compressão do contexto por trecho, orientada pela pergunta (`0` = trechos inteiros) |
 | `OBSERVABILIDADE` | `sqlite` | `sqlite` (tabela de spans), `phoenix` ou `nenhuma` |
 | `AI_ALLOW_REMOTE` | `false` | Libera provedores fora da máquina (ver §8) |
 | `SADGD_LLM_F2` | `local` | `gemini` usa a nuvem na F2 do corpus acadêmico |
@@ -319,6 +321,8 @@ Commits no padrão Conventional Commits; registrar decisões relevantes em ADR (
 | Busca só textual (sem vetores) | bge-m3 ausente em `modelos\bge-m3` | `preparar_bge_m3.py` e reindexar |
 | Falha nativa ao carregar o bge-m3 | `HF_DEACTIVATE_ASYNC_LOAD` não definido | Use os scripts do projeto (já definem) |
 | Embeddings lentos | fp16 na GTX 1660 | Manter float32 (padrão; fp16 é 5× mais lento nessa GPU) |
+| Perguntas lentas (≈ 1 min) | Reranker na CPU ou compressão desligada | `SADGD_DISPOSITIVO_RERANKER=auto` e `SADGD_CONTEXTO_MAX_CHARS=1200` no `.env` |
+| Após mudar regras de metadados, tipos antigos no acervo | Metadados são calculados na indexação | `scripts/sadgd/reclassificar.py` (sem OCR, minutos) e depois `construir_grafo.py` |
 | F1/F2 com erro de conexão ao LLM | Ollama parado | `ollama.ps1 -Acao iniciar`, depois `-Acao status` |
 | Comando que inicia o Ollama não termina | Encadeado com `| Out-Null` | Não redirecionar a saída do `ollama.ps1 -Acao iniciar` |
 | Respostas com recusa indevida / JSON fora de ordem | Schema estrito no Ollama | Manter `json_livre=True` com a ordem dos campos no prompt |

@@ -1,5 +1,6 @@
 """RerankerPort com BAAI/bge-reranker-v2-m3 (cross-encoder, ADR-005), float32, pesos em modelos\\hf."""
 import logging
+import os
 from pathlib import Path
 
 from app.core.config import settings  # HF_HOME e carga sequencial antes de importar torch
@@ -34,8 +35,13 @@ class BgeReranker:
         if self._modelo is None:
             from sentence_transformers import CrossEncoder
 
+            extra = {}
+            if self.dispositivo == "cuda" and os.environ.get("SADGD_RERANK_FP16") == "1":
+                import torch
+
+                extra = {"model_kwargs": {"torch_dtype": torch.float16}}
             self._modelo = CrossEncoder(pasta_snapshot(self.nome_modelo), device=self.dispositivo,
-                                        max_length=self._max)
+                                        max_length=self._max, **extra)
         return self._modelo
 
     def pontuar(self, consulta, textos):

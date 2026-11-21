@@ -1,7 +1,9 @@
 """SAD-076 — API de perguntas (RF-01, RF-15 a RF-18, RF-24): orquestrador multiagentes com auditoria.
 
 Os modelos de recuperação (bge-m3 + reranker) rodam por padrão na CPU (`SADGD_DISPOSITIVO_RECUPERACAO`), deixando
-a GPU de 6 GB para o LLM do Ollama. O orquestrador é criado sob demanda e reaproveitado (singleton)."""
+a GPU de 6 GB para o LLM do Ollama; o reranker pode ir para a GPU (`SADGD_DISPOSITIVO_RERANKER`), quantos trechos
+reranquear é `SADGD_PARA_RERANK`. O orquestrador é criado sob demanda e reaproveitado (singleton)."""
+import os
 import threading
 import time
 
@@ -77,11 +79,13 @@ def construir_orquestrador(tracer=None):
         embedder, reranker = _modelos_recuperacao()
         _componentes["recuperador"] = RecuperadorHibrido(
             BuscaLexicalSqlite(_fabrica), RepositorioTrechosSqlite(_fabrica), embedder, SqliteVecStore(_fabrica),
-            reranker)
+            reranker, para_rerank=int(os.environ.get("SADGD_PARA_RERANK", "24")))
     rec, memoria = _componentes["recuperador"], memoria_decisoes()
     llm = OpenAICompativelAdapter("ollama", settings.ollama_url + "/v1", settings.llm_modelo_padrao, timeout=300)
     grafo = RepositorioGrafoSqlite(_fabrica_sem_vetores)
-    return Orquestrador(lambda p, k: rec.recuperar(p, k=k).trechos, ResponderF1(llm, conflitos=grafo, verificador=verificar),
+    return Orquestrador(lambda p, k: rec.recuperar(p, k=k).trechos, ResponderF1(llm, conflitos=grafo, verificador=verificar,
+                                                                     contexto_max_chars=int(os.environ.get(
+                                                                         "SADGD_CONTEXTO_MAX_CHARS", "1200"))),
                         llm, linha_do_tempo=grafo.resumo,
                         precedentes=lambda p, docs: memoria.precedentes(p, documento_ids=docs), tracer=tracer,
                         llm_f2_remoto=llm_f2_remoto(), envio_externo_permitido=settings.ai_allow_remote)

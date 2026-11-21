@@ -186,3 +186,31 @@ def test_conflito_preserva_as_duas_fontes():
               fontes=["T11", "T12"])
     r = ResponderF1(LLMFalso(s)).responder("x", TRECHOS)
     assert r.classificacao == "conflito" and len(r.fontes) == 2
+
+
+# ------------------------------------------------ compressão do contexto (A3, acervo real, 2026-11-20)
+LONGO = ("O presente termo trata da prestação de serviços de manutenção predial. " * 20
+         + "A vigência do contrato fica prorrogada até 31/12/2025, conforme cláusula segunda. "
+         + "As demais cláusulas permanecem inalteradas e em pleno vigor. " * 20)
+
+
+def test_compressao_mantem_as_frases_da_pergunta_e_corta_o_resto():
+    t = tr(7, LONGO)
+    ctx = montar_contexto([t], pergunta="Até quando vai a vigência do contrato prorrogada?", max_chars=400)
+    corpo = ctx.split("\n", 1)[1]
+    assert "31/12/2025" in corpo and "[…]" in corpo
+    assert len(corpo) <= 400 + 10
+    assert all(parte.strip(" […]") in LONGO for parte in corpo.split("[…]") if parte.strip(" […]"))  # literal
+
+
+def test_sem_limite_ou_trecho_curto_nao_muda_nada():
+    curto = tr(8, "O valor global do contrato é de R$ 1.200.000,00.")
+    assert montar_contexto([curto]) == montar_contexto([curto], pergunta="valor", max_chars=400)
+    longo = tr(9, LONGO)
+    assert montar_contexto([longo]) == montar_contexto([longo], pergunta="vigência", max_chars=0)
+
+
+def test_sem_termo_da_pergunta_mantem_o_inicio():
+    t = tr(10, LONGO)
+    corpo = montar_contexto([t], pergunta="xyzzy", max_chars=300).split("\n", 1)[1]
+    assert corpo.startswith("O presente termo") and len(corpo) <= 310

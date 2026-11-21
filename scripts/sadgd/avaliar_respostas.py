@@ -51,7 +51,7 @@ def metricas_item(it, resposta, classificacao, citados, suportes=None):
     }
 
 
-def responder_v2(modelo, rotulo, usar_grafo=True, usar_verificador=False):
+def responder_v2(modelo, rotulo, usar_grafo=True, usar_verificador=False, contexto_max_chars=0):
     from app.application.respostas.f1 import ResponderF1
     from app.infrastructure.llm.openai_compativel import OpenAICompativelAdapter
     from app.infrastructure.sqlite.busca import RepositorioTrechosSqlite
@@ -65,7 +65,8 @@ def responder_v2(modelo, rotulo, usar_grafo=True, usar_verificador=False):
         else None
     if usar_verificador:
         from app.application.agentes.verificador import verificar
-    caso = ResponderF1(llm, conflitos=conflitos, verificador=verificar if usar_verificador else None)
+    caso = ResponderF1(llm, conflitos=conflitos, verificador=verificar if usar_verificador else None,
+                       contexto_max_chars=contexto_max_chars)
 
     def responder(it):
         ids = [r["trecho_id"] for r in cache[it["id"]]["recuperados"][:TOP_CONTEXTO]]
@@ -118,7 +119,8 @@ def recalcular(rotulo):
     return 0
 
 
-def avaliar(sistema, modelo, conjunto, rotulo, limite_s, usar_grafo=True, usar_verificador=False):
+def avaliar(sistema, modelo, conjunto, rotulo, limite_s, usar_grafo=True, usar_verificador=False,
+            contexto_max_chars=0):
     nome = "v1" if sistema == "v1" else f"v2_{modelo.replace(':', '_').replace('/', '_')}"
     arquivo = EXECUCOES / rotulo / f"respostas_{nome}.jsonl"
     feitos = _jsonl_existente(arquivo)
@@ -126,7 +128,7 @@ def avaliar(sistema, modelo, conjunto, rotulo, limite_s, usar_grafo=True, usar_v
     if not itens:
         print(f"[OK] {nome}: nada pendente ({len(feitos)} respostas)")
         return 0
-    responder = responder_v2(modelo, rotulo, usar_grafo, usar_verificador)
+    responder = responder_v2(modelo, rotulo, usar_grafo, usar_verificador, contexto_max_chars)
     inicio = time.perf_counter()
     with arquivo.open("a", encoding="utf-8", newline="\n") as f:
         for n, it in enumerate(itens, start=1):
@@ -206,13 +208,16 @@ def main():
     p.add_argument("--recalcular", action="store_true", help="recalcula métricas das respostas v2 já geradas")
     p.add_argument("--sem-grafo", action="store_true", help="desativa a detecção de conflitos pelo grafo (v2.0)")
     p.add_argument("--verificador", action="store_true", help="ativa o Verificador de Fontes no ResponderF1 (v2.2)")
+    p.add_argument("--contexto-max-chars", type=int, default=0,
+                   help="compressão do contexto por trecho orientada pela pergunta (0 = desligada; A3)")
     a = p.parse_args()
     if a.recalcular:
         return recalcular(a.rotulo)
     if a.resumo:
         return resumo(a.rotulo)
     return avaliar(a.sistema, a.modelo, a.conjunto, a.rotulo, a.max_minutos * 60 if a.max_minutos else None,
-                   usar_grafo=not a.sem_grafo, usar_verificador=a.verificador)
+                   usar_grafo=not a.sem_grafo, usar_verificador=a.verificador,
+                   contexto_max_chars=a.contexto_max_chars)
 
 
 if __name__ == "__main__":

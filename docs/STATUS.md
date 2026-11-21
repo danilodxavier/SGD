@@ -6,9 +6,9 @@
 |---|---|
 | Atualizado em | 2026-11-20 |
 | Fase atual | Projeto encerrado (Fase 11 aprovada) · **Pós-entrega: avaliação com documentos reais** |
-| Situação da fase | Acervo real indexado (6.011 documentos, 51.510 trechos) e grafo construído; aguardando perguntas reais da equipe |
-| Última tarefa concluída | Indexação completa do acervo real; 2 defeitos do grafo corrigidos (`022a053`); fumaça no pipeline real; diagnóstico agregado com 4 achados (A1–A4 em `docs/AVALIACAO_REAL.md` §7) |
-| Próxima tarefa exata | (1) a equipe preenche `avaliacao\real\perguntas.csv` (mín. 50); (2) `avaliar_real.py executar --max-minutos 30` → `revisao` (julgamento) → `resumo` = baseline real; (3) aplicar A1–A4 conforme decisão do responsável e medir contra o baseline |
+| Situação da fase | Acervo real indexado; A1 (tipos) e A3 (latência) aplicados; aguardando perguntas reais e conferência da amostra de tipos pela equipe |
+| Última tarefa concluída | **A1**: `outro` 88% → 22%, 168 processos de contrato, fusão indevida de processos corrigida; **A3**: F1 60,5 s → 17,3 s (reranker na GPU + compressão 1.200; exatidão da validação 0,923 inalterada). Ver `docs/AVALIACAO_REAL.md` §7.1–7.2 |
+| Próxima tarefa exata | (1) equipe confere `avaliacao/real/amostra_tipos.csv` → `avaliar_real.py medir-tipos`; (2) equipe preenche `avaliacao/real/perguntas.csv` → `executar` → `revisao` → `resumo` (baseline real); (3) opcional: compressão do contexto também na F2 (reavaliar as 21 perguntas F2); (4) A2 (processos pela estrutura de pastas) depende de a equipe explicar os níveis de pasta |
 | Bloqueios | Perguntas reais e julgamento dependem da equipe (o agente não lê conteúdo real) |
 
 ## Histórico de fases

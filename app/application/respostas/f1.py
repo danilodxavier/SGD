@@ -75,12 +75,51 @@ def _frases(texto: str) -> list[str]:
     return [f.strip() for f in re.split(r"(?<=[.!?])\s+(?=[A-ZÁÉÍÓÚÂÊÔÃÕÇ\[])", texto.strip()) if f.strip()]
 
 
-def montar_contexto(trechos) -> str:
+PALAVRAS_VAZIAS = {"qual", "quais", "quando", "como", "onde", "para", "pela", "pelo", "pelos", "pelas", "sobre",
+                   "entre", "este", "esta", "esse", "essa", "isso", "aquele", "ainda", "também", "após", "ate", "até",
+                   "devo", "deve", "pode", "seria", "foram", "está", "estão", "contrato", "documento", "documentos"}
+
+
+def _termos(texto: str) -> set:
+    return {p for p in re.findall(r"[\wÀ-ÿ/.-]{4,}", texto.lower()) if p not in PALAVRAS_VAZIAS}
+
+
+def comprimir(texto: str, pergunta: str | None, max_chars: int) -> str:
+    """Compressão do contexto orientada pela pergunta (A3; prompt mestre §5): trechos reais sem estrutura chegam a
+    2.400 caracteres e o LLM local lê o prompt a ≈ 130 tokens/s. Mantém, na ordem original, as frases que mais
+    compartilham termos com a pergunta, até `max_chars`; cortes viram "[…]". O texto mantido é literal."""
+    texto = texto.strip()
+    if not max_chars or len(texto) <= max_chars:
+        return texto
+    unidades = [u for linha in texto.splitlines() for u in _frases(linha)]
+    alvo = _termos(pergunta or "")
+    notas = [(len(alvo & _termos(u)), -i) for i, u in enumerate(unidades)]
+    if not alvo or max(notas)[0] == 0:
+        return texto[:max_chars].rsplit(" ", 1)[0] + " […]"
+    escolhidas, total = set(), 0
+    for _, menos_i in sorted(notas, reverse=True):
+        i = -menos_i
+        if notas[i][0] == 0 or total + len(unidades[i]) + 4 > max_chars:
+            continue
+        escolhidas.add(i)
+        total += len(unidades[i]) + 4
+    partes, anterior = [], -1
+    for i in sorted(escolhidas):
+        if i != anterior + 1:
+            partes.append("[…]")
+        partes.append(unidades[i])
+        anterior = i
+    if anterior != len(unidades) - 1:
+        partes.append("[…]")
+    return " ".join(partes)
+
+
+def montar_contexto(trechos, pergunta: str | None = None, max_chars: int | None = None) -> str:
     blocos = []
     for t in trechos:
         meta = " | ".join(str(x) for x in (t.titulo, t.dispositivo, f"pág. {t.pagina}" if t.pagina else None,
                                            t.data_documento, f"origem: {t.corpus_origem}") if x)
-        blocos.append(f"[{t.rotulo}] ({meta})\n{t.texto.strip()}")
+        blocos.append(f"[{t.rotulo}] ({meta})\n{comprimir(t.texto, pergunta, max_chars or 0)}")
     return "\n\n".join(blocos)
 
 
@@ -101,8 +140,9 @@ class RespostaF1:
 
 class ResponderF1:
     def __init__(self, llm: LLMPort, *, max_tokens: int = 500, versao_prompt: int = 1,
-                 conflitos: ConflitosPort | None = None, verificador=None):
+                 conflitos: ConflitosPort | None = None, verificador=None, contexto_max_chars: int = 0):
         self.llm, self.max_tokens, self.versao = llm, max_tokens, versao_prompt
+        self.contexto_max_chars = contexto_max_chars  # 0 = trechos inteiros (compressão desligada)
         self.conflitos = conflitos
         self.verificador = verificador  # callable(resposta, citados, pergunta) -> Verificacao
 
@@ -115,7 +155,8 @@ class ResponderF1:
         mensagens = [
             {"role": "system", "content": carregar_prompt("relator", self.versao) + "\n\n" + INSTRUCAO_F1 + "\n"
                 + ORDEM_SAIDA},
-            {"role": "user", "content": f"PERGUNTA: {pergunta}\n\nTRECHOS:\n{montar_contexto(trechos)}"},
+            {"role": "user", "content": f"PERGUNTA: {pergunta}\n\nTRECHOS:\n"
+                                        f"{montar_contexto(trechos, pergunta, self.contexto_max_chars)}"},
         ]
         r = self.llm.chat(mensagens, max_tokens=self.max_tokens, temperatura=0.0, json_livre=True)
         dados = r.json if isinstance(r.json, dict) else {}
