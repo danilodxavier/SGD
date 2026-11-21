@@ -7,6 +7,7 @@ escolhe o valor "certo": apresenta as duas fontes para conferência.
 """
 import re
 from dataclasses import dataclass
+from datetime import date
 
 from app.application.linha_do_tempo.referencias import chave_documento, encontrar_referencias
 
@@ -62,7 +63,8 @@ def detectar_contradicoes(documentos):
                 vigentes.setdefault((c.id, "valor_global"), (_norm_moeda(m.group(1)), c.id, tid))
             if m := FIM_CONTRATO.search(texto):
                 vigentes.setdefault((c.id, "vigencia_fim"), (m.group(1), c.id, tid))
-    for a in sorted((d for d in documentos if d.tipo == "aditivo"), key=lambda d: d.data):
+    # aditivo sem data (comum no acervo real) tem prioridade mínima: os datados, em ordem, definem o vigente
+    for a in sorted((d for d in documentos if d.tipo == "aditivo"), key=lambda d: (d.data or date.min, d.id)):
         c = _contrato_referido(a, por_chave)
         if not c:
             continue

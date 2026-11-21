@@ -215,14 +215,16 @@ def agrupar(documentos, relacoes):
     por_raiz = defaultdict(list)
     for d in documentos:
         por_raiz[raiz(d.id)].append(d)
-    grupos = []
+    # componentes com a mesma chave (ex.: duas cópias da mesma lei, uma isolada) são o mesmo processo/tema
+    por_chave = defaultdict(list)
     for membros in por_raiz.values():
         membros.sort(key=lambda d: (d.data or date.min, d.id))
         contratos = [d for d in membros if d.tipo == "contrato"]
         base = contratos[0] if contratos else membros[0]
         chave = chave_documento(base.tipo, base.numero) or ("tema", str(base.id))
-        grupos.append(Grupo(("contrato", chave[1]) if contratos else ("tema", chave[0] + ":" + chave[1]),
-                            [d.id for d in membros]))
+        por_chave[("contrato", chave[1]) if contratos else ("tema", chave[0] + ":" + chave[1])] += membros
+    grupos = [Grupo(chave, [d.id for d in sorted(membros, key=lambda d: (d.data or date.min, d.id))])
+              for chave, membros in por_chave.items()]
     return sorted(grupos, key=lambda g: g.chave)
 
 

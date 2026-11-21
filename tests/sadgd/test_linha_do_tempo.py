@@ -189,3 +189,34 @@ def test_contrato_que_cita_lei_e_fundamentacao_e_nao_une_processos():
     assert r[(1, 2)] == "fundamenta" and r[(1, 3)] == "fundamenta"  # nem ruptura, nem continuação
     grupos = agrupar([lei, ti, limpeza], relacoes)
     assert not any({2, 3} <= set(g.documentos) for g in grupos)
+
+
+def test_documentos_sem_data_nao_quebram_o_grafo_e_aditivo_datado_prevalece():
+    """Regressão (acervo real, 2026-11-20): documentos reais podem vir sem data; a ordenação dos aditivos
+    comparava None com date. Aditivo sem data fica com prioridade mínima: o datado define a vigência."""
+    sem_data = DocGrafo(9, "aditivo", "2º TA ao Contrato 012/2023", None, "2º TA", "real",
+                        [(900, "Fica prorrogada a vigência do Contrato nº 012/2023, passando o término para "
+                               "31/12/2030.")])
+    docs = [CONTRATO, ADITIVO, sem_data, NOTIF, RESC, SUSP, REIN, REL, APOST]
+    contradicoes = detectar_contradicoes(docs)
+    pares = {(c.origem, c.destino, c.campo): c.valor_vigente for c in contradicoes}
+    assert pares[(2, 8, "vigencia_fim")] == "28/02/2025"  # o aditivo datado prevalece sobre o sem data
+    relacoes = classificar_relacoes(docs, contradicoes)
+    grupos = agrupar(docs, relacoes)
+    assert any(9 in g.documentos for g in grupos)
+    for g in grupos:
+        linha_do_tempo(g, docs, relacoes)
+
+
+def test_copias_da_mesma_norma_sem_relacao_formam_um_unico_grupo():
+    """Regressão (acervo real, 2026-11-20): a mesma lei em dois arquivos, um deles ligado a outros documentos e o
+    outro isolado, gerava dois grupos com a mesma chave e violava UNIQUE(tipo, chave) ao salvar o grafo."""
+    lei = doc(20, "lei", "14.133", "2021-04-01", "LEI Nº 14.133, DE 1º DE ABRIL DE 2021. Lei de Licitações.")
+    copia = doc(21, "lei", "14.133", "2021-04-01", "LEI Nº 14.133, DE 1º DE ABRIL DE 2021 (compilada).")
+    parecer = doc(22, "parecer_juridico", "010/2024", "2024-05-01", "Nos termos da Lei nº 14.133, de 2021, opina-se.")
+    docs = [lei, copia, parecer]
+    grupos = agrupar(docs, classificar_relacoes(docs))
+    chaves = [g.chave for g in grupos]
+    assert len(chaves) == len(set(chaves))
+    assert sorted(i for g in grupos if 20 in g.documentos for i in g.documentos) == [20, 21]
+    assert sorted(i for g in grupos for i in g.documentos) == [20, 21, 22]  # nenhum documento perdido
