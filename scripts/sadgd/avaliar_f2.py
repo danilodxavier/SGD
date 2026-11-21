@@ -31,7 +31,8 @@ def media(vals):
     return round(sum(vals) / len(vals), 4) if vals else None
 
 
-def construir(modelo, rotulo, precedentes=True, modelo_especialistas=None, provedor_f2="local"):
+def construir(modelo, rotulo, precedentes=True, modelo_especialistas=None, provedor_f2="local",
+              contexto_max_chars=0):
     from app.application.agentes.orquestrador import Orquestrador
     from app.application.agentes.verificador import verificar
     from app.application.respostas.f1 import ResponderF1
@@ -63,9 +64,9 @@ def construir(modelo, rotulo, precedentes=True, modelo_especialistas=None, prove
 
         def buscar_precedentes(pergunta, documentos):
             return memoria.precedentes(pergunta, documento_ids=documentos)
-    return Orquestrador(recuperar, ResponderF1(llm, conflitos=grafo, verificador=verificar), llm_esp,
-                        linha_do_tempo=grafo.resumo, precedentes=buscar_precedentes, k=K, llm_relator=llm,
-                        **_remoto(provedor_f2))
+    f1 = ResponderF1(llm, conflitos=grafo, verificador=verificar, contexto_max_chars=contexto_max_chars)
+    return Orquestrador(recuperar, f1, llm_esp, linha_do_tempo=grafo.resumo, precedentes=buscar_precedentes, k=K,
+                        llm_relator=llm, contexto_max_chars=contexto_max_chars, **_remoto(provedor_f2))
 
 
 def _remoto(provedor_f2):
@@ -119,9 +120,10 @@ def metricas(it, estado, ms):
 
 
 def avaliar(modelo, rotulo, limite_s, precedentes=True, modelo_especialistas=None, conjunto="todos",
-            provedor_f2="local"):
+            provedor_f2="local", contexto_max_chars=0):
     sufixo = f"__esp_{modelo_especialistas.replace(':', '_')}" if modelo_especialistas else ""
     sufixo += f"__f2_{provedor_f2}" if provedor_f2 != "local" else ""
+    sufixo += f"__ctx{contexto_max_chars}" if contexto_max_chars else ""
     (EXECUCOES / rotulo).mkdir(parents=True, exist_ok=True)
     arquivo = EXECUCOES / rotulo / f"f2_{modelo.replace(':', '_')}{sufixo}.jsonl"
     feitos = _jsonl_existente(arquivo)
@@ -129,7 +131,7 @@ def avaliar(modelo, rotulo, limite_s, precedentes=True, modelo_especialistas=Non
     if not itens:
         print(f"[OK] F2: nada pendente ({len(feitos)} itens)")
         return 0
-    orq = construir(modelo, rotulo, precedentes, modelo_especialistas, provedor_f2)
+    orq = construir(modelo, rotulo, precedentes, modelo_especialistas, provedor_f2, contexto_max_chars)
     inicio = time.perf_counter()
     with arquivo.open("a", encoding="utf-8", newline="\n") as f:
         for n, it in enumerate(itens, start=1):
@@ -203,11 +205,13 @@ def main():
     p.add_argument("--conjunto", default="todos", choices=["validacao", "teste", "todos"])
     p.add_argument("--provedor-f2", default="local", choices=["local", "gemini"],
                    help="gemini: especialistas e relator no Gemini (corpus acadêmico, anonimizado, reserva local)")
+    p.add_argument("--contexto-max-chars", type=int, default=0,
+                   help="compressão do contexto por trecho na F1 e na F2 (0 = desligada; A3)")
     a = p.parse_args()
     if a.resumo:
         return resumo(a.rotulo)
     return avaliar(a.modelo, a.rotulo, a.max_minutos * 60 if a.max_minutos else None, not a.sem_precedentes,
-                   a.modelo_especialistas, a.conjunto, a.provedor_f2)
+                   a.modelo_especialistas, a.conjunto, a.provedor_f2, a.contexto_max_chars)
 
 
 if __name__ == "__main__":

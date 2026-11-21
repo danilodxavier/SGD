@@ -157,12 +157,12 @@ def _chat_json(llm, mensagens, max_tokens, temperatura):
         return None, 2
 
 
-def executar_especialista(llm, agente, pergunta, trechos, contexto_extra="") -> Parecer:
+def executar_especialista(llm, agente, pergunta, trechos, contexto_extra="", contexto_max_chars=0) -> Parecer:
     meta = _meta(agente)
     mensagens = [
         {"role": "system", "content": carregar_prompt(agente) + "\n\n" + ORDEM_PARECER},
         {"role": "user", "content": f"PERGUNTA: {pergunta}\n\n{contexto_extra}\n\n"
-                                    f"TRECHOS:\n{montar_contexto(trechos)}"},
+                                    f"TRECHOS:\n{montar_contexto(trechos, pergunta, contexto_max_chars)}"},
     ]
     r, tentativas = _chat_json(llm, mensagens, int(meta.get("max_tokens", 800)), float(meta.get("temperatura", 0)))
     if r is None:  # o especialista falhou: parecer vazio e inválido (o relator o ignora), sem derrubar o grafo
@@ -207,13 +207,14 @@ class RespostaF2:
     observacoes: list = field(default_factory=list)
 
 
-def relatar_f2(llm, pergunta, trechos, pareceres, contexto_extra="", precedentes=()) -> RespostaF2:
+def relatar_f2(llm, pergunta, trechos, pareceres, contexto_extra="", precedentes=(),
+               contexto_max_chars=0) -> RespostaF2:
     validos = [_compactar(p) for p in pareceres if p.dados.get("parecer")]
     mensagens = [
         {"role": "system", "content": carregar_prompt("relator", versao=2) + "\n\n" + ORDEM_RELATOR},
         {"role": "user", "content": f"PERGUNTA: {pergunta}\n\n{contexto_extra}\n\nPARECERES VERIFICADOS:\n"
                                     f"{json.dumps(validos, ensure_ascii=False)}\n\n"
-                                    f"TRECHOS:\n{montar_contexto(trechos)}"},
+                                    f"TRECHOS:\n{montar_contexto(trechos, pergunta, contexto_max_chars)}"},
     ]
     r, tentativas = _chat_json(llm, mensagens, 1200, 0.1)
     d = r.json if r is not None and isinstance(r.json, dict) else {}

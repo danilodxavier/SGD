@@ -154,6 +154,7 @@ Leitura: a F2 em nuvem **atinge a meta de p95 ≤ 120 s** (3,9× mais rápida no
 | 2026-11-17 | fase10_cache | golden set | Limiar do cache semântico | maior par diferente 0,883 → limiar 0,93 |
 | 2026-11-17 | fase10_fidelidade | validação (calibração) + teste | LLM-juiz Llama 3.1 8B | κ 0,71; faithfulness 0,964 adjudicada; alucinação 5,4% |
 | 2026-11-17 | fase11 (F2 Gemini v1) | validação + teste (21) | Especialistas e relator no Gemini 3.5 Flash-Lite | schema relator 0,333 (`consensos` em objeto); p95 213 s |
+| 2026-11-21 | fase11_f2ctx | validação (6 F2) | Compressão 1.200 na F2 | RF-20 1,00 nas duas; recall docs 0,722 → 0,639; p50 333 → 303 s. Acervo real: 0 → 6–7 fontes citadas (contexto deixou de estourar) |
 | 2026-11-20 | fase11_ctx0/1200/800 | validação (47 F1) | Compressão do contexto por trecho (A3) | exatidão 0,923 nas três; p50 14,9 / 9,5 / 11,6 s; 1.200 adotado |
 | 2026-11-20 | acervo real (latência) | 4 perguntas | Reranker na GPU + compressão 1.200 | F1 60,5 s → 17,3 s; ranking idêntico com reranker na GPU |
 | 2026-11-17 | fase11 (F2 Gemini v2) | validação + teste (21) | + reparo/instrução de `consensos` | schema relator 1,00; recall docs 0,865; p50/p95 30 s / 100 s |

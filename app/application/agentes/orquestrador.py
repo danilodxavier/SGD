@@ -37,7 +37,7 @@ class Estado(TypedDict, total=False):
 class Orquestrador:
     def __init__(self, recuperar, responder_f1, llm_especialistas, *, linha_do_tempo=None, precedentes=None,
                  tracer=None, checkpointer=None, k=8, llm_relator=None, llm_f2_remoto=None,
-                 envio_externo_permitido=False):
+                 envio_externo_permitido=False, contexto_max_chars=0):
         """recuperar(pergunta, k) -> list[TrechoRecuperado]; responder_f1: ResponderF1;
         linha_do_tempo(documento_ids) -> str (resumo para F2);
         precedentes(pergunta, documento_ids) -> list[Precedente] (memória de decisões, RF-19);
@@ -48,6 +48,7 @@ class Orquestrador:
         self._llm_relator = llm_relator or llm_especialistas
         self._remoto, self._envio_permitido = llm_f2_remoto, envio_externo_permitido
         self._tl, self._prec, self._tracer, self._k = linha_do_tempo, precedentes, tracer, k
+        self._ctx = contexto_max_chars  # compressão do contexto dos especialistas e do relator (0 = desligada)
         g = StateGraph(Estado)
         g.add_node("rotear", self._no(self._rotear))
         g.add_node("recuperar", self._no(self._recuperar_no))
@@ -125,13 +126,14 @@ class Orquestrador:
 
     def _especialista(self, s):
         llm = self._llm_f2(s, self._llm)
-        parecer = executar_especialista(llm, s["agente"], s["pergunta"], s["trechos"], s.get("contexto_extra", ""))
+        parecer = executar_especialista(llm, s["agente"], s["pergunta"], s["trechos"], s.get("contexto_extra", ""),
+                                        self._ctx)
         return {"pareceres": [parecer], "falhas_remotas": [getattr(llm, "falhas", 0)]}
 
     def _relator(self, s):
         llm = self._llm_f2(s, self._llm_relator)
         resposta = relatar_f2(llm, s["pergunta"], s["trechos"], s.get("pareceres", []), s.get("contexto_extra", ""),
-                              s.get("precedentes", []))
+                              s.get("precedentes", []), self._ctx)
         return {"resposta": resposta, "falhas_remotas": [getattr(llm, "falhas", 0)]}
 
     def executar(self, pergunta, thread_id=None):

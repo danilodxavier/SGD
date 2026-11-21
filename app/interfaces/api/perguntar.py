@@ -83,12 +83,12 @@ def construir_orquestrador(tracer=None):
     rec, memoria = _componentes["recuperador"], memoria_decisoes()
     llm = OpenAICompativelAdapter("ollama", settings.ollama_url + "/v1", settings.llm_modelo_padrao, timeout=300)
     grafo = RepositorioGrafoSqlite(_fabrica_sem_vetores)
-    return Orquestrador(lambda p, k: rec.recuperar(p, k=k).trechos, ResponderF1(llm, conflitos=grafo, verificador=verificar,
-                                                                     contexto_max_chars=int(os.environ.get(
-                                                                         "SADGD_CONTEXTO_MAX_CHARS", "1200"))),
-                        llm, linha_do_tempo=grafo.resumo,
+    contexto = int(os.environ.get("SADGD_CONTEXTO_MAX_CHARS", "1200"))  # compressão na F1 e na F2 (A3)
+    f1 = ResponderF1(llm, conflitos=grafo, verificador=verificar, contexto_max_chars=contexto)
+    return Orquestrador(lambda p, k: rec.recuperar(p, k=k).trechos, f1, llm, linha_do_tempo=grafo.resumo,
                         precedentes=lambda p, docs: memoria.precedentes(p, documento_ids=docs), tracer=tracer,
-                        llm_f2_remoto=llm_f2_remoto(), envio_externo_permitido=settings.ai_allow_remote)
+                        llm_f2_remoto=llm_f2_remoto(), envio_externo_permitido=settings.ai_allow_remote,
+                        contexto_max_chars=contexto)
 
 
 def _fonte(t):

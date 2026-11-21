@@ -1,0 +1,78 @@
+{
+  "f2_sadgd-qwen2.5-7b": {
+    "n": 6,
+    "erros": 0,
+    "rota_f2": 1.0,
+    "agentes_precisao": 0.8571,
+    "agentes_recall": 0.6667,
+    "pareceres_por_consulta": 2.3333,
+    "schema_pareceres_bruto": 0.7857,
+    "schema_pareceres_reparado": 1.0,
+    "schema_relator": 1.0,
+    "afirmacoes_removidas_por_consulta": 0.3333,
+    "recall_documentos": 0.7222,
+    "precisao_documentos": 0.4337,
+    "com_alternativas": 1.0,
+    "com_riscos": 1.0,
+    "com_aviso": 1.0,
+    "confianca_media": 0.7167,
+    "rf20_completo": 1.0,
+    "rf20_todos_preenchidos": 0.8333,
+    "rf20_por_elemento": {
+      "alternativas": 1.0,
+      "riscos": 1.0,
+      "base_legal": 1.0,
+      "precedentes": 0.8333,
+      "confianca": 1.0,
+      "aviso": 1.0
+    },
+    "com_precedentes": 0.8333,
+    "base_legal_media": 2.3333,
+    "latencia_ms": {
+      "p50": 333365,
+      "p95": 397796
+    },
+    "tokens_medios": {
+      "entrada": 18862.3333,
+      "saida": 2365.1667
+    }
+  },
+  "f2_sadgd-qwen2.5-7b__ctx1200": {
+    "n": 6,
+    "erros": 0,
+    "rota_f2": 1.0,
+    "agentes_precisao": 0.8571,
+    "agentes_recall": 0.6667,
+    "pareceres_por_consulta": 2.3333,
+    "schema_pareceres_bruto": 0.7143,
+    "schema_pareceres_reparado": 1.0,
+    "schema_relator": 1.0,
+    "afirmacoes_removidas_por_consulta": 0.3333,
+    "recall_documentos": 0.6389,
+    "precisao_documentos": 0.4556,
+    "com_alternativas": 1.0,
+    "com_riscos": 1.0,
+    "com_aviso": 1.0,
+    "confianca_media": 0.7917,
+    "rf20_completo": 1.0,
+    "rf20_todos_preenchidos": 0.8333,
+    "rf20_por_elemento": {
+      "alternativas": 1.0,
+      "riscos": 1.0,
+      "base_legal": 1.0,
+      "precedentes": 0.8333,
+      "confianca": 1.0,
+      "aviso": 1.0
+    },
+    "com_precedentes": 0.8333,
+    "base_legal_media": 2.5,
+    "latencia_ms": {
+      "p50": 303501,
+      "p95": 371776
+    },
+    "tokens_medios": {
+      "entrada": 17424.1667,
+      "saida": 2201.1667
+    }
+  }
+}

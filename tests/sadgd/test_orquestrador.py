@@ -252,3 +252,28 @@ def test_relator_com_consensos_no_formato_de_divergencia_e_reparado():
     final = estado["resposta"]
     assert final.valido and not any(o.startswith("relator_schema") for o in final.observacoes)
     assert final.dados["consensos"] == ["Prorrogação — gestor_publico: viável; fiscal_contrato: com pesquisa de preços"]
+
+
+def test_f2_comprime_os_trechos_dos_especialistas_e_do_relator():
+    """A3 na F2 (2026-11-21): com contexto_max_chars, especialistas e relator recebem só as frases da pergunta."""
+    longo = TrechoRecuperado(13, 3, "Cláusula genérica sobre obrigações acessórias da contratada. " * 30
+                             + "A vigilância pode ser prorrogada por mais 12 meses mediante pesquisa de preços. "
+                             + "Disposições finais sem relação com o tema. " * 30, "e.txt", "sintetico/e.txt",
+                             "CONTRATO Nº 044/2023", None, 1, "contrato", "sintetico", "2023-09-01", False, None)
+
+    class LLMQueGuarda(LLMRoteiro):
+        def __init__(self):
+            super().__init__()
+            self.usuarios = []
+
+        def chat(self, mensagens, **kw):
+            self.usuarios.append((mensagens[0]["content"], mensagens[1]["content"]))
+            return super().chat(mensagens, **kw)
+
+    llm = LLMQueGuarda()
+    orq = Orquestrador(lambda pergunta, k: TRECHOS + [longo], ResponderF1(llm, verificador=verificar), llm,
+                       contexto_max_chars=300)
+    orq.executar("Devo prorrogar novamente o Contrato nº 044/2023 de vigilância?")
+    f2 = [u for s, u in llm.usuarios if "Papel: RELATOR" not in s or "Modo F2" in s]
+    assert f2 and all("[…]" in u and "prorrogada por mais 12 meses" in u for u in f2)
+    assert all(u.count("Cláusula genérica") < 10 for u in f2)  # o trecho longo chegou comprimido

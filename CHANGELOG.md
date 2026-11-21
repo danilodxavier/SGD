@@ -41,6 +41,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 - Especificação v1 (`AGENTS.md`), `ARQUITETURA.md` e `CONFORMIDADE.md` movidos para `docs/legado/`.
 
 ### Corrigido
+- F2 no acervo real: prompts dos especialistas estouravam o contexto de 8.192 tokens (instruções cortadas, todas as afirmações removidas pelo verificador, recomendação sem fontes); a compressão do contexto (`SADGD_CONTEXTO_MAX_CHARS`) agora vale também para especialistas e relator.
 - Grafo: documento que cita dois contratos não funde mais os processos (só substituição direta entre contratos).
 - `scripts/github/criar_backlog.ps1`: argumentos com barra invertida final quebravam a chamada ao `gh` no PowerShell 5.1; reexecução falhava com `-like` e colchetes. Kanban publicado (GitHub Project #2, 52 issues).
 - `POST /api/sadgd/perguntar`: a montagem real do orquestrador passava `ResultadoRecuperacao` ao grafo em vez da lista de trechos (falhava desde a Fase 7; métricas não afetadas); teste de regressão da montagem real.

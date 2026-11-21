@@ -126,8 +126,29 @@ Escolha de 1.200 × 800: qualidade igual no acadêmico; no acervo real o corte d
 **Cuidado de medição:** o Ollama reaproveita o cache de prompts idênticos; uma primeira leitura de "9,6 s" de
 geração era esse artefato. Todas as medições acima partem do LLM descarregado.
 
-**Pendente:** a F2 ainda envia os trechos inteiros aos especialistas; aplicar a compressão nela exige reavaliar as
-21 perguntas F2.
+### 7.3 A3 na F2 e resolução do A4 (2026-11-21)
+
+A compressão passou a valer também para os especialistas e o relator. O diagnóstico no acervo real (mesma pergunta
+de decisão, somente contagens) mostrou que **sem compressão a F2 estava quebrada**:
+
+| F2 real | Sem compressão | **Compressão 1.200** |
+|---|---|---|
+| Prompt de cada especialista | ≈ 25.400 caracteres (≈ 7.000 tokens + até 1.200 de saída > contexto de 8.192 → o Ollama corta o início do prompt) | ≈ 8.400 caracteres |
+| Chamadas com 2ª tentativa | 3 de 3 | 1 de 3 |
+| Afirmações dos especialistas removidas pelo verificador | **6 de 6** | **0 de 4** |
+| Fontes citadas na recomendação | **0** (achado A4) | **6–7** |
+| Tempo (2 perguntas) | 102 s / 69 s | 203 s / 246 s |
+
+A F2 "rápida" sem compressão era rápida porque o contexto estourava e quase nada útil era gerado. Com compressão,
+os pareceres saem completos e citados; o tempo (≈ 3,5–4 min) fica perto do limite do hardware (saída a ≈ 24
+tokens/s, especialistas atendidos um de cada vez pelo mesmo LLM). **A4 resolvido.**
+
+Validação acadêmica (6 perguntas F2, LLM local): erros 0, relator válido 1,00 e RF-20 1,00 nas duas; recall de
+documentos 0,722 → 0,639 e precisão 0,434 → 0,456 (≈ 1 documento em 6 perguntas — nível de ruído); p50 333 s → 303 s
+(trechos acadêmicos são curtos). Resultados em `avaliacao/execucoes/fase11_f2ctx/`.
+
+Observação de medição: `tokens_entrada` do relator subestima o prompt quando há 2ª tentativa (o Ollama só conta o que
+não veio do cache).
 
 Ordem recomendada: **medir o baseline real primeiro** (perguntas da equipe, §3–§5) e só então aplicar A1–A4, medindo o ganho contra esse baseline.
 
