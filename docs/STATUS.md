@@ -7,8 +7,8 @@
 | Atualizado em | 2026-11-20 |
 | Fase atual | **Fase 12 — implantação na rede interna (chat por texto e voz)** — em execução; aguarda DNS e certificado da STI |
 | Situação da fase | Acervo real indexado; A1 (tipos) e A3 (latência) aplicados; aguardando perguntas reais e conferência da amostra de tipos pela equipe |
-| Última tarefa concluída | Fase 12: fila de consultas com etapas, chat e voz local (Whisper small, 1,3 s/pergunta) na tela Perguntar, instalador do certificado e script de publicação (firewall só rede interna, início automático); 403 testes + fumaça HTTPS local. Ver `docs/fases/FASE_12.md` |
-| Próxima tarefa exata | (1) STI: DNS `sistemasad.sema.mt.gov.br` → <IP da estação> (IP fixo) e certificado (`docs/implantacao/PEDIDO_STI.md`) → `instalar_certificado.py` + `publicar_rede.ps1 -Acao publicar`; (2) testar voz real com os gestores; (3) equipe julga `avaliacao/real/revisao.csv` (rodada 4); (4) aprovar ADR-014 |
+| Última tarefa concluída | Publicado na LAN em `http://sad.sema.mt.gov.br:8000` (porta 80 bloqueada por exclusão do Windows; firewall só rede interna; tarefa de início no logon); testes: IP 200, nome 200, nome desconhecido 403. Antes: chat por texto e voz local, fila com etapas. Ver `docs/fases/FASE_12.md` §1.1 |
+| Próxima tarefa exata | (1) STI: DNS `sad.sema.mt.gov.br` → <IP da estação> (IP fixo) e certificado (`docs/implantacao/PEDIDO_STI.md`) → `instalar_certificado.py` + `publicar_rede.ps1 -Acao publicar`; (2) testar voz real com os gestores; (3) equipe julga `avaliacao/real/revisao.csv` (rodada 4); (4) aprovar ADR-014 |
 | Bloqueios | DNS e certificado da STI para o acesso pela rede; julgamento humano das respostas reais |
 
 ## Histórico de fases

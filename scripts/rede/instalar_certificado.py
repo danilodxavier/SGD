@@ -24,7 +24,7 @@ from cryptography.x509.oid import ExtensionOID, NameOID
 
 RAIZ = Path(__file__).resolve().parents[2]
 DESTINO = RAIZ / "ferramentas" / "certificados"
-NOME_PADRAO = "sistemasad.sema.mt.gov.br"
+NOME_PADRAO = "sad.sema.mt.gov.br"
 
 
 def nomes_do_certificado(cert: x509.Certificate) -> list[str]:

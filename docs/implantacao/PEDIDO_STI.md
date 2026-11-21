@@ -6,8 +6,8 @@ interna, com login e auditoria. Nenhum dado é enviado a serviços externos (LLM
 | # | Item | Detalhe |
 |---|---|---|
 | 1 | **IP fixo** para a estação | IP atual da placa Ethernet (informado à STI fora do repositório). Reserva DHCP ou IP estático |
-| 2 | **Registro DNS interno** | `sistemasad.sema.mt.gov.br` tipo A → IP do item 1 |
-| 3 | **Certificado TLS** do nome | Para `sistemasad.sema.mt.gov.br` (ou curinga `*.sema.mt.gov.br`), confiável nos navegadores da SEMA (autoridade interna distribuída por GPO ou certificado público). Formato **.pfx com senha** (ou .crt + .key + cadeia). Validade mínima de 1 ano |
+| 2 | **Registro DNS interno** | `sad.sema.mt.gov.br` tipo A → IP do item 1 |
+| 3 | **Certificado TLS** do nome | Para `sad.sema.mt.gov.br` (ou curinga `*.sema.mt.gov.br`), confiável nos navegadores da SEMA (autoridade interna distribuída por GPO ou certificado público). Formato **.pfx com senha** (ou .crt + .key + cadeia). Validade mínima de 1 ano |
 | 4 | **Liberação de rede** | Entrada TCP **443** na estação a partir das redes internas. O firewall do Windows da estação é configurado pelo script do sistema (somente faixas privadas) |
 | 5 | Política de energia (se gerida por GPO) | A estação não deve suspender/hibernar no horário de uso |
 

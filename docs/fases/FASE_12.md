@@ -1,6 +1,6 @@
 # Fase 12 — Implantação na rede interna (chat por texto e voz)
 
-> Aberta em 2026-11-21 a pedido do responsável: acesso pelo navegador em `https://sistemasad.sema.mt.gov.br`, servido
+> Aberta em 2026-11-21 a pedido do responsável: acesso pelo navegador em `https://sad.sema.mt.gov.br`, servido
 > por esta máquina, com perguntas por texto ou voz, para uso da alta gestão (alta assertividade, baixo tempo de
 > resposta).
 
@@ -12,6 +12,12 @@
 | Quem acessa | **Rede interna + login** (perfis do sistema; consultas auditadas) | Faixas privadas 10/8, 172.16/12, 192.168/16; nome de acesso conferido (`ALLOWED_HOSTS`) |
 | Tempo × precisão | **Precisão + tempo percebido** | Mantém a qualidade medida; fila com posição/etapa e parecer de hardware para reduzir o tempo real |
 | Voz | **Transcrição local** (faster-whisper, CPU) — ver [ADR-014](../adr/ADR-014-voz-local.md) | O reconhecimento do navegador envia o áudio a servidores externos; perguntas citam contratos reais |
+
+## 1.1 Ajuste de 2026-11-21 — endereço `sad.sema.mt.gov.br`, só na LAN
+
+O responsável pediu trocar `http://127.0.0.1:8000` por `http://sad.sema.mt.gov.br`, respondendo apenas na LAN. A porta 80 está numa faixa excluída do Windows desta estação (`netsh int ipv4 show excludedportrange`: 80–80, origem desconhecida) e o http.sys reserva `*:80`; decisão: **já em `http://sad.sema.mt.gov.br:8000`** (sem alterar o Windows) e, com o certificado, **`https://sad.sema.mt.gov.br`** (porta 443 livre no IP da LAN, com voz).
+
+Estado: servidor escutando só no IP da LAN, porta 8000; `ALLOWED_HOSTS` = nome + IP; firewall de entrada TCP 8000 só para faixas privadas (perfil Domínio); tarefa "SAD-GD" no logon. Testes: pelo IP 200, pelo nome 200, nome desconhecido 403, `127.0.0.1:8000` sem resposta. **Voz**: em http o navegador bloqueia o microfone nos outros computadores (e numa sessão remota depende do redirecionamento de áudio) — só com HTTPS. DNS do nome: pendente (STI).
 
 ## 2. Entregue
 
@@ -25,7 +31,7 @@
 
 ## 3. Pendências (dependem da STI)
 
-Ver [PEDIDO_STI.md](../implantacao/PEDIDO_STI.md): registro DNS `sistemasad.sema.mt.gov.br` → **IP da estação**
+Ver [PEDIDO_STI.md](../implantacao/PEDIDO_STI.md): registro DNS `sad.sema.mt.gov.br` → **IP da estação**
 com IP fixo (reserva DHCP) e certificado do nome. Com eles:
 
 ```powershell

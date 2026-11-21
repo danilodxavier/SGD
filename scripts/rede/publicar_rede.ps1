@@ -14,15 +14,18 @@
 #>
 param(
     [ValidateSet("status", "publicar", "remover")][string]$Acao = "status",
-    [string]$Nome = "sistemasad.sema.mt.gov.br",
-    [string]$IP = ""
+    [string]$Nome = "sad.sema.mt.gov.br",
+    [string]$IP = "",
+    [int]$Porta = 443,
+    [switch]$SemHttps   # provisorio (ex.: -Porta 8000 -SemHttps): sem certificado; voz so funciona com HTTPS
 )
 $ErrorActionPreference = "Stop"
 $Raiz = Resolve-Path (Join-Path $PSScriptRoot "..\..")
 $Env = Join-Path $Raiz ".env"
 $Cert = Join-Path $Raiz "ferramentas\certificados\sistemasad.crt"
 $Chave = Join-Path $Raiz "ferramentas\certificados\sistemasad.key"
-$Regra = "SAD-GD HTTPS (443)"
+$Regra = "SAD-GD ($Porta)"
+$RegraPrefixo = "SAD-GD ("
 $Tarefa = "SAD-GD"
 $Faixas = @("10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16")
 
@@ -62,8 +65,8 @@ function Show-Status {
         $dns = (Resolve-DnsName $Nome -Type A -ErrorAction Stop | Where-Object Type -eq "A").IPAddress -join ", "
         Write-Host "DNS: $Nome -> $dns (IP desta maquina: $(Get-IPRede))"
     } catch { Write-Host "DNS: $Nome ainda nao existe (pedir a STI: registro A -> $(Get-IPRede), com IP fixo)" }
-    $r = Get-NetFirewallRule -DisplayName $Regra -ErrorAction SilentlyContinue
-    Write-Host ("Firewall: " + $(if ($r) { "regra '$Regra' ativa=$($r.Enabled)" } else { "sem regra" }))
+    $r = Get-NetFirewallRule -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -like "$RegraPrefixo*" }
+    Write-Host ("Firewall: " + $(if ($r) { ($r | ForEach-Object { "regra '$($_.DisplayName)' ativa=$($_.Enabled)" }) -join "; " } else { "sem regra" }))
     $t = Get-ScheduledTask -TaskName $Tarefa -ErrorAction SilentlyContinue
     Write-Host ("Inicio automatico: " + $(if ($t) { "tarefa '$Tarefa' ($($t.State))" } else { "sem tarefa" }))
     $porta = [int]$(if (Get-ChaveEnv 'APP_PORT') { Get-ChaveEnv 'APP_PORT' } else { 8000 })
@@ -83,39 +86,46 @@ switch ($Acao) {
     "status" { Show-Status; exit 0 }
     "publicar" {
         if (-not (Test-Admin)) { throw "Execute o PowerShell como Administrador (firewall e tarefa de inicio)." }
-        if (-not ((Test-Path $Cert) -and (Test-Path $Chave))) {
-            throw "Certificado ausente. Instale antes: .venv\Scripts\python.exe scripts\rede\instalar_certificado.py --pfx <arquivo>"
+        if (-not $SemHttps) {
+            if (-not ((Test-Path $Cert) -and (Test-Path $Chave))) {
+                throw "Certificado ausente. Instale antes: .venv\Scripts\python.exe scripts\rede\instalar_certificado.py --pfx <arquivo>"
+            }
+            & (Join-Path $Raiz ".venv\Scripts\python.exe") (Join-Path $Raiz "scripts\rede\instalar_certificado.py") --verificar --nome $Nome
+            if ($LASTEXITCODE -ne 0) { throw "Certificado invalido para $Nome." }
         }
-        & (Join-Path $Raiz ".venv\Scripts\python.exe") (Join-Path $Raiz "scripts\rede\instalar_certificado.py") --verificar --nome $Nome
-        if ($LASTEXITCODE -ne 0) { throw "Certificado invalido para $Nome." }
         if (-not $IP) { $IP = Get-IPRede }
         Backup-Env
-        Set-ChaveEnv "APP_HOST" $IP          # IP especifico: a porta 443 de outro adaptador esta ocupada
-        Set-ChaveEnv "APP_PORT" "443"
+        Set-ChaveEnv "APP_HOST" $IP          # IP especifico da LAN: nao escuta no adaptador "Topaz Loopback"
+        Set-ChaveEnv "APP_PORT" "$Porta"
         Set-ChaveEnv "ALLOWED_HOSTS" "$Nome,$IP"
         Set-ChaveEnv "ALLOWED_CLIENTS" ("127.0.0.1/32,::1/128," + ($Faixas -join ","))
-        Set-ChaveEnv "SSL_CERTFILE" $Cert
-        Set-ChaveEnv "SSL_KEYFILE" $Chave
-        Write-Host "[OK] .env configurado para https://$Nome (escuta em ${IP}:443)"
-        Get-NetFirewallRule -DisplayName $Regra -ErrorAction SilentlyContinue | Remove-NetFirewallRule
-        New-NetFirewallRule -DisplayName $Regra -Direction Inbound -Protocol TCP -LocalPort 443 -LocalAddress $IP `
+        $esquema = if ($SemHttps) { "http" } else { "https" }
+        Set-ChaveEnv "SSL_CERTFILE" $(if ($SemHttps) { "" } else { $Cert })
+        Set-ChaveEnv "SSL_KEYFILE" $(if ($SemHttps) { "" } else { $Chave })
+        $sufixo = if (($SemHttps -and $Porta -eq 80) -or (-not $SemHttps -and $Porta -eq 443)) { "" } else { ":$Porta" }
+        Write-Host "[OK] .env configurado para ${esquema}://$Nome$sufixo (escuta em ${IP}:$Porta)"
+        if ($SemHttps) { Write-Host "[AVISO] Sem HTTPS o navegador bloqueia o microfone nos outros computadores (voz so com certificado)." }
+        Get-NetFirewallRule -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -like "$RegraPrefixo*" } | Remove-NetFirewallRule
+        New-NetFirewallRule -DisplayName $Regra -Direction Inbound -Protocol TCP -LocalPort $Porta -LocalAddress $IP `
             -RemoteAddress $Faixas -Action Allow -Profile Domain, Private | Out-Null
-        Write-Host "[OK] Firewall: entrada TCP 443 liberada apenas para a rede interna ($($Faixas -join ', '))"
-        $acao = New-ScheduledTaskAction -Execute (Join-Path $Raiz "scripts\rede\iniciar_rede.bat") -WorkingDirectory $Raiz
+        Write-Host "[OK] Firewall: entrada TCP $Porta liberada apenas para a rede interna ($($Faixas -join ', '))"
+        $acaoTarefa = New-ScheduledTaskAction -Execute (Join-Path $Raiz "scripts\rede\iniciar_rede.bat") -WorkingDirectory $Raiz
         $gatilho = New-ScheduledTaskTrigger -AtLogOn -User "$env:USERDOMAIN\$env:USERNAME"
         $config = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries `
             -ExecutionTimeLimit ([TimeSpan]::Zero) -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1)
-        Register-ScheduledTask -TaskName $Tarefa -Action $acao -Trigger $gatilho -Settings $config -Force `
-            -Description "SAD-GD: Ollama + servidor HTTPS na rede interna" | Out-Null
+        Register-ScheduledTask -TaskName $Tarefa -Action $acaoTarefa -Trigger $gatilho -Settings $config -Force `
+            -Description "SAD-GD: Ollama + servidor na rede interna" | Out-Null
         Write-Host "[OK] Inicio automatico: tarefa '$Tarefa' no logon de $env:USERNAME"
-        Write-Host "Proximo passo: reinicie o servidor (stop.bat e scripts\rede\iniciar_rede.bat) e teste https://$Nome"
+        Write-Host "Proximo passo: reinicie o servidor (stop.bat e scripts\rede\iniciar_rede.bat) e teste ${esquema}://$Nome$sufixo"
     }
     "remover" {
         if (-not (Test-Admin)) { throw "Execute o PowerShell como Administrador." }
         Backup-Env
         Set-ChaveEnv "APP_HOST" "127.0.0.1"
         Set-ChaveEnv "APP_PORT" "8000"
-        Get-NetFirewallRule -DisplayName $Regra -ErrorAction SilentlyContinue | Remove-NetFirewallRule
+        Get-NetFirewallRule -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -like "$RegraPrefixo*" } | Remove-NetFirewallRule
+        Set-ChaveEnv "SSL_CERTFILE" ""
+        Set-ChaveEnv "SSL_KEYFILE" ""
         Unregister-ScheduledTask -TaskName $Tarefa -Confirm:$false -ErrorAction SilentlyContinue
         Write-Host "[OK] Voltou ao uso local (http://127.0.0.1:8000); regra de firewall e tarefa removidas."
     }
