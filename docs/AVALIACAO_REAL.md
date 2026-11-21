@@ -67,3 +67,17 @@ julgue se a recomendação é coerente com os documentos e se alternativas, risc
 | Data | Documentos indexados | Perguntas | Resultado | Observações |
 |---|---|---|---|---|
 | 2026-11-18 | 1º ciclo: 112 arquivos, 571 trechos, 0 falhas (24% com OCR) | — | — | Indexação completa estimada em ≈ 7 h |
+| 2026-11-18/20 | **6.011 documentos**, 51.510 trechos e vetores (8,6 h); 1.101 com OCR; 2 corrompidos, 8 sem texto, 1 digitalizado sem OCR útil | — | Grafo: 4.131 grupos, só 21 com 2+ documentos; 13 processos de contrato; 3.330 relações; 0 contradições | 2 defeitos corrigidos (`022a053`): data ausente e chave de grupo duplicada |
+| 2026-11-20 | Fumaça (4 perguntas sem conteúdo real na saída) | 4 | Ausência → recusa correta; F1 com 4 fontes; F2 local, válida, 6 elementos — **mas 0 trechos citados** | F1 aquecida ≈ 30 s (rerank 18–27 s) |
+
+## 7. Achados estruturais (somente contagens)
+
+| # | Achado | Evidência agregada | Impacto | Proposta |
+|---|---|---|---|---|
+| A1 | **Classificação de tipo inadequada ao acervo real** | 5.307 de 6.011 (88%) como `outro`; entre eles, pistas no nome/início do texto: pagamento/liquidação 769/999, fiscalização 559/988, empenho 482/893, relatório 346/381, certidão 265/370, nota fiscal 182/519, apostilamento 116/111; "contrato" no início do texto de 1.994 | Linha do tempo, vigência e agrupamento quase não funcionam; a busca de trechos (F1) não depende disso | Novos tipos (nota de empenho, nota fiscal, certidão, processo de pagamento, atesto/relatório de fiscalização, portaria de fiscal) e uso do nome do arquivo; medir em amostra rotulada pela equipe |
+| A2 | **Processos não reconstruídos** | 13 processos de contrato para 402 contratos e 181 aditivos; 21 grupos com 2+ documentos | Tela Linha do tempo pouco útil no acervo real | Usar a hierarquia de pastas (24 pastas de 1º nível, mediana 72 documentos; 165 de 2º nível) como sinal de processo — **depende de a equipe confirmar o que cada nível representa** |
+| A3 | **Latência da F1 ≈ 30 s** (acadêmico 14,6 s) | Rerank 18–27 s: trechos reais com mediana de 2.374 caracteres (no limite de 2.400) porque PDFs reais não têm estrutura de artigos | Experiência de uso | Reranquear 12 em vez de 24 e/ou trechos menores para texto sem estrutura — decidir com o baseline real |
+| A4 | **F2 sem trecho citado** na fumaça | 1 de 1 recomendação com `fontes=0` | Recomendação sem lastro documental | Conferir no julgamento humano; se recorrente, exigir citação mínima no relator |
+
+Ordem recomendada: **medir o baseline real primeiro** (perguntas da equipe, §3–§5) e só então aplicar A1–A4, medindo o ganho contra esse baseline.
+

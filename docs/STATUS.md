@@ -4,11 +4,11 @@
 
 | Campo | Valor |
 |---|---|
-| Atualizado em | 2026-11-18 |
+| Atualizado em | 2026-11-20 |
 | Fase atual | Projeto encerrado (Fase 11 aprovada) · **Pós-entrega: avaliação com documentos reais** |
-| Situação da fase | Indexação do acervo real em andamento (processo independente; `data\logs\indexacao_real_pid.txt`) |
-| Última tarefa concluída | Índice de teste e decisões fictícias excluídos (backup `BACKUP\backup_20261118_095229.zip`); `.env` protegido (sem nuvem, origem real, sem indexação automática); raiz = compartilhamento da STI (6.010 arquivos suportados); 1º ciclo: 112 arquivos sem falhas; `avaliar_real.py` + `docs/AVALIACAO_REAL.md` |
-| Próxima tarefa exata | (1) acompanhar a indexação até o fim (contagem em `documentos`; se o processo cair, relançar `scripts\sadgd\indexar.py` — retoma); (2) `construir_grafo.py`; (3) a equipe preenche `avaliacao\real\perguntas.csv`; (4) `avaliar_real.py executar` → `revisao` (julgamento humano) → `resumo`; (5) registrar os números em `docs/AVALIACAO_REAL.md` §6 |
+| Situação da fase | Acervo real indexado (6.011 documentos, 51.510 trechos) e grafo construído; aguardando perguntas reais da equipe |
+| Última tarefa concluída | Indexação completa do acervo real; 2 defeitos do grafo corrigidos (`022a053`); fumaça no pipeline real; diagnóstico agregado com 4 achados (A1–A4 em `docs/AVALIACAO_REAL.md` §7) |
+| Próxima tarefa exata | (1) a equipe preenche `avaliacaoeal\perguntas.csv` (mín. 50); (2) `avaliar_real.py executar --max-minutos 30` → `revisao` (julgamento) → `resumo` = baseline real; (3) aplicar A1–A4 conforme decisão do responsável e medir contra o baseline |
 | Bloqueios | Perguntas reais e julgamento dependem da equipe (o agente não lê conteúdo real) |
 
 ## Histórico de fases
