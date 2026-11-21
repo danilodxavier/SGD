@@ -107,6 +107,23 @@ Mesmas 21 perguntas F2; especialistas e relator em `gemini-3.5-flash-lite` (cont
 
 Leitura: a F2 em nuvem **atinge a meta de p95 ≤ 120 s** (3,9× mais rápida no p95) com qualidade igual ou maior nos critérios estruturais e de recuperação. A queda do relator na v1 era de **forma**, não de conteúdo: o prompt citava `"consensos"` sem formato ao lado de `divergencias` em `{tema, posicoes}` e o Gemini repetia esse formato; correção = instrução explícita + reparo determinístico que preserva o conteúdo (teste de regressão em `test_orquestrador.py`). Ressalvas: a latência em nuvem varia com a demanda (503 "high demand") e a cota por minuto do plano gratuito (429); a menor média de base legal citada pelo modelo é coberta pelo complemento determinístico do RF-20. **Somente corpus acadêmico** — dados reais continuam no LLM local (ADR-002).
 
+### Compressão do contexto na F2 — conjunto de TESTE (15 F2; `avaliacao/execucoes/fase11_f2ctx/`)
+
+Qwen 2.5 7B local nas duas execuções; banco acadêmico separado; única diferença relevante: `SADGD_CONTEXTO_MAX_CHARS=1200`
+nos especialistas e no relator (reranker na GPU desde a Fase 11).
+
+| Execução (teste, 15) | Erros | Schema pareceres reparado | Relator válido | RF-20 presentes / com conteúdo | Afirmações removidas/consulta | Recall docs | Precisão docs | Base legal (média) | Confiança | p50 / p95 | Tokens (entr./saída) |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| Fase 8 (sem compressão) | 0 | 1,00 | 1,00 | 1,00 / 0,667 | 0,27 | 0,822 | 0,466 | 1,73 | 0,62 | 334 s / 393 s | 18.894 / 2.648 |
+| **Compressão 1.200** | 0 | 1,00 | 1,00 | 1,00 / 0,667 | 0,40 | **0,822** | 0,439 | 1,53 | 0,65 | **288 s** / 396 s | 17.492 / 2.734 |
+
+Leitura: no teste, a compressão **não reduz o recall de documentos** (0,822 nas duas) e mantém schema, relator e RF-20
+inalterados; a queda de recall vista na validação (0,722 → 0,639, 6 perguntas) não se confirmou e era ruído de amostra
+pequena. Custos: precisão de documentos −0,027, base legal citada −0,2 por consulta (coberta pelo complemento
+determinístico do RF-20) e +0,13 afirmação removida pelo verificador por consulta. Ganho: p50 −14% e −7% de tokens de
+entrada. O benefício decisivo está no acervo real, onde os trechos longos estouravam o contexto (ver
+`docs/AVALIACAO_REAL.md` §7.3). **A compressão 1.200 fica como padrão na F1 e na F2.**
+
 ### Fase 9 — MVP (testes de aceitação)
 
 | Critério | Evidência | Resultado |
@@ -154,6 +171,7 @@ Leitura: a F2 em nuvem **atinge a meta de p95 ≤ 120 s** (3,9× mais rápida no
 | 2026-11-17 | fase10_cache | golden set | Limiar do cache semântico | maior par diferente 0,883 → limiar 0,93 |
 | 2026-11-17 | fase10_fidelidade | validação (calibração) + teste | LLM-juiz Llama 3.1 8B | κ 0,71; faithfulness 0,964 adjudicada; alucinação 5,4% |
 | 2026-11-17 | fase11 (F2 Gemini v1) | validação + teste (21) | Especialistas e relator no Gemini 3.5 Flash-Lite | schema relator 0,333 (`consensos` em objeto); p95 213 s |
+| 2026-11-21 | fase11_f2ctx | teste (15 F2) | Compressão 1.200 na F2 × Fase 8 | Recall docs 0,822 = 0,822; RF-20 1,00; relator 1,00; p50 334 → 288 s; precisão docs 0,466 → 0,439 |
 | 2026-11-21 | fase11_f2ctx | validação (6 F2) | Compressão 1.200 na F2 | RF-20 1,00 nas duas; recall docs 0,722 → 0,639; p50 333 → 303 s. Acervo real: 0 → 6–7 fontes citadas (contexto deixou de estourar) |
 | 2026-11-20 | fase11_ctx0/1200/800 | validação (47 F1) | Compressão do contexto por trecho (A3) | exatidão 0,923 nas três; p50 14,9 / 9,5 / 11,6 s; 1.200 adotado |
 | 2026-11-20 | acervo real (latência) | 4 perguntas | Reranker na GPU + compressão 1.200 | F1 60,5 s → 17,3 s; ranking idêntico com reranker na GPU |

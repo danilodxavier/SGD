@@ -7,8 +7,8 @@
 | Atualizado em | 2026-11-20 |
 | Fase atual | Projeto encerrado (Fase 11 aprovada) · **Pós-entrega: avaliação com documentos reais** |
 | Situação da fase | Acervo real indexado; A1 (tipos) e A3 (latência) aplicados; aguardando perguntas reais e conferência da amostra de tipos pela equipe |
-| Última tarefa concluída | Compressão do contexto também na **F2**: no acervo real, prompts deixaram de estourar o contexto e a recomendação passou de 0 para 6–7 fontes citadas (**A4 resolvido**); F2 real ≈ 3,5–4 min. Antes: A1 (tipos) e A3 (F1 60,5 s → 17,3 s). Ver `docs/AVALIACAO_REAL.md` §7.1–7.3 |
-| Próxima tarefa exata | (1) equipe confere `avaliacao/real/amostra_tipos.csv` → `avaliar_real.py medir-tipos`; (2) equipe preenche `avaliacao/real/perguntas.csv` → `executar` → `revisao` → `resumo` (baseline real); (3) opcional: rodar as 15 F2 do teste com compressão para o relatório; (4) A2 depende de a equipe explicar os níveis de pasta |
+| Última tarefa concluída | F2 com compressão no **conjunto de teste** (15): recall de documentos 0,822 = Fase 8, RF-20/relator 1,00, p50 334 → 288 s (`docs/AVALIACAO.md`). Antes: compressão na F2 resolveu o A4 no acervo real (0 → 6–7 fontes); A1 (tipos) e A3 (F1 60,5 s → 17,3 s). Ver `docs/AVALIACAO_REAL.md` §7.1–7.3 |
+| Próxima tarefa exata | (1) equipe confere `avaliacao/real/amostra_tipos.csv` → `avaliar_real.py medir-tipos`; (2) equipe preenche `avaliacao/real/perguntas.csv` → `executar` → `revisao` → `resumo` (baseline real); (3) A2 depende de a equipe explicar os níveis de pasta |
 | Bloqueios | Perguntas reais e julgamento dependem da equipe (o agente não lê conteúdo real) |
 
 ## Histórico de fases

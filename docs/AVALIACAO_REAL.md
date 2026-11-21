@@ -147,6 +147,10 @@ Validação acadêmica (6 perguntas F2, LLM local): erros 0, relator válido 1,0
 documentos 0,722 → 0,639 e precisão 0,434 → 0,456 (≈ 1 documento em 6 perguntas — nível de ruído); p50 333 s → 303 s
 (trechos acadêmicos são curtos). Resultados em `avaliacao/execucoes/fase11_f2ctx/`.
 
+Conjunto de teste acadêmico (15 F2, comparado com a Fase 8): recall de documentos 0,822 nas duas, RF-20 e relator
+1,00 nas duas, precisão 0,466 → 0,439, p50 334 s → 288 s — a queda de recall da validação era ruído de amostra
+pequena (ver `docs/AVALIACAO.md`).
+
 Observação de medição: `tokens_entrada` do relator subestima o prompt quando há 2ª tentativa (o Ollama só conta o que
 não veio do cache).
 
