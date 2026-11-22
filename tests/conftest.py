@@ -1,8 +1,13 @@
+import os
+
 import pytest
 
 from app.core import database
 from app.core.config import settings
 from tests import sample_docs
+
+# a indexação dos testes não atualiza as fichas (chamaria o LLM local); teste próprio em test_api_acervo
+os.environ["SADGD_FICHAS_APOS_INDEXAR"] = "false"
 
 
 @pytest.fixture()

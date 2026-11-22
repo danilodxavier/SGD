@@ -7,8 +7,8 @@
 | Atualizado em | 2026-11-20 |
 | Fase atual | **Fase 12 — implantação na rede interna (chat por texto e voz)** — em execução; aguarda DNS e certificado da STI |
 | Situação da fase | Acervo real indexado; A1 (tipos) e A3 (latência) aplicados; aguardando perguntas reais e conferência da amostra de tipos pela equipe |
-| Última tarefa concluída | Rodada 7: 2ª passada das fichas (campos reais 104 → 170; vigência e valor atuais pelo aditivo) e regras de precisão (conferência contra o golden: 71 respostas rápidas, todas corretas); real: mediana F1 89 → 47 s, 4/11 em ≤ 1,6 s, recusas 2 → 1. Ver `docs/fases/FASE_12.md` §8 |
-| Próxima tarefa exata | (1) equipe julga `avaliacao/real/revisao.csv` (rodada 6) e confere `amostra_tipos.csv` (as listas das fichas dependem dos tipos); (2) agendar `gerar_fichas.py` após indexações; (3) melhorar extração de vigência/fiscal (7/19); (4) STI: DNS + certificado; (5) perguntas abertas < 10 s exigem GPU com tensor cores (decisão da gestão) |
+| Última tarefa concluída | Fichas atualizadas automaticamente ao fim de cada indexação (≈ 3,6 s sem contrato novo). Antes: rodada 7 (2ª passada, regras de precisão; mediana F1 real 89 → 47 s). GPU: troca não é possível agora. Ver `docs/fases/FASE_12.md` §8–§9 |
+| Próxima tarefa exata | (1) equipe julga `avaliacao/real/revisao.csv` (rodada 7) e confere `amostra_tipos.csv`; (2) ampliar o que a ficha responde (ex.: notificações/ocorrências por ano com verificação no texto) e reduzir texto por pergunta aberta com base no julgamento; (3) STI: DNS + certificado |
 | Bloqueios | DNS e certificado da STI para o acesso pela rede; julgamento humano das respostas reais |
 
 ## Histórico de fases

@@ -105,3 +105,26 @@ def test_gestor_registra_decisao_e_consulta_nao(db, monkeypatch):
         RepositorioDecisoesSqlite(lambda: conectar(settings.database_path)), EmbedderFalso(), RerankerFalso()))
     with logged_client("gestora.teste", "gestor") as c:
         assert c.post("/api/sadgd/decisoes", json=DECISAO, headers=HEADERS).status_code == 201
+
+
+def test_indexacao_atualiza_as_fichas_ao_final_e_falha_nas_fichas_nao_invalida(db, tmp_path, monkeypatch):
+    from app.infrastructure import fichas_servico
+
+    raiz = tmp_path / "corpus"
+    (raiz / "sintetico").mkdir(parents=True)
+    (raiz / "sintetico" / "contrato.txt").write_text("CONTRATO Nº 012/2023\nObjeto: limpeza.\n", encoding="utf-8")
+    chamadas = []
+    monkeypatch.setattr(fichas_servico, "atualizar_fichas", lambda fabrica=None: chamadas.append(1) or {"ok": 1})
+    servico = ServicoIndexacao(raiz, com_embeddings=False, atualizar_fichas=True)
+    servico.iniciar(None)
+    estado = servico.aguardar(60)
+    assert estado["erro"] is None and estado["fichas"] == {"ok": 1} and chamadas == [1]
+
+    def quebra(fabrica=None):
+        raise RuntimeError("LLM fora do ar")
+
+    monkeypatch.setattr(fichas_servico, "atualizar_fichas", quebra)
+    servico.iniciar(None)
+    estado = servico.aguardar(60)
+    assert estado["erro"] is None and estado["etapa"] == "concluída" and "RuntimeError" in estado["fichas"]["erro"]
+    assert ServicoIndexacao(raiz, com_embeddings=False).atualizar_fichas is False  # testes: desligado pelo ambiente

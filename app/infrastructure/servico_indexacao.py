@@ -5,6 +5,7 @@ grafo documental (relações, processos, vigência; decisões religadas pela cha
 indexados em modo PARCIAL (nada fora deles é considerado removido). O estado fica em memória para a interface e
 cada execução é registrada na tabela `indexacoes`."""
 import logging
+import os
 import threading
 import time
 from datetime import datetime
@@ -16,14 +17,17 @@ log = logging.getLogger(__name__)
 
 
 class ServicoIndexacao:
-    def __init__(self, raiz=None, *, com_embeddings=True, fabrica=None):
+    def __init__(self, raiz=None, *, com_embeddings=True, fabrica=None, atualizar_fichas=None):
         self._raiz = raiz
         self.com_embeddings = com_embeddings
+        # padrão: SADGD_FICHAS_APOS_INDEXAR (true); testes desligam para não chamar o LLM
+        self.atualizar_fichas = (os.environ.get("SADGD_FICHAS_APOS_INDEXAR", "true").lower() in ("1", "true", "sim")
+                                 if atualizar_fichas is None else atualizar_fichas)
         self._fabrica = fabrica
         self._trava = threading.Lock()
         self._thread = None
         self.estado = {"executando": False, "etapa": None, "arquivos": [], "resumo": None, "grafo": None,
-                       "erro": None, "inicio": None, "fim": None}
+                       "fichas": None, "erro": None, "inicio": None, "fim": None}
 
     @property
     def raiz(self) -> Path:
@@ -43,7 +47,8 @@ class ServicoIndexacao:
             if self.estado["executando"]:
                 return False
             self.estado.update(executando=True, etapa="preparando", arquivos=list(relativos or []), resumo=None,
-                               grafo=None, erro=None, inicio=datetime.now().isoformat(timespec="seconds"), fim=None)
+                               grafo=None, fichas=None, erro=None,
+                               inicio=datetime.now().isoformat(timespec="seconds"), fim=None)
             self._thread = threading.Thread(target=self._executar, args=(relativos,), daemon=True,
                                             name="sadgd-indexacao")
             self._thread.start()
@@ -89,6 +94,8 @@ class ServicoIndexacao:
 
             self.estado["grafo"] = construir_grafo(RepositorioGrafoSqlite(
                 self._fabrica or (lambda: conectar(settings.database_path, vetores=False))))
+            self.estado["etapa"] = "atualizando as fichas dos contratos"
+            self.estado["fichas"] = self._atualizar_fichas()
             self.estado["etapa"] = "concluída"
         except Exception as exc:  # noqa: BLE001 - registrado e exibido na interface
             log.exception("Falha na indexação do SAD-GD")
@@ -96,6 +103,19 @@ class ServicoIndexacao:
         finally:
             self.estado.update(executando=False, fim=datetime.now().isoformat(timespec="seconds"),
                                segundos=round(time.perf_counter() - t0, 1))
+
+
+    def _atualizar_fichas(self) -> dict:
+        """Fichas de contrato (ADR-015) refletem o acervo recém-indexado; falha não invalida a indexação."""
+        if not self.atualizar_fichas:
+            return {"pulada": "desativada"}
+        try:
+            from app.infrastructure.fichas_servico import atualizar_fichas
+
+            return atualizar_fichas(self._fabrica)
+        except Exception as exc:  # noqa: BLE001 - indexação continua válida; fichas na próxima execução
+            log.exception("Falha ao atualizar as fichas dos contratos")
+            return {"erro": f"{type(exc).__name__}: {exc}"[:300]}
 
 
 servico = ServicoIndexacao()

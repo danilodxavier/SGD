@@ -155,3 +155,14 @@ rápida errada.
 recusas 2 → 1 (R12, provável ausência real); R03 e R10 passaram a ser respondidas. Pergunta transversal sem
 ocorrência no ano (R08) e ausência com o assunto citado no texto da pasta (R12) agora vão ao caminho completo
 (46–89 s) — troca deliberada de tempo por segurança.
+
+## 9. Fichas sempre atualizadas e decisão sobre a GPU (2026-11-21)
+
+- **Atualização automática**: ao fim de cada indexação — upload/atualização pela tela Acervo (serviço do servidor,
+  etapa "atualizando as fichas dos contratos", resultado em `estado.fichas`) e `scripts/sadgd/indexar.py` (exceto
+  `--sem-fichas` ou execução interrompida por `--max-minutos`, que atualiza no ciclo final). Inventário sempre
+  refeito; LLM local só para contratos novos ou fichas sem a 2ª passada. Sem contrato novo: ≈ 3,6 s. Falha nas
+  fichas não invalida a indexação (registrada; nova tentativa na próxima). Chave: `SADGD_FICHAS_APOS_INDEXAR`.
+- **GPU**: o responsável informou que a troca da placa **não é possível agora**. Perguntas abertas e de decisão
+  seguem limitadas pelo hardware (abertas ≈ 45–90 s; decisão ≈ 3–4 min); a estratégia passa a ser ampliar o que é
+  preparado antes (fichas) e reduzir texto por pergunta sem perder acerto.

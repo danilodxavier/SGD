@@ -22,6 +22,8 @@ def main(argv=None):
     p.add_argument("--cpu", action="store_true", help="gera embeddings na CPU")
     p.add_argument("--max-minutos", type=float, default=None,
                    help="encerra de forma limpa após N minutos; a próxima execução continua de onde parou")
+    p.add_argument("--sem-fichas", action="store_true",
+                   help="não atualiza as fichas dos contratos ao final (ADR-015; padrão: atualiza)")
     a = p.parse_args(argv)
 
     from app.application.ingestao.indexador import IndexarCorpus
@@ -63,8 +65,19 @@ def main(argv=None):
     for arquivo, motivo in r.falhas:
         print(f"  [FALHA] {arquivo}: {motivo}")
     if r.interrompido:
-        print("[PARCIAL] Limite de tempo atingido; execute novamente para continuar.")
+        print("[PARCIAL] Limite de tempo atingido; execute novamente para continuar (fichas ao final).")
         return 3
+    if not a.sem_fichas:
+        from app.infrastructure.fichas_servico import atualizar_fichas
+
+        print("Atualizando as fichas dos contratos ...")
+        try:
+            f = atualizar_fichas()
+            p1, p2 = f.get("primeira_passada", {}), f.get("segunda_passada", {})
+            print(f"Fichas: contratos={p1.get('contratos')} novas={p1.get('extraidas')} "
+                  f"complementadas={p2.get('complementadas')} {f.get('pulada', '')}".rstrip())
+        except Exception as exc:  # noqa: BLE001 - a indexação vale; fichas na próxima execução
+            print(f"[AVISO] Fichas não atualizadas ({type(exc).__name__}); rode scripts/sadgd/gerar_fichas.py")
     return 0 if not r.falhas else 2
 
 
