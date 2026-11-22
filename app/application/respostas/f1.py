@@ -8,7 +8,7 @@ Salvaguardas determinísticas (independentes do modelo):
 """
 import json
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from functools import cache
 from pathlib import Path
 from typing import Protocol
@@ -104,7 +104,9 @@ def schema_f1() -> dict:
 
 
 def _frases(texto: str) -> list[str]:
-    return [f.strip() for f in re.split(r"(?<=[.!?])\s+(?=[A-ZÁÉÍÓÚÂÊÔÃÕÇ\[])", texto.strip()) if f.strip()]
+    """Frases por pontuação e por linha (itens "- " dos detalhes são frases distintas, como no verificador)."""
+    return [f.strip() for linha in texto.strip().splitlines()
+            for f in re.split(r"(?<=[.!?])\s+(?=[A-ZÁÉÍÓÚÂÊÔÃÕÇ\[])", linha.strip()) if f.strip()]
 
 
 PALAVRAS_VAZIAS = {"qual", "quais", "quando", "como", "onde", "para", "pela", "pelo", "pelos", "pelas", "sobre",
@@ -184,6 +186,27 @@ def _com_detalhes(resposta: str, detalhes, rotulos_validos=None) -> str:
 def _norm_frase(texto: str) -> str:
     """Frase sem citações, pontuação e caixa — para reconhecer o mesmo fato escrito duas vezes."""
     return " ".join(re.sub(r"\[?T\d+\]?|[^\w\s]", " ", texto.lower()).split())
+
+
+def _sem_detalhes_reprovados(resposta, reprovadas):
+    """Se o verificador só reprovou frases dos detalhes (não a resposta direta), devolve a resposta sem elas; senão
+    None (a resposta direta errada merece a nova tentativa com o LLM)."""
+    direta = [f.strip() for f in _frases(str((resposta.bruto or {}).get("resposta") or "")) if f.strip()]
+    reprovadas = [r.strip() for r in reprovadas if r.strip()]
+    if not direta or not reprovadas:
+        return None
+    if any(d in r.lstrip("- ") or r.lstrip("- ") in d for r in reprovadas for d in direta):
+        return None
+    restantes = [f for f in _frases(resposta.resposta) if f.strip() and f.strip() not in reprovadas]
+    if not restantes:
+        return None
+    corpo = " ".join(f for f in restantes if not f.startswith("- "))
+    itens = [f for f in restantes if f.startswith("- ")]
+    texto = corpo + ("\n" + "\n".join(itens) if itens else "")
+    citados = {f"T{n}" for n in RE_CITACAO.findall(texto)}
+    fontes = [t for t in resposta.fontes if t.rotulo in citados] or resposta.fontes
+    return replace(resposta, resposta=texto, fontes=fontes, confianca=min(resposta.confianca, 0.8),
+                   observacoes=resposta.observacoes + ["verificador_detalhes_removidos"])
 
 
 def _parecidas(a: str, b: str, limiar: float = 0.6) -> bool:
@@ -281,6 +304,9 @@ class ResponderF1:
         v = self.verificador(resposta.resposta, resposta.fontes, pergunta)
         if v.aprovada:
             return resposta
+        enxuta = _sem_detalhes_reprovados(resposta, v.frases_reprovadas)
+        if enxuta is not None:  # só detalhes reprovados: remove-os sem nova chamada ao LLM (≈ 26 s a menos)
+            return enxuta
         problemas = "; ".join(f"{p.detalhe} (frase: \"{p.frase}\")" for p in v.problemas)
         correcao = mensagens + [
             {"role": "assistant", "content": json.dumps(resposta.bruto or {}, ensure_ascii=False)},

@@ -287,3 +287,18 @@ def test_detalhes_sem_citacao_ou_repetidos_sao_descartados():
                            "Vigência de 12 meses.", "Pagamento mensal [T999].", "a vigência é de 12 meses [t12]"],
                           {"T11", "T12"})
     assert texto == "O valor global é R$ 1.200.000,00 [T11]. A vigência é de 12 meses [T12]."
+
+
+def test_detalhe_reprovado_sai_sem_nova_chamada_e_resposta_direta_reprovada_ganha_nova_tentativa():
+    from app.application.agentes.verificador import verificar
+
+    detalhe_ruim = {**saida(), "detalhes": ["A vigência é de 12 meses [T12].", "O valor mensal é R$ 9.999,00 [T11]."]}
+    llm = LLMLeituras(detalhe_ruim)
+    r = ResponderF1(llm, verificador=verificar).responder("Qual o valor global?", TRECHOS)
+    assert len(llm.todas) == 1 and "verificador_detalhes_removidos" in r.observacoes
+    assert "9.999" not in r.resposta and "12 meses [T12]" in r.resposta and "R$ 1.200.000,00 [T11]" in r.resposta
+
+    direta_ruim = saida(resposta="O valor global é R$ 7.000,00 [T11].")
+    llm2 = LLMLeituras(direta_ruim, saida())
+    r2 = ResponderF1(llm2, verificador=verificar).responder("Qual o valor global?", TRECHOS)
+    assert len(llm2.todas) == 2 and "verificador_nova_tentativa" in r2.observacoes and "1.200.000,00" in r2.resposta

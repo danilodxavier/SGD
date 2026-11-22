@@ -15,6 +15,11 @@ def db(tmp_path, monkeypatch):
     monkeypatch.setattr(settings, "database_path", tmp_path / "test.db")
     monkeypatch.setattr(settings, "data_dir", tmp_path / "data")  # relatórios e cache fora do projeto
     monkeypatch.setattr(settings, "ocr_enabled", False)  # testes de OCR o ativam explicitamente
+    # independente do .env da máquina (publicada na LAN, ex.: APP_HOST = IP da rede): testes rodam em modo local
+    monkeypatch.setattr(settings, "app_host", "127.0.0.1")
+    monkeypatch.setattr(settings, "allowed_hosts", [])
+    monkeypatch.setattr(settings, "ssl_certfile", "")
+    monkeypatch.setattr(settings, "ssl_keyfile", "")
     monkeypatch.setattr(settings, "ai_provider", "local")  # testes de IA usam um servidor simulado
     monkeypatch.setattr(settings, "ai_allow_remote", False)
     database.init_db()
