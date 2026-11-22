@@ -35,16 +35,18 @@ class Estado(TypedDict, total=False):
     pareceres: Annotated[list, operator.add]
     resposta: Any
     tempos: Annotated[list, operator.add]
+    via_ficha: bool
 
 
 class Orquestrador:
     def __init__(self, recuperar, responder_f1, llm_especialistas, *, linha_do_tempo=None, precedentes=None,
                  tracer=None, checkpointer=None, k=8, llm_relator=None, llm_f2_remoto=None,
-                 envio_externo_permitido=False, contexto_max_chars=0):
+                 envio_externo_permitido=False, contexto_max_chars=0, fichas=None):
         """recuperar(pergunta, k) -> list[TrechoRecuperado]; responder_f1: ResponderF1;
         linha_do_tempo(documento_ids) -> str (resumo para F2);
         precedentes(pergunta, documento_ids) -> list[Precedente] (memória de decisões, RF-19);
         llm_relator: modelo do relator, se diferente do dos especialistas (Fase 10: especialistas menores);
+        fichas(pergunta) -> resposta | None: ficha do contrato pré-processada (resposta em ~1 s, sem LLM);
         llm_f2_remoto: provedor em nuvem para a F2 (ex.: Gemini) — usado só se TODO o contexto (trechos e
         precedentes) for do corpus acadêmico e o envio estiver autorizado no .env; anonimizado; com reserva local."""
         self._recuperar, self._f1, self._llm = recuperar, responder_f1, llm_especialistas
@@ -52,15 +54,22 @@ class Orquestrador:
         self._remoto, self._envio_permitido = llm_f2_remoto, envio_externo_permitido
         self._tl, self._prec, self._tracer, self._k = linha_do_tempo, precedentes, tracer, k
         self._ctx = contexto_max_chars  # compressão do contexto dos especialistas e do relator (0 = desligada)
+        self._fichas = fichas
         g = StateGraph(Estado)
         g.add_node("rotear", self._no(self._rotear))
+        if fichas is not None:
+            g.add_node("ficha", self._no(self._ficha))
         g.add_node("recuperar", self._no(self._recuperar_no))
         g.add_node("responder_f1", self._no(self._responder_f1))
         g.add_node("contexto_f2", self._no(self._contexto_f2))
         g.add_node("especialista", self._no(self._especialista))
         g.add_node("relator", self._no(self._relator))
         g.add_edge(START, "rotear")
-        g.add_edge("rotear", "recuperar")
+        if fichas is not None:
+            g.add_edge("rotear", "ficha")
+            g.add_conditional_edges("ficha", lambda s: END if s.get("via_ficha") else "recuperar", [END, "recuperar"])
+        else:
+            g.add_edge("rotear", "recuperar")
         g.add_conditional_edges("recuperar", lambda s: "contexto_f2" if s["decisao"].rota == "F2" else "responder_f1",
                                 ["contexto_f2", "responder_f1"])
         g.add_edge("responder_f1", END)
@@ -87,6 +96,16 @@ class Orquestrador:
 
     def _rotear(self, s):
         return {"decisao": rotear(s["pergunta"])}
+
+    def _ficha(self, s):
+        """Perguntas sobre um contrato conhecido (objeto, valor, vigência, fiscal, documentos de um tipo) são
+        respondidas pela ficha pré-processada; decisões (F2) e o que a ficha não cobre seguem o caminho completo."""
+        if self._fichas is None or s["decisao"].rota == "F2":
+            return {"via_ficha": False}
+        r = self._fichas(s["pergunta"])
+        if r is None:
+            return {"via_ficha": False}
+        return {"via_ficha": True, "resposta": r, "trechos": list(r.fontes)}
 
     def _recuperar_no(self, s):
         if getattr(s.get("decisao"), "lista", False):

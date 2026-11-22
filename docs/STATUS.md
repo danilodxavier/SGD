@@ -7,8 +7,8 @@
 | Atualizado em | 2026-11-20 |
 | Fase atual | **Fase 12 — implantação na rede interna (chat por texto e voz)** — em execução; aguarda DNS e certificado da STI |
 | Situação da fase | Acervo real indexado; A1 (tipos) e A3 (latência) aplicados; aguardando perguntas reais e conferência da amostra de tipos pela equipe |
-| Última tarefa concluída | Versão rápida: modelo 100% na GPU, compressão 800, relator enxuto, detalhe reprovado sem nova chamada — validação sem perda (exatidão 0,923; classificação 0,979; citação 0,954) e LLM p50 23 → 17 s; real: lista 129 → 68 s, histórico 95 → 77 s, simples ≈ 42–47 s (piso: leitura dos trechos a 140 tok/s). Publicado na LAN em `http://sad.sema.mt.gov.br:8000`. Ver `docs/fases/FASE_12.md` §1.1 e §6 |
-| Próxima tarefa exata | (1) STI: DNS `sad.sema.mt.gov.br` → <IP da estação> (IP fixo) e certificado (`docs/implantacao/PEDIDO_STI.md`) → `instalar_certificado.py` + `publicar_rede.ps1 -Acao publicar`; (2) testar voz real com os gestores; (3) equipe julga `avaliacao/real/revisao.csv` (rodada 4); (4) aprovar ADR-014 |
+| Última tarefa concluída | Fichas de contrato (ADR-015): 19 contratos reais, resposta sem LLM; rodada 6: 6 das 11 perguntas não-decisórias em ≤ 1,2 s (antes 38–84 s); abertas 40–145 s; decisão ≈ 4 min. Antes: versão rápida (modelo 100% GPU) e publicação na LAN (`http://sad.sema.mt.gov.br:8000`). Ver `docs/fases/FASE_12.md` §6–§7 |
+| Próxima tarefa exata | (1) equipe julga `avaliacao/real/revisao.csv` (rodada 6) e confere `amostra_tipos.csv` (as listas das fichas dependem dos tipos); (2) agendar `gerar_fichas.py` após indexações; (3) melhorar extração de vigência/fiscal (7/19); (4) STI: DNS + certificado; (5) perguntas abertas < 10 s exigem GPU com tensor cores (decisão da gestão) |
 | Bloqueios | DNS e certificado da STI para o acesso pela rede; julgamento humano das respostas reais |
 
 ## Histórico de fases

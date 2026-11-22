@@ -1,0 +1,44 @@
+{
+  "v2_sadgd-qwen2.5-3b-gpu": {
+    "validacao": {
+      "n": 47,
+      "exatidao": 0.8718,
+      "classificacao": 0.7872,
+      "acerto_conflito": 1.0,
+      "acerto_recusa": 0.25,
+      "falsa_recusa": 0.0465,
+      "citacao_correta": 0.8837,
+      "precisao_citacoes": 0.4386,
+      "taxa_alucinacao_numerica": 0.0227,
+      "erros": 0,
+      "latencia_ms": {
+        "p50": 6945,
+        "p95": 17080
+      },
+      "tokens_medios": {
+        "entrada": 2860.2766,
+        "saida": 238.0213
+      }
+    },
+    "todos": {
+      "n": 47,
+      "exatidao": 0.8718,
+      "classificacao": 0.7872,
+      "acerto_conflito": 1.0,
+      "acerto_recusa": 0.25,
+      "falsa_recusa": 0.0465,
+      "citacao_correta": 0.8837,
+      "precisao_citacoes": 0.4386,
+      "taxa_alucinacao_numerica": 0.0227,
+      "erros": 0,
+      "latencia_ms": {
+        "p50": 6945,
+        "p95": 17080
+      },
+      "tokens_medios": {
+        "entrada": 2860.2766,
+        "saida": 238.0213
+      }
+    }
+  }
+}

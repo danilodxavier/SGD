@@ -101,3 +101,29 @@ Acervo real (mesmas perguntas, ponta a ponta): R01 48 → 47 s; R05 44 → 42 s;
 novos de trechos (≈ 17–25 s) — piso desta placa. Próximas alavancas: menos texto por pergunta (exige o julgamento
 da equipe para não perder qualidade) ou GPU com tensor cores (ex.: RTX 3060 12 GB: leitura do prompt estimada em
 5–10×, decisão de compra da gestão).
+
+## 7. Meta de 10 s — fichas de contrato (ADR-015)
+
+Pedido do responsável: respostas em até 10 s. Medido: nenhuma configuração gratuita do LLM chega lá mantendo o acerto
+(3B: ≈ 12 s, exatidão 0,872 e **recusa correta 0,25**). Decisão: **fichas pré-processadas** — ver
+[ADR-015](../adr/ADR-015-fichas-de-contrato.md).
+
+- Agrupamento: 19 contratos (pastas de 1º nível com nº/ano), 5.944 de 6.011 documentos; acadêmico: 20 contratos.
+- Extração (LLM local, ≈ 25 s por contrato, uma vez): real 104 campos conferidos (objeto 19/19, contratada e valor
+  12/19, gestor 10/19, fiscal 7/19, vigência 7/19); acadêmico 166 campos (8,3 por contrato).
+- Consulta sem LLM: 0–20 ms; checagem de número inexistente ≈ 0,4–0,8 s.
+
+| Pergunta real (rodada 5 → 6) | Antes | Agora | Como |
+|---|---|---|---|
+| R01 objeto do contrato | 66 s | **0,0 s** | ficha |
+| R04 empenho do contrato | 28–41 s | **1,2 s** | inventário |
+| R05 contrato de um fornecedor | 38–45 s | **0,0 s** | 2 contratos casam com o nome → lista |
+| R08 contratos com notificação em 2025 | 49–84 s | **0,0 s** | inventário transversal |
+| R11 termo de recebimento do contrato | 38–65 s | **0,0 s** | inventário |
+| R12 ordem de serviço em 2026 | 72–98 s | **0,0 s** | inventário (tipo pelo título) |
+| R03, R10 (número citado aparece no acervo, mas sem pasta) | 40–83 s | 40–83 s | caminho completo |
+| R06, R07, R09 (abertas) | 90–145 s | 90–145 s | caminho completo |
+| R02 decisão (especialistas) | ≈ 4 min | ≈ 4 min | F2 |
+
+Atualização: `python scripts/sadgd/gerar_fichas.py` após cada indexação (extrai só contratos novos; o inventário é
+sempre refeito).

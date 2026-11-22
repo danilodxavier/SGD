@@ -89,7 +89,19 @@ def construir_orquestrador(tracer=None):
     return Orquestrador(lambda p, k, **kw: rec.recuperar(p, k=k, **kw).trechos, f1, llm, linha_do_tempo=grafo.resumo,
                         precedentes=lambda p, docs: memoria.precedentes(p, documento_ids=docs), tracer=tracer,
                         llm_f2_remoto=llm_f2_remoto(), envio_externo_permitido=settings.ai_allow_remote,
-                        contexto_max_chars=contexto)
+                        contexto_max_chars=contexto, fichas=fichas().responder)
+
+
+def fichas():
+    """Respostas pela ficha do contrato (pré-processada por scripts/sadgd/gerar_fichas.py): ~1 s, sem LLM."""
+    if "fichas" not in _componentes:
+        from app.application.fichas.consulta import ResponderPorFicha
+        from app.infrastructure.sqlite.busca import RepositorioTrechosSqlite
+        from app.infrastructure.sqlite.repositorio_fichas import RepositorioFichasSqlite
+
+        _componentes["fichas"] = ResponderPorFicha(RepositorioFichasSqlite(_fabrica_sem_vetores),
+                                                   RepositorioTrechosSqlite(_fabrica_sem_vetores))
+    return _componentes["fichas"]
 
 
 def _fonte(t):
@@ -104,7 +116,7 @@ def serializar(estado):
             "resposta": r.resposta, "fontes": [_fonte(t) for t in r.fontes], "observacoes": r.observacoes,
             "tokens": {"entrada": r.tokens_entrada, "saida": r.tokens_saida},
             "tempos_ms": dict(estado.get("tempos", [])), "aviso": AVISO_DECISAO,
-            "provedor_f2": estado.get("provedor_f2")}
+            "provedor_f2": estado.get("provedor_f2"), "ficha": bool(estado.get("via_ficha"))}
     if decisao.rota == "F2":
         from app.application.decisoes.recomendacao import elementos_rf20
 
@@ -154,7 +166,7 @@ def processar(pergunta, usuario_id, ip=None, usar_cache=True, ao_mudar_etapa=Non
     latencia = int((time.perf_counter() - inicio) * 1000)
     auditoria.concluir(consulta_id, estado, latencia)
     payload = serializar(estado)
-    if usar_cache:
+    if usar_cache and not estado.get("via_ficha"):  # a ficha já é instantânea e muda com o acervo
         cache_semantico().gravar(pergunta, payload, versao)  # o embedder pode ter sido carregado agora
     return {"consulta_id": consulta_id, "latencia_ms": latencia, "cache": False, **payload}
 

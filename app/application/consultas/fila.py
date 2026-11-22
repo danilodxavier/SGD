@@ -13,6 +13,7 @@ from dataclasses import dataclass, field
 
 ETAPAS = {
     "rotear": "Entendendo a pergunta",
+    "ficha": "Consultando a ficha do contrato",
     "recuperar": "Buscando nos documentos",
     "responder_f1": "Redigindo a resposta e conferindo as fontes",
     "contexto_f2": "Montando linha do tempo e precedentes",
