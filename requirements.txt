@@ -12,3 +12,4 @@ pytest>=8.0
 httpx>=0.27
 defusedxml>=0.7
 python-multipart>=0.0.20  # upload de documentos (formulário multipart, SAD-091)
+cryptography>=42  # certificado da STI para HTTPS (scripts/rede/instalar_certificado.py)
