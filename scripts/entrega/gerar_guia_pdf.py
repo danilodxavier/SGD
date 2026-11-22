@@ -59,7 +59,7 @@ def tabela(cab: list[str], linhas: list[list[str]], classe: str = "") -> str:
 
 
 def imagens_auxiliares() -> dict:
-    """Diagrama da arquitetura e o apresentador em massinha (gerados pelos scripts do vídeo)."""
+    """Diagrama da arquitetura e o apresentador 3D (gerados pelos scripts do vídeo)."""
     sys.path.insert(0, str(RAIZ / "scripts" / "video"))
     import gerar_video_demoday as gv
 
@@ -143,7 +143,7 @@ def montar(video_url: str, aux: dict) -> str:
     <div class="autor"><b>Danilo Xavier</b><br>Analista de Meio Ambiente · Perfil Analista de Sistemas<br>
       Coordenadoria de Infraestrutura e Tecnologia — SEMA-MT<br>Curso de Engenharia de IA · Pitch e guia completo</div>
   </div>
-  <img class="av" src="{aux['apresentador']}" alt="Apresentador em massinha">
+  <img class="av" src="{aux['apresentador']}" alt="Apresentador 3D">
   <div class="links">
     <table>
       <tr><td>▶ Vídeo (4 min 57 s)</td><td>{link(video_url)}</td></tr>
@@ -553,15 +553,17 @@ scripts\\sadgd\\ollama.ps1 -Acao iniciar|parar|status         &lt;- LLM local
     ["Alucinação por frase 5,4% (meta 5%)", "Verificador remove frases sem fonte; 0% numérica", "Mais regras determinísticas e julgamento humano das respostas reais"],
 ])}
 <h1 style="margin-top:9mm">11. Como o vídeo e este guia foram produzidos</h1>
-<p>Tudo local e gratuito, com o Claude Code:</p>
+<p>Tudo com ferramentas gratuitas, conduzido pelo Claude Code:</p>
 <ul class="passos">
 <li><b>Telas</b>: <code>scripts/video/capturar_telas.py</code> sobe uma instância isolada com o corpus acadêmico e
 navega com o Microsoft Edge (Playwright), inclusive a pergunta por voz (áudio sintético injetado como microfone).</li>
-<li><b>Apresentador em massinha 3D</b>: <code>scripts/video/avatar_massinha.py</code> transforma a foto em um boneco de
-plasticina — segmentação (GrabCut), peças de massa (cabelo, sobrancelhas, barba, pele, camisa), relevo esculpido,
-iluminação cerosa e textura de digitais (OpenCV, NumPy, SciPy).</li>
-<li><b>Animação</b>: olhos de contas com piscadas e olhar, boca e mandíbula sincronizadas com a energia da voz,
-movimento de cabeça (<code>scripts/video/gerar_video_demoday.py</code>).</li>
+<li><b>Apresentador 3D no estilo de animação</b>: gerado no <b>Google Gemini</b> (app gratuito, operado pelo Claude Code
+no Chrome do responsável, com a conta dele e a sua autorização) a partir da foto: retrato base e quatro variações
+alinhadas ao pixel — boca em "A", boca em "O", olhos fechados e sorriso aberto com sobrancelhas erguidas. Os prompts
+estão em <code>scripts/video/prompts_personagem.md</code>.</li>
+<li><b>Animação</b>: <code>scripts/video/gerar_video_demoday.py</code> recorta o fundo e mistura, quadro a quadro, só a
+região que muda — boca sincronizada com a energia da voz, piscadas, sorriso nas pausas, sobrancelhas erguidas nas
+ênfases — com movimento de cabeça e respiração (OpenCV e NumPy).</li>
 <li><b>Narração</b>: voz neural pt-BR Microsoft Daniel (a mesma do vídeo anterior), roteiro em
 <code>scripts/video/cenas_demoday.json</code>; legendas geradas automaticamente.</li>
 <li><b>Codificação</b>: ffmpeg (H.264 + AAC, 1080p, 25 fps); este PDF: HTML impresso pelo Edge.</li>

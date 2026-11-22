@@ -8,6 +8,7 @@ Registro obrigatório (regra 6). Inclui desenvolvimento e produção. Custo em R
 |---|---|---|---|---|---|---|
 | Claude Opus 5.5 | Anthropic (via Claude Code) | `claude-opus-5-5` | Agente de engenharia: auditoria, planejamento, arquitetura, código, testes e documentação | 0– | Assinatura do responsável (não é custo do sistema) | Ferramenta de desenvolvimento escolhida pelo responsável |
 | Microsoft Daniel (voz neural pt-BR) | Microsoft (nativo do Windows, OneCore/SAPI) | `MSTTS_V110_ptBR_DanielM` | Narração do vídeo de apresentação (Fase 11) | 11 | R$ 0 | Local, sem envio de dados; `scripts/video/gerar_video.py` |
+| Gemini (geração/edição de imagem, app gratuito, modo Pro) | Google | app gemini.google.com | Apresentador 3D no estilo de animação do vídeo do Demo Day: retrato a partir da foto e 4 expressões alinhadas | 12 | R$ 0 (app gratuito; a API não tem cota gratuita para imagem) | Foto enviada com autorização do responsável; prompts em `scripts/video/prompts_personagem.md` |
 
 ## Produção / execução do sistema
 

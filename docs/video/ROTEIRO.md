@@ -56,7 +56,7 @@ Também é possível substituir a narração sintética pela **voz do próprio a
 
 ---
 
-## 4. Vídeo do Demo Day (23/11/2026) — apresentador em massinha 3D
+## 4. Vídeo do Demo Day (23/11/2026) — apresentador 3D no estilo de animação
 
 | Campo | Valor |
 |---|---|
@@ -68,10 +68,10 @@ Também é possível substituir a narração sintética pela **voz do próprio a
 Produção (100% local):
 
 1. **Telas reais** — `scripts/video/capturar_telas.py --etapa basicas|f1|voz|f2`: instância isolada em `127.0.0.1:8011` com cópia do banco acadêmico (`data/video/trabalho/demo.db`), usuário de demonstração com senha gerada (`data/video/trabalho/demo_credenciais.txt`), Edge via Playwright em 1600×900 × 1,2 = PNG 1080p. A etapa `voz` injeta uma fala sintética como microfone (`--use-file-for-fake-audio-capture`) e passa pela transcrição real (Whisper).
-2. **Boneco de massinha** — `scripts/video/avatar_massinha.py` (requer `pip install opencv-python-headless`): GrabCut com dicas, peças de massa (cabelo, sobrancelhas, barba, pele, camisa), relevo esculpido (cúpula, nariz, maçãs, queixo, orelhas), iluminação de plasticina (luz envolvente, brilho ceroso, oclusão) e textura de digitais → `data/video/trabalho/massinha/`.
-3. **Animação e montagem** — `scripts/video/gerar_video_demoday.py audio | previa 12,95 | parte K N | juntar`: olhos de contas (piscadas, olhar), boca e mandíbula guiadas pela energia da voz, movimento de cabeça; cenas de apresentador, demonstração com zoom nas telas, cartões de ferramentas, diagrama da arquitetura e métricas; render em partes (≈ 0,07 s/quadro) por causa da RAM.
+2. **Apresentador 3D no estilo de animação** — gerado no Google Gemini (app gratuito, conta e autorização do responsável) a partir da foto: retrato base e quatro variações alinhadas ao pixel (boca "A", boca "O", olhos fechados, sorriso aberto com sobrancelhas erguidas) em `data/video/pixar/final/`. Os prompts estão em [`scripts/video/prompts_personagem.md`](../../scripts/video/prompts_personagem.md). A chave da API não serve: os modelos de imagem não têm cota no plano gratuito.
+3. **Animação e montagem** — `scripts/video/gerar_video_demoday.py audio | previa 12,95 | parte K N | juntar`: recorte do fundo (preenchimento a partir das bordas para a cabeça; canal b* para a camisa), mistura por região a cada quadro — boca "A"/"O" guiada pela energia da voz, piscadas, sorriso nas pausas, sobrancelhas erguidas nas ênfases — com movimento de cabeça e respiração; cenas de apresentador, demonstração com zoom nas telas, cartões de ferramentas, diagrama da arquitetura e métricas; render em partes por causa da RAM.
 
-**Versão 2 do personagem (2026-11-22, pedido do responsável: simpático, carismático e fiel à foto):** contorno do rosto medido na foto (`CONTORNO`), cabeça 16% mais larga e 4% mais alta que o corpo (proporção de personagem, mais arredondada), pele pêssego com bochechas rosadas, cabelo castanho-escuro com topete e mechas penteadas para cima e para o lado, barba e cavanhaque com o formato da foto, nariz arredondado, orelhas pequenas e gola da polo; no vídeo, olhos de contas maiores com dois brilhos e "olhar sorridente", sobrancelhas de massa no lugar e no comprimento das da foto (sobem no início das frases e nas ênfases, com aceno de cabeça) e sorriso com covinhas que abre em "D" ao falar e se alarga nas pausas.
+Histórico: as versões 1 e 2 usavam um boneco de massinha gerado localmente a partir da foto; o responsável preferiu um personagem no estilo de animação 3D, mais carismático, e o gerador de massinha foi removido (está no histórico do Git, commit `8ec9f27`).
 
 Durante a gravação foi encontrado e corrigido um defeito real: a fala "contrato doze barra dois mil e vinte e três" era transcrita como "contrato 12 barra 2023" e a busca não reconhecia o contrato (agora `normalizar_fala` em `app/infrastructure/voz/transcritor.py`).
 
