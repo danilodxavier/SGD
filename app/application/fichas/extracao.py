@@ -39,6 +39,7 @@ CAMPOS_ADITIVO = {
     "valor_atual": "novo valor global do contrato após o aditivo (R$), como escrito",
 }
 PALAVRAS_ADITIVO = r"prorrog|vigencia|\bprazo\b|\bvalor\b|r\$|acresc|supress"
+PRORROGACAO = r"prorrog"
 
 
 def sistema(campos: dict) -> str:
@@ -111,12 +112,19 @@ def trechos_complemento(fontes: list[list], faltantes: list[str], ja_enviados: s
 def trechos_aditivo(trechos_doc: list, max_trechos: int = 4) -> list:
     """Abertura do aditivo + trechos que falam de prorrogação/vigência."""
     escolhidos = {tid: janela(texto, None) for tid, texto in trechos_doc[:1]}
-    for tid, texto in trechos_doc[1:]:
-        if len(escolhidos) >= max_trechos:
-            break
-        if re.search(PALAVRAS_ADITIVO, normalizar(texto)):
-            escolhidos[tid] = janela(texto, PALAVRAS_ADITIVO)
-    return list(escolhidos.items())
+    # prorrogação primeiro (antes, trechos que só citavam "valor"/"prazo" ocupavam as vagas e a cláusula de
+    # prorrogação ficava de fora — e a janela centrava na 1ª palavra-chave, cortando a prorrogação)
+    for padrao in (PRORROGACAO, PALAVRAS_ADITIVO):
+        for tid, texto in trechos_doc[1:]:
+            if len(escolhidos) >= max_trechos:
+                break
+            norm = normalizar(texto)
+            if tid not in escolhidos and re.search(padrao, norm):
+                escolhidos[tid] = janela(texto, PRORROGACAO if re.search(PRORROGACAO, norm) else PALAVRAS_ADITIVO)
+    if trechos_doc and re.search(PRORROGACAO, normalizar(trechos_doc[0][1])):  # prorrogação na abertura longa
+        escolhidos[trechos_doc[0][0]] = janela(trechos_doc[0][1], PRORROGACAO)
+    ordem = {tid: i for i, (tid, _) in enumerate(trechos_doc)}
+    return sorted(escolhidos.items(), key=lambda x: ordem[x[0]])
 
 
 def _confere(campo: str, valor: str, texto: str) -> bool:

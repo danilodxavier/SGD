@@ -247,3 +247,44 @@ diferente.
 
 Item a item, mesmo número de pareceres (2–3) e o mesmo resultado estrutural; ganho de tempo em todos (283 → 265 s a
 372 → 235 s).
+
+## 14. Rodada 11 — datas dos documentos, pendências e documentos para conferir (2026-11-22)
+
+**Diagnóstico** (só contagens): **4.891 dos 6.011 documentos reais (81%) estavam sem data** — a regra de data só
+aceitava o fecho ("Cuiabá, 10 de março de 2025.") no fim da última linha. Toda pergunta com ano ("em 2025",
+"no ano de 2026") esbarrava nisso: a ficha não podia afirmar ausência e a pergunta ia para o caminho completo
+(≈ 55 s), que terminava em recusa (R09, R12).
+
+**Mudanças:**
+1. **Datas complementares** (`data_complementar` em `metadados.py`; só onde a regra antiga não achou data):
+   último fecho por extenso em qualquer ponto → último "assinado … dd/mm/aaaa" → "data de emissão" → "em
+   dd/mm/aaaa, às hh:mm" → "Cuiabá, dd/mm/aaaa"; datas antes de 1988 ou no futuro são descartadas. Medido contra
+   os 1.120 documentos reais que já tinham data: último fecho com **ano igual em 98,5%** (dia igual em 90%);
+   assinatura com ano igual em 93%. `scripts/sadgd/datar_documentos.py` completou o acervo já indexado
+   (backup antes): **1.492 documentos datados**; seguem sem data 3.399 (sobretudo planilhas e rascunhos .docx).
+   Grafo reconstruído e inventário das fichas atualizado (sem LLM).
+2. **Documentos para conferir** (classificação `candidatos`, confiança 0,5): quando nada foi classificado no
+   tipo e no ano, mas há documentos que começam citando o assunto no ano (ou sem data), a ficha lista esses
+   documentos com a fonte, em vez de mandar a pergunta para um caminho longo que recusava. Na pergunta geral
+   (sem contrato), agrupa por contrato só os documentos datados do ano.
+3. **Pendências** ("Há pendência em algum contrato?" / "…no contrato X?"): pontos de atenção deduzidos das
+   fichas, cada um com fonte — vencimento em até 120 dias, documentos de execução datados depois do término,
+   término passado com aditivo posterior (conferir prorrogação), notificação/apuração nos últimos 12 meses e
+   contrato vigente sem empenho no exercício. Sem nada avaliável, não afirma "sem pendências" (caminho completo);
+   "pendência de pagamento/empenho…" segue o assunto próprio.
+4. **Aditivos relidos quando surge um mais recente** (nova indexação ou data corrigida; só os aditivos, uma vez)
+   e **cláusula de prorrogação priorizada** na seleção de trechos do aditivo (antes, trechos que só citavam
+   "valor"/"prazo" ocupavam as vagas). Acervo real: vigência atual pelo aditivo em 7 das 16 fichas com término
+   (5 aditivos com vigência lida nesta rodada); acadêmico: vigência 32/32 mantida.
+
+**Resultado nas perguntas reais** (só tempos e códigos):
+
+| Pergunta | Antes | Agora |
+|---|---|---|
+| R07 (pendências) | 87 s (caminho completo) | **0,0 s** — 11 contratos com pontos de atenção, 13 fontes |
+| R09 (apuração em 2025) | 57 s, recusa | **0,0 s** — fato, com fonte (documento passou a ter data) |
+| R12 (OS em 2026) | 55 s, recusa | **0,1 s** — documentos para conferir (8 fontes) |
+| Demais 8 não-decisão | ≤ 5 s | ≤ 4,3 s (sem mudança) |
+
+Agora **11 das 12 perguntas reais respondem em menos de 5 s**; só a decisão (R02, F2) segue no caminho dos
+especialistas. Regressão acadêmica das fichas: 70/72 (as 2 diferenças são pontuação de "Ltda."), igual à anterior.

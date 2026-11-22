@@ -193,6 +193,37 @@ def _data_br(texto):
         return None
 
 
+# Datas complementares (acervo real: 81% dos documentos ficavam sem data — o fecho raramente está no fim da última
+# linha). Cascata medida contra os 1.120 documentos reais que já tinham data (FASE_12 §14): último fecho
+# "Cidade, 10 de março de 2025" em qualquer ponto (ano igual em 98,5%), último "assinado ... dd/mm/aaaa" (93%),
+# "data de emissão" (notas, empenhos, certidões), "em dd/mm/aaaa, às hh:mm" (SEI) e "Cuiabá, dd/mm/aaaa".
+D_BR = r"(\d{2}/\d{2}/(?:19|20)\d{2})"
+RE_FECHO_LIVRE = re.compile(r"[A-Za-zÀ-ú]{3,}(?:\s*[-/]\s*MT)?\s*,\s*(?:em\s+)?" + DATA_EXTENSO, re.I)
+CASCATA_DATAS = [  # (padrão, usar a última ocorrência?)
+    (re.compile(r"assinad[oa].{0,200}?" + D_BR, re.I | re.S), True),
+    (re.compile(r"(?:data\s+(?:de\s+|da\s+)?emiss[ãa]o|emitid[oa]\s+em)\s*[:\-]?\s*" + D_BR, re.I), False),
+    (re.compile(r"\bem\s+" + D_BR + r",?\s+(?:a|à)s\s+\d{1,2}[:h]", re.I), False),
+    (re.compile(r"cuiab[áa]\s*(?:[-/]\s*mt)?\s*,?\s*(?:em\s+)?" + D_BR, re.I), False),
+]
+
+
+def data_complementar(texto: str, hoje: date | None = None) -> date | None:
+    """Data do documento pela cascata acima; descarta datas impossíveis (antes de 1988 ou no futuro)."""
+    hoje = hoje or date.today()
+
+    def plausivel(d):
+        return d is not None and date(1988, 1, 1) <= d <= hoje
+
+    fechos = [d for m in RE_FECHO_LIVRE.finditer(texto) if plausivel(d := _data_extenso(*m.groups()))]
+    if fechos:
+        return fechos[-1]
+    for padrao, ultima in CASCATA_DATAS:
+        datas = [d for m in padrao.finditer(texto) if plausivel(d := _data_br(m.group(1)))]
+        if datas:
+            return datas[-1] if ultima else datas[0]
+    return None
+
+
 def extrair_metadados(texto: str, nome_arquivo: str | None = None, extensao: str | None = None) -> Metadados:
     md = Metadados()
     inicio = texto[:6000]
@@ -247,6 +278,8 @@ def _complementar(md, texto, inicio):
         md.data = md.vigencia_inicio
     if md.data is None and (m := RE_FECHO.search(texto[-3000:] if len(texto) > 3000 else texto)):
         md.data = _data_extenso(*m.groups())
+    if md.data is None:
+        md.data = data_complementar(texto)
 
     if md.titulo and especie:
         # a nota de revogação do ATO INTEIRO fica entre o título e o art. 1º; notas posteriores são de dispositivos

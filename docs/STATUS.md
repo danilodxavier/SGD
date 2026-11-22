@@ -4,10 +4,10 @@
 
 | Campo | Valor |
 |---|---|
-| Atualizado em | 2026-11-20 |
+| Atualizado em | 2026-11-22 |
 | Fase atual | **Fase 12 — implantação na rede interna (chat por texto e voz)** — em execução; aguarda DNS e certificado da STI |
 | Situação da fase | Acervo real indexado; A1 (tipos) e A3 (latência) aplicados; aguardando perguntas reais e conferência da amostra de tipos pela equipe |
-| Última tarefa concluída | Decisão (F2): contexto compartilhado + ficha do contrato; regressão acadêmica completa (6/6): qualidade igual (relator 1,00; RF-20 0,83; recall 0,639) e p50 319 → 236 s (−26%); modelo padrão (variante 100% GPU mais lenta com o reranker); LLM carregado por 12 h. Ver `docs/fases/FASE_12.md` §13 |
+| Última tarefa concluída | Rodada 11: datas complementares (1.492 documentos reais datados; ano igual em 98,5% no fecho), pendências pela ficha, documentos para conferir em vez de recusa, aditivos relidos com prorrogação priorizada. 11/12 perguntas reais em < 5 s (R07 87 → 0 s; R09 57 → 0 s; R12 55 → 0,1 s). Ver `docs/fases/FASE_12.md` §14 |
 | Próxima tarefa exata | (1) equipe julga `avaliacao/real/revisao.csv` e confere `amostra_tipos.csv`; (2) STI: DNS + certificado (HTTPS e voz para os gestores) |
 | Bloqueios | DNS e certificado da STI para o acesso pela rede; julgamento humano das respostas reais |
 

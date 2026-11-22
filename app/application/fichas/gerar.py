@@ -35,6 +35,7 @@ class RepositorioFichasPort(Protocol):
 
 
 VERSAO_COMPLEMENTO = 2  # 2: valor atualizado pelo aditivo (fichas com versão menor são complementadas de novo)
+VERSAO_ADITIVOS = 2  # 2: cláusula de prorrogação priorizada na seleção de trechos (só os aditivos são relidos)
 TIPOS_PELO_TITULO = [("ordem_servico", re.compile(r"orde(?:m|ns) de servic")),
                      ("relatorio_apuracao", re.compile(r"\bapuracao\b|\bapurar\b|apuracao de responsabilidade")),
                      ("notificacao", re.compile(r"notificacao extrajudicial|\bnotificacao\b"))]
@@ -125,14 +126,21 @@ class GerarFichas:
             if not ficha or ficha.get("extracao") != "ok":
                 continue
             resumo["fichas"] += 1
-            if ficha.get("complemento", 0) >= VERSAO_COMPLEMENTO and not refazer:
-                continue
+            por_data = sorted(g.documentos, key=lambda d: (d.data or "", d.id))
+            recentes = [d.id for d in reversed(por_data) if d.tipo == "aditivo"][:2]
+            lidos = set(ficha.get("aditivos_lidos") or [(ficha["campos"].get(c) or {}).get("documento_id")
+                                                       for c in ("aditivo_vigencia", "aditivo_valor")])
+            if ficha.get("aditivos_versao", 1) < VERSAO_ADITIVOS:
+                lidos = set()  # seleção de trechos do aditivo mudou: reler os aditivos (só eles)
+            completa = ficha.get("complemento", 0) >= VERSAO_COMPLEMENTO and not refazer
+            if completa and set(recentes) <= lidos:
+                continue  # já complementada e nenhum aditivo mais recente desde a última leitura
             if limite_s and time.perf_counter() - inicio > limite_s:
                 resumo["pendentes"] += 1
                 continue
             antes = len(ficha["campos"])
-            faltantes = [c for c in COMPLEMENTAVEIS if c not in ficha["campos"]]
-            por_data = sorted(g.documentos, key=lambda d: (d.data or "", d.id))
+            # ficha já complementada que só ganhou aditivo novo (indexação ou datas corrigidas): só os aditivos
+            faltantes = [] if completa else [c for c in COMPLEMENTAVEIS if c not in ficha["campos"]]
             if faltantes:
                 extratos = [d for d in por_data if d.tipo == "extrato_publicacao"][:2]
                 portarias = [d for d in reversed(por_data) if d.tipo in ("portaria_designacao", "portaria")][:3]
@@ -155,6 +163,8 @@ class GerarFichas:
             for aditivo in [d for d in reversed(por_data) if d.tipo == "aditivo"][:2]:  # do mais recente
                 if vigencia_ok and valor_ok:
                     break
+                if completa and aditivo.id in lidos:
+                    continue  # já lido: os valores dele seguem na ficha
                 trechos = trechos_aditivo(self.repo.trechos_do_documento(aditivo.id))
                 try:
                     r = self.llm.chat(mensagens(trechos, CAMPOS_ADITIVO), max_tokens=250, temperatura=0.0,
@@ -175,6 +185,8 @@ class GerarFichas:
                     ficha["campos"]["aditivo_valor"] = origem
                     valor_ok = True
             ficha["complemento"] = VERSAO_COMPLEMENTO
+            ficha["aditivos_lidos"] = sorted(i for i in lidos | set(recentes) if i is not None)
+            ficha["aditivos_versao"] = VERSAO_ADITIVOS
             resumo["complementadas"] += 1
             resumo["campos_novos"] += len(ficha["campos"]) - antes
             self.repo.salvar(ficha)

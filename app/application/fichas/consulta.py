@@ -82,6 +82,10 @@ RE_PANORAMA = re.compile(r"(fase de renova|renovac|renovar|a vencer|vencend|venc
                          r"encerrad|vigentes|proximos? do (fim|vencimento))")
 RE_PLURAL_CONTRATOS = re.compile(r"\b(quais|que|quantos)\b|\bcontratos\b|\bprocessos\b")
 JANELA_RENOVACAO_DIAS = 120
+# "Há pendência em algum contrato?" / "algum problema nos contratos?" → pontos de atenção pelas fichas
+RE_PENDENCIA = re.compile(r"pendenc|pendent|irregularidad|pontos? de atencao")
+RE_ALGUM_CONTRATO = re.compile(r"\b(algum|alguns|nos|dos|quais|que)\s+contratos?\b|\bcontratos\b")
+EXECUCAO = ["nota_fiscal", "pagamento", "termo_recebimento", "nota_empenho"]
 RE_TRANSVERSAL = re.compile(r"\b(quais|quantos|algum|alguns|em que|que)\s+contratos?\b|\bcontratos\b")
 RE_NOME = re.compile(r"contrat\w*\s+(?:d[aoe]s?|com(?:\s+[ao])?|junto\s+[aà])\s+([a-z0-9][a-z0-9 .&-]{2,50})")
 
@@ -245,8 +249,10 @@ class ResponderPorFicha:
             termos = [t for tipo in tipos for t in TERMOS_TEXTO.get(tipo, [])]
             verificar = getattr(self.fichas, "documento_do_tipo_no_ano", None) or getattr(self.fichas, "menciona_ano",
                                                                                             None)
-            if not ano or verificar is None or not termos or verificar(None, None, termos, ano):
+            if not ano or verificar is None or not termos:
                 return None
+            if verificar(None, None, termos, ano):
+                return self._transversal_candidatos(nome, tipos, ano, singular, inicio)
             resposta = (f"Não localizei {plural}{periodo} no acervo: nenhuma das {len(self._todas())} pastas de "
                         f"contrato tem documento desse tipo{periodo}, e nenhum trecho dos documentos cita o assunto "
                         f"junto com o ano {ano}.")
@@ -269,6 +275,41 @@ class ResponderPorFicha:
                              ["Relação baseada na classificação automática dos documentos de cada pasta."],
                              latencia_ms=int((time.perf_counter() - inicio) * 1000),
                              observacoes=["ficha_do_contrato", f"assunto:{nome}", "transversal"])
+
+    def _transversal_candidatos(self, nome, tipos, ano, singular, inicio):
+        """Nenhum documento classificado no tipo e no ano, mas há documentos DATADOS do ano que começam citando o
+        assunto: agrupa por contrato (o gestor sabe onde conferir). Só os sem data → caminho completo."""
+        total, itens = self._candidatos(None, tipos, ano, limite=2000)
+        do_ano = [d for d in itens if d["no_ano"]]
+        if not do_ano:
+            return None
+        dono = {d["documento_id"]: f for f in self._todas() for d in f["documentos"]}
+        grupos: dict[str, list] = {}
+        for d in do_ano:  # já vêm do mais recente para o mais antigo
+            f = dono.get(d["documento_id"])
+            grupos.setdefault(f["chave"] if f else "", []).append((f, d))
+        mais_recentes = [g[0][1]["trecho_id"] for g in grupos.values()]
+        trechos = {t.id: t for t in self.trechos.obter(mais_recentes)}
+        linhas = []
+        for chave_grupo, docs in sorted(grupos.items(), key=lambda g: (g[0] == "", g[0]))[:MAX_ITENS]:
+            f, d = docs[0]
+            c = f["campos"] if f else {}
+            ident = (f"Contrato nº {(c.get('numero') or {}).get('valor') or chave_grupo}" if f else
+                     "Fora das pastas de contrato")
+            t = trechos.get(d["trecho_id"])
+            linhas.append(f"- {ident}: {len(docs)} documento(s); o mais recente: {_data(d['data'])}, "
+                          f"{(t.titulo or t.arquivo) if t else 'documento'} [T{d['trecho_id']}]")
+        sem_data = sum(1 for d in itens if not d["data"])
+        resposta = (f"Nenhum documento do acervo foi classificado como {singular}"
+                    f" em {ano}, mas {len(do_ano)} documento(s) datados de {ano} começam citando o assunto — confira "
+                    f"por contrato:\n" + "\n".join(linhas))
+        lacunas = ["Confira nesses documentos se algum é de fato o documento procurado: a classificação automática "
+                   "não os reconheceu como tal."]
+        if sem_data:
+            lacunas.append(f"Outros {sem_data} documento(s) sem data identificada também citam o assunto.")
+        return RespostaFicha(resposta, "candidatos", 0.5, list(trechos.values()), lacunas,
+                             latencia_ms=int((time.perf_counter() - inicio) * 1000),
+                             observacoes=["ficha_do_contrato", f"assunto:{nome}", "transversal", "candidatos"])
 
     def _em_conflito(self, ficha, assunto) -> bool:
         campo = {"valor": "valor_global", "vigencia": "vigencia_fim"}.get(assunto)
@@ -305,6 +346,16 @@ class ResponderPorFicha:
         if verificar is None or not termos:
             return True
         return verificar(ficha.get("pasta"), [d["documento_id"] for d in ficha["documentos"]], termos, ano)
+
+    def _candidatos(self, ficha, tipos, ano, limite=MAX_ITENS):
+        """(total, itens) dos documentos cujo início cita o assunto e que são do ano (ou sem data)."""
+        buscar = getattr(self.fichas, "candidatos_do_tipo_no_ano", None)
+        termos = [t for tipo in tipos for t in TERMOS_TEXTO.get(tipo, [])]
+        if buscar is None or not termos:
+            return 0, []
+        if ficha is None:
+            return buscar(None, None, termos, ano, limite)
+        return buscar(ficha.get("pasta"), [d["documento_id"] for d in ficha["documentos"]], termos, ano, limite)
 
     def _panorama(self, texto, inicio):
         """Situação de vigência de todos os contratos: encerrados, vencendo em até 120 dias (fase de renovação) e
@@ -351,6 +402,85 @@ class ResponderPorFicha:
         return RespostaFicha(resposta, "inferencia", 0.75, self.trechos.obter(list(dict.fromkeys(citados))),
                              lacunas, latencia_ms=int((time.perf_counter() - inicio) * 1000),
                              observacoes=["ficha_do_contrato", "assunto:panorama_vigencia", "transversal"])
+
+    def _pendencias(self, fichas, inicio, hoje=None):
+        """"Há pendência em algum contrato?": pontos de atenção deduzidos das fichas, cada um com a fonte —
+        vencimento próximo, execução datada depois do término, notificação/apuração recente e contrato vigente
+        sem empenho no exercício. É inferência sobre datas e tipos automáticos: o gestor confere."""
+        import datetime as dt
+
+        hoje = hoje or dt.date.today()
+        pontos, citados, sem_termino = [], [], 0
+        for f in sorted(fichas, key=lambda f: f["chave"]):
+            c = f["campos"]
+            ident = f"Contrato nº {(c.get('numero') or {}).get('valor') or f['chave']}" + (
+                f" — {c['contratada']['valor']}" if "contratada" in c else "")
+            docs = f["documentos"]
+
+            def ultimo(tipos, depois_de="", docs=docs):
+                achados = [d for d in docs if d["tipo"] in tipos and str(d.get("data") or "") > depois_de]
+                return len(achados), (max(achados, key=lambda d: d["data"]) if achados else None)
+
+            def ref(d):
+                if d and d.get("trecho_id"):
+                    citados.append(d["trecho_id"])
+                    return f" [T{d['trecho_id']}]"
+                return ""
+
+            itens = []
+            fim, fonte, trechos_fim = termino(f)
+            if fim is None:
+                sem_termino += 1
+            else:
+                cita_fim = "".join(f" [T{t}]" for t in trechos_fim)
+                posterior = aditivo_posterior(f, fonte)
+                if hoje <= fim and (fim - hoje).days <= JANELA_RENOVACAO_DIAS:
+                    citados.extend(trechos_fim)
+                    itens.append(f"vigência termina em {fim:%d/%m/%Y} ({(fim - hoje).days} dias): decidir renovação "
+                                 f"ou nova contratação{cita_fim}")
+                elif fim < hoje:
+                    n, d = ultimo(EXECUCAO, fim.isoformat())
+                    if n and posterior:
+                        citados.extend(trechos_fim)
+                        itens.append(f"término pela ficha em {fim:%d/%m/%Y}{cita_fim}, mas há termo aditivo posterior "
+                                     f"e {n} documento(s) de execução depois dessa data: conferir a prorrogação")
+                    elif n:
+                        citados.extend(trechos_fim)
+                        itens.append(f"vigência encerrada em {fim:%d/%m/%Y}{cita_fim}, mas há {n} documento(s) de "
+                                     f"execução datados depois (o mais recente: {_data(d['data'])}{ref(d)}): conferir "
+                                     f"a cobertura contratual")
+                if fim >= hoje:
+                    empenhos = [d for d in docs if d["tipo"] == "nota_empenho"]
+                    do_ano = [d for d in empenhos if str(d.get("data") or "").startswith(str(hoje.year))]
+                    if empenhos and not do_ano and all(d.get("data") for d in empenhos):
+                        d = max(empenhos, key=lambda d: d["data"])
+                        itens.append(f"vigente, sem nota de empenho datada de {hoje.year} na pasta (a mais recente: "
+                                     f"{_data(d['data'])}{ref(d)})")
+            n, d = ultimo(["notificacao", "relatorio_apuracao"], (hoje - dt.timedelta(days=365)).isoformat())
+            if n:
+                itens.append(f"{n} notificação(ões)/relatório(s) de apuração nos últimos 12 meses (o mais recente: "
+                             f"{_data(d['data'])}{ref(d)})")
+            if itens:
+                pontos.append(f"- {ident}:\n" + "\n".join(f"  • {i}" for i in itens))
+        lacunas = ["Pontos de atenção deduzidos das datas e da classificação automática dos documentos de cada "
+                   "pasta: confirme na pasta antes de agir."]
+        if sem_termino:
+            lacunas.append(f"{sem_termino} contrato(s) sem data de término identificada na ficha (vencimento não "
+                           "avaliado).")
+        if not pontos and sem_termino == len(fichas):
+            return None  # nada avaliável nas fichas: não afirmar "sem pendências" — caminho completo
+        alvo = "contrato" if len(fichas) == 1 else f"{len(fichas)} contratos do acervo"
+        if pontos:
+            resposta = (f"{len(pontos)} contrato(s) com pontos de atenção em {hoje:%d/%m/%Y} (entre os {alvo}):\n"
+                        if len(fichas) > 1 else f"Pontos de atenção em {hoje:%d/%m/%Y}:\n") + "\n".join(pontos)
+        else:
+            resposta = (f"Não identifiquei pontos de atenção nas fichas ({alvo}) em {hoje:%d/%m/%Y}: nenhum "
+                        f"vencimento em até {JANELA_RENOVACAO_DIAS} dias, execução após o término, notificação ou "
+                        "apuração recente, nem contrato vigente sem empenho no exercício.")
+        return RespostaFicha(resposta, "inferencia", 0.6, self.trechos.obter(list(dict.fromkeys(citados))),
+                             lacunas, latencia_ms=int((time.perf_counter() - inicio) * 1000),
+                             observacoes=["ficha_do_contrato", "assunto:pendencias"]
+                             + (["transversal"] if len(fichas) > 1 else []))
 
     @staticmethod
     def _situacao_vigencia(ficha, linhas, lacunas):
@@ -421,6 +551,13 @@ class ResponderPorFicha:
         if tipo_local == "varias":
             assunto = next((a for a in ASSUNTOS if re.search(a[1], texto)), None)
             return self._varias(achado, inicio) if assunto and assunto[0] in ("objeto", "contratada") else None
+        # "pendência de pagamento/empenho…" tem assunto próprio: segue o fluxo do assunto
+        if RE_PENDENCIA.search(texto) and not FORA_DA_FICHA.search(texto) and not any(
+                re.search(a[1], texto) for a in ASSUNTOS):
+            if tipo_local is None and RE_ALGUM_CONTRATO.search(texto) and self._todas():
+                return self._pendencias(self._todas(), inicio)
+            if tipo_local == "ficha":
+                return self._pendencias([achado], inicio)
         if tipo_local is None and RE_PANORAMA.search(texto) and RE_PLURAL_CONTRATOS.search(texto):
             return self._panorama(texto, inicio)
         if tipo_local is None:
@@ -496,7 +633,24 @@ class ResponderPorFicha:
                 lacunas.append("Datas dos documentos extraídas automaticamente; confira a pasta do contrato.")
             elif not presentes and self._mencionado(ficha, tipos) and not (ano and not self._mencionado_ano(
                     ficha, tipos, ano)):
-                return None  # nada classificado, mas o texto da pasta cita o assunto (no ano pedido): ler
+                # nada classificado, mas há documentos que COMEÇAM citando o assunto no ano (ou sem data): mostrar
+                # esses documentos (antes: caminho completo, ~55 s, que terminava em recusa nas perguntas reais)
+                total, itens = self._candidatos(ficha, tipos, ano) if ano else (0, [])
+                if not itens:
+                    return None  # sem ano: o caminho completo lê os documentos
+                classificacao = "candidatos"
+                linhas.append(f"Nenhum documento da pasta do {rotulo_contrato} foi classificado como {singular}"
+                              f"{periodo}, mas {total} documento(s) começam citando o assunto e são de {ano} ou "
+                              f"estão sem data identificada — confira"
+                              f"{' (os mais recentes)' if total > len(itens) else ''}:")
+                trechos = {t.id: t for t in self.trechos.obter([d["trecho_id"] for d in itens])}
+                for d in itens:
+                    t = trechos.get(d["trecho_id"])
+                    descricao = (t.titulo or t.arquivo) if t else "documento"
+                    linhas.append(f"- {_data(d['data']) if d['data'] else 'sem data identificada'}: {descricao}"
+                                  f"{cita(d['trecho_id'])}")
+                lacunas.append(f"Confira nesses documentos se algum é {singular}{periodo}: a classificação automática "
+                               "não os reconheceu como tal.")
             elif not presentes:
                 classificacao = "ausencia"
                 linhas.append(f"Não localizei {plural}{periodo} entre os {len(ficha['documentos'])} documentos "
@@ -511,7 +665,8 @@ class ResponderPorFicha:
         corpo = [linha if linha.startswith("- ") or linha.endswith(":") else f"- {linha}" for linha in linhas]
         resposta = cabecalho + ":\n" + "\n".join(corpo)
         fontes = self.trechos.obter(list(dict.fromkeys(citados))) if citados else []
-        return RespostaFicha(resposta, classificacao, 0.9 if classificacao == "fato" else 0.6, fontes, lacunas,
+        confianca = {"fato": 0.9, "candidatos": 0.5}.get(classificacao, 0.6)
+        return RespostaFicha(resposta, classificacao, confianca, fontes, lacunas,
                              latencia_ms=int((time.perf_counter() - inicio) * 1000),
                              observacoes=["ficha_do_contrato", f"assunto:{nome}"])
 

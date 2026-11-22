@@ -282,6 +282,13 @@ def test_segunda_passada_completa_campos_e_vigencia_atual_uma_vez_so():
     assert campos["vigencia_atual_fim"]["valor"] == "31/08/2099" and campos["aditivo_vigencia"]["documento_id"] == 5
     chamadas = llm.chamadas
     assert gerar.complementar()["complementadas"] == 0 and llm.chamadas == chamadas  # já feito: não repete
+    # aditivo mais recente chega (nova indexação ou data corrigida): só os aditivos são relidos, uma vez
+    repo.docs.append(doc(6, "CT 012-2023 X/a2.pdf", "aditivo", "SEGUNDO TERMO ADITIVO", "2025-01-01"))
+    repo.trechos_por_doc[6] = [(50, "Fica prorrogada a vigência do contrato até 31/08/2099.")]
+    chamadas = llm.chamadas
+    assert gerar.complementar()["complementadas"] == 1 and llm.chamadas == chamadas + 1  # sem refazer os campos
+    assert repo.salvas["012/2023"]["campos"]["aditivo_vigencia"]["documento_id"] == 6
+    assert gerar.complementar()["complementadas"] == 0
 
 
 def test_vigencia_atual_mostra_situacao_e_so_avisa_se_ha_aditivo_mais_recente():
@@ -471,3 +478,74 @@ def test_decisao_sobre_contrato_recebe_a_ficha_com_trechos_citaveis():
     estado = orq.executar("Devo prorrogar o contrato 012/2023?")
     assert pedidos == [4] and [t.id for t in estado["trechos"]][:2] == [12, 11]
     assert all("FICHA DO CONTRATO" in p for p in llm.prompts_usuario)  # especialistas e relator veem a ficha
+
+
+class RepoComCandidatos(RepoComAno):
+    def __init__(self, fichas, itens):
+        super().__init__(fichas, True)
+        self.itens = itens
+
+    def candidatos_do_tipo_no_ano(self, pasta, ids, termos, ano, limite=8):
+        return len(self.itens), self.itens[:limite]
+
+
+def test_documentos_que_citam_o_assunto_no_ano_sao_mostrados_em_vez_de_recusar():
+    sem_os = {**FICHA, "documentos": [{"documento_id": 7, "tipo": None, "data": None, "trecho_id": 70}]}
+    itens = [{"documento_id": 7, "data": None, "trecho_id": 70, "no_ano": False}]
+    r = ResponderPorFicha(RepoComCandidatos([sem_os], itens), RepoTrechos()).responder(
+        "Foi aberta ordem de serviço para o contrato 012/2023 no ano de 2026?")
+    assert r.classificacao == "candidatos" and r.confianca == 0.5
+    assert "sem data identificada: Documento 70 [T70]" in r.resposta and [t.id for t in r.fontes] == [70]
+    # pergunta geral: agrupa por contrato só os documentos DATADOS do ano
+    b = {**OUTRA, "documentos": [{"documento_id": 8, "tipo": None, "data": "2025-04-02", "trecho_id": 80}]}
+    itens = [{"documento_id": 8, "data": "2025-04-02", "trecho_id": 80, "no_ano": True},
+             {"documento_id": 9, "data": None, "trecho_id": 90, "no_ano": False}]
+    geral = ResponderPorFicha(RepoComCandidatos([FICHA, b], itens), RepoTrechos()).responder(
+        "Foi realizado relatório de apuração de descumprimento contratual em 2025?")
+    assert geral.classificacao == "candidatos" and "Contrato nº 015/2023: 1 documento(s)" in geral.resposta
+    assert "02/04/2025" in geral.resposta and "[T80]" in geral.resposta and "[T90]" not in geral.resposta
+    assert any("1 documento(s) sem data" in lacuna for lacuna in geral.lacunas)
+    so_sem_data = [{"documento_id": 9, "data": None, "trecho_id": 90, "no_ano": False}]
+    assert ResponderPorFicha(RepoComCandidatos([FICHA, b], so_sem_data), RepoTrechos()).responder(
+        "Foi realizado relatório de apuração de descumprimento contratual em 2025?") is None
+
+
+def test_data_complementar_pelo_fecho_assinatura_ou_emissao():
+    from datetime import date
+
+    from app.application.ingestao.metadados import data_complementar, extrair_metadados
+
+    hoje = date(2026, 11, 22)
+    texto = ("Conforme contrato de 10 de janeiro de 2023.\nCuiabá-MT, 5 de março de 2025, conforme ata.\n"
+             "Cuiabá, 12 de abril de 2025, ficam registradas as presenças.")
+    assert data_complementar(texto, hoje) == date(2025, 4, 12)  # o último fecho, mesmo fora do fim da linha
+    assert data_complementar("Documento assinado eletronicamente por Fulano, em 03/02/2026, às 10:15", hoje) \
+        == date(2026, 2, 3)
+    assert data_complementar("NOTA FISCAL\nData de emissão: 15/07/2024\nVencimento 15/08/2024", hoje) \
+        == date(2024, 7, 15)
+    assert data_complementar("Cuiabá, 1 de janeiro de 2030.", hoje) is None  # futuro: descartada
+    assert data_complementar("sem data nenhuma", hoje) is None
+    assert extrair_metadados("ATESTO\nRecebi os serviços.\nData de emissão: 15/07/2024").data == date(2024, 7, 15)
+
+
+def test_pendencias_listam_pontos_de_atencao_com_fonte():
+    import datetime as dt
+
+    hoje = dt.date.today()
+    fim = f"{hoje + dt.timedelta(days=30):%d/%m/%Y}"
+    vencendo = {**FICHA, "campos": {**FICHA["campos"], "vigencia_fim": {"valor": fim, "trecho_id": 13}},
+                "documentos": [{"documento_id": 1, "tipo": "nota_empenho", "data": f"{hoje.year - 1}-02-01",
+                                "trecho_id": 21}]}
+    encerrado = {**OUTRA, "campos": {"vigencia_fim": {"valor": f"31/01/{hoje.year - 1}", "trecho_id": 31}},
+                 "documentos": [{"documento_id": 5, "tipo": "nota_fiscal", "data": f"{hoje.year - 1}-06-01",
+                                 "trecho_id": 50}]}
+    r = ResponderPorFicha(RepoFichas([vencendo, encerrado]), RepoTrechos()).responder("Há pendência em algum contrato?")
+    assert r.classificacao == "inferencia" and r.resposta.startswith("2 contrato(s) com pontos de atenção")
+    assert "decidir renovação" in r.resposta and "[T13]" in r.resposta
+    assert f"sem nota de empenho datada de {hoje.year}" in r.resposta and "[T21]" in r.resposta
+    assert "documento(s) de execução datados depois" in r.resposta and "[T50]" in r.resposta
+    um = ResponderPorFicha(RepoFichas([vencendo]), RepoTrechos()).responder("Há pendência no contrato 012/2023?")
+    assert um.resposta.startswith("Pontos de atenção") and "transversal" not in um.observacoes
+    pagamento = ResponderPorFicha(RepoFichas([vencendo]), RepoTrechos()).responder(
+        "Há pendência de pagamento no contrato 012/2023?")
+    assert pagamento is None or "assunto:pendencias" not in pagamento.observacoes  # assunto próprio

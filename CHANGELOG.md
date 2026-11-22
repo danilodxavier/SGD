@@ -5,6 +5,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 ## [Não lançado] — Reestruturação SAD-GD
 
 ### Adicionado
+- Datas complementares dos documentos (último fecho, assinatura, emissão; ano igual em 98,5% no fecho) e `scripts/sadgd/datar_documentos.py`: 1.492 documentos reais datados (81% → 56% sem data). Ficha responde pendências dos contratos (vencimento, execução após o término, prorrogação a conferir, notificação recente, vigente sem empenho) e lista documentos para conferir em vez de recusar; aditivos relidos quando surge um mais recente, com a cláusula de prorrogação priorizada.
 - Busca restrita ao contrato citado quando a ficha não basta (F1 e decisão): documentos da pasta + 3 vagas do acervo inteiro, reranqueados juntos — validação: documento esperado 37/37, foco 18% → 27%, busca 1,8 → 1,0 s.
 - Ficha responde "contrato nº X" quando o número existe no acervo só em outros documentos (mostra onde aparece) e confere ausência com ano pelo início dos documentos (título/abertura + data).
 - Ficha responde mais na hora: panorama de vigência de todos os contratos (vencendo em 120 dias, encerrados, vigentes), relatório de apuração e notificação extrajudicial reconhecidos pelo título, perguntas de existência sem contrato citado e ausência com ano conferida no texto dos documentos.

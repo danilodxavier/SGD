@@ -4,7 +4,7 @@
 
 const SG = {
   CLASSE: { fato: ["ok", "Fato documental"], inferencia: ["info", "Inferência"], conflito: ["err", "Conflito"],
-            ausencia: ["warn", "Informação ausente"] },
+            ausencia: ["warn", "Informação ausente"], candidatos: ["info", "Documentos para conferir"] },
   ROTA: { F1_simples: "Pergunta simples", F1_complexa: "Pergunta complexa", F2: "Apoio à decisão" },
   AGENTE: {
     procurador_estado: "Procurador do Estado", advogado: "Advogado", controlador_geral: "Controlador-Geral",

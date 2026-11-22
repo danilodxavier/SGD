@@ -97,6 +97,34 @@ class RepositorioFichasSqlite:
         finally:
             conn.close()
 
+    def candidatos_do_tipo_no_ano(self, pasta: str | None, documento_ids: list[int] | None, termos: list[str],
+                                  ano: str, limite: int = 8) -> tuple[int, list[dict]]:
+        """Os documentos que fazem documento_do_tipo_no_ano dar verdadeiro: (total, até `limite` itens com
+        documento_id, data e o 1º trecho_id), mais recentes primeiro — para mostrar ao usuário em vez de recusar."""
+        if not termos:
+            return 0, []
+        filtro = " OR ".join("t.texto LIKE ?" for _ in termos)
+        alvo, params_alvo = "1 = 1", []
+        if pasta:
+            alvo, params_alvo = "(d.caminho_relativo LIKE ? OR d.caminho_relativo LIKE ?)", [f"{pasta}/%",
+                                                                                          f"{pasta}\\%"]
+        elif documento_ids:
+            alvo = f"d.id IN ({','.join('?' * len(documento_ids))})"  # noqa: S608 - só marcadores
+            params_alvo = list(documento_ids)
+        conn = self._conexao()
+        try:
+            linhas = conn.execute(
+                f"SELECT d.id, d.data_documento, t.id FROM documentos d JOIN trechos t ON t.id = (SELECT id FROM "  # noqa: S608
+                f"trechos WHERE documento_id = d.id ORDER BY ordem LIMIT 1) WHERE {alvo} AND ({filtro}) AND "
+                f"(d.data_documento LIKE ? OR d.data_documento IS NULL OR d.data_documento = '' OR t.texto LIKE ?) "
+                f"ORDER BY COALESCE(d.data_documento, '') DESC, d.id DESC",
+                params_alvo + [f"%{t}%" for t in termos] + [f"{ano}%", f"%{ano}%"]).fetchall()
+        finally:
+            conn.close()
+        itens = [{"documento_id": r[0], "data": r[1] or None, "trecho_id": r[2],
+                  "no_ano": str(r[1] or "").startswith(ano)} for r in linhas[:limite]]
+        return len(linhas), itens
+
     def documentos_da_pasta(self, pasta: str) -> set[int]:
         """Todos os documentos da pasta do contrato (inclusive os de tipo "outro", fora do inventário)."""
         conn = self._conexao()
@@ -154,6 +182,7 @@ class RepositorioFichasSqlite:
         return {"id": r[0], "chave": r[1], "pasta": r[2],
                 "campos": {k: v for k, v in campos.items() if not k.startswith("_")},
                 "apelidos": campos.get("_apelidos", []), "complemento": campos.get("_complemento", 0),
+                "aditivos_lidos": campos.get("_aditivos_lidos"), "aditivos_versao": campos.get("_aditivos_versao", 1),
                 "documentos": json.loads(r[4] or "[]"), "texto_busca": r[5], "extracao": r[6], "gerada_em": r[7]}
 
     def ficha(self, chave: str) -> dict | None:
@@ -175,7 +204,8 @@ class RepositorioFichasSqlite:
 
     def salvar(self, ficha: dict) -> None:
         campos = {**ficha.get("campos", {}), "_apelidos": ficha.get("apelidos", []),
-                  "_complemento": ficha.get("complemento", 0)}
+                  "_complemento": ficha.get("complemento", 0), "_aditivos_lidos": ficha.get("aditivos_lidos"),
+                  "_aditivos_versao": ficha.get("aditivos_versao", 1)}
         conn = self._conexao()
         try:
             conn.execute(
