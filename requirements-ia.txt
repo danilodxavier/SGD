@@ -11,7 +11,8 @@ pytesseract==0.3.13
 scikit-learn==1.9.1
 jsonschema==4.26.0
 pydantic==2.14.3
-# Voz (transcrição local). Python 3.15 sem onnxruntime: instalar com --no-deps + as dependências abaixo
-faster-whisper==1.2.1
+# Voz (transcrição local): faster-whisper fica em requirements-voz.txt (instalado com --no-deps, porque o
+# onnxruntime — usado só pelo filtro VAD, desligado aqui — não existe para o Python 3.15). Dependências dele:
+av==19.0.2
 ctranslate2==4.9.0
 tokenizers>=0.13,<1

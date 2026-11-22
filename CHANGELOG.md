@@ -5,6 +5,13 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 ## [Não lançado] — Reestruturação SAD-GD
 
 ### Adicionado
+- Demo Day (23/11/2026): vídeo de 4 min 57 s com apresentador em massinha 3D gerado localmente a partir da foto (`scripts/video/avatar_massinha.py`, `gerar_video_demoday.py`, roteiro `cenas_demoday.json`), captura das telas reais com o corpus acadêmico (`scripts/video/capturar_telas.py`) e PDF de pitch + guia completo (`scripts/entrega/gerar_guia_pdf.py`). Saídas em `data/video/demoday/` e `data/entrega/` (fora do Git).
+
+### Corrigido
+- Voz: números de atos falados viram a forma escrita ("contrato 12 barra 2023" / "contrato número 44 de 2023" → "contrato nº 12/2023"), e a pergunta ganha "?" — antes a busca não reconhecia o contrato e respondia sobre outros (6 testes).
+- CI: `faster-whisper` instalado com `--no-deps` (`requirements-voz.txt`), porque o `onnxruntime` não existe para o Python 3.15; o CI falhava na instalação desde a Fase 12.
+
+### Adicionado (anteriores)
 - Pergunta sobre regra ou procedimento ("quais documentos são exigidos…", "como deve…") segue para o caminho completo em vez de virar inventário da ficha; reranker sem memória na GPU passa para a CPU em vez de derrubar a pergunta.
 - Decisão com um só especialista: síntese montada do parecer (afirmações verificadas, mesmas salvaguardas do relator), sem 2ª chamada ao modelo — decisão real 103 → 71 s.
 - Decisão (F2) mais rápida: orçamento do contexto dentro do `num_ctx` do modelo local (sem JSON cortado nem cache de prefixo perdido), linha do tempo com os eventos mais recentes, parecer enxuto e pareceres compactados para o relator — decisão real 334 → 78–103 s; validação acadêmica p50 236 → 150 s com qualidade igual ou melhor.

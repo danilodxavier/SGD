@@ -8,6 +8,7 @@ português. O áudio não é gravado em disco. Medição (voz sintética pt-BR, 
 """
 import io
 import os
+import re
 import threading
 import time
 import wave
@@ -22,6 +23,30 @@ CONTEXTO = ("Pergunta à gestão pública sobre contratos administrativos, termo
 
 class AudioInvalido(ValueError):
     pass
+
+
+# Números de atos falados ("contrato doze barra dois mil e vinte e três" → Whisper: "contrato 12 barra 2023";
+# "decreto 7892 de 2013") viram a forma escrita que a busca e as fichas reconhecem ("nº 12/2023").
+_ATO = (r"contrato|termo aditivo|aditivo|apostilamento|decreto|lei|portaria|resolu[cç][aã]o|instru[cç][aã]o normativa|"
+        r"parecer|of[ií]cio|ordem de servi[cç]o|ordem de suspens[aã]o|ordem de rein[ií]cio|processo|preg[aã]o|edital|"
+        r"conv[eê]nio|notifica[cç][aã]o|relat[oó]rio")
+_RE_BARRA = re.compile(r"(?<![\d/])(\d{1,5}(?:\.\d{3})?)\s*(?:barra|/)\s*((?:19|20)\d{2})(?!\d)", re.I)
+_RE_ATO_DE_ANO = re.compile(
+    rf"\b({_ATO})\s+(?:n[uú]mero\s+|n[º°o]\.?\s*)?(\d{{1,5}}(?:\.\d{{3}})?)\s+de\s+((?:19|20)\d{{2}})(?!\d)", re.I)
+_RE_ATO_NUMERO = re.compile(rf"\b({_ATO})\s+(?:n[uú]mero\s+|n[º°o]\.?\s*)?(?=\d)", re.I)
+_RE_INTERROGATIVA = re.compile(r"^(quando|qual|quais|quem|como|onde|o que|por que|porque|quanto|quantos|quantas|existe|"
+                               r"existem|h[aá]|houve|tem|devo|deve|devemos|[eé]|est[aá]|foi|foram|pode|posso)\b", re.I)
+
+
+def normalizar_fala(texto: str) -> str:
+    """Forma escrita para perguntas faladas: "contrato 12 barra 2023." → "contrato nº 12/2023?"."""
+    t = " ".join(texto.split())
+    t = _RE_ATO_DE_ANO.sub(lambda m: f"{m.group(1)} {m.group(2)}/{m.group(3)}", t)
+    t = _RE_BARRA.sub(r"\1/\2", t)
+    t = _RE_ATO_NUMERO.sub(lambda m: f"{m.group(1)} nº ", t)
+    if _RE_INTERROGATIVA.match(t) and t.endswith("."):
+        t = t[:-1] + "?"
+    return t
 
 
 def ler_wav(dados: bytes) -> np.ndarray:
@@ -70,6 +95,6 @@ class TranscritorLocal:
         with self._trava:  # um áudio por vez (CPU compartilhada com a busca)
             segmentos, info = self._carregar().transcribe(audio, language="pt", beam_size=1, vad_filter=False,
                                                           initial_prompt=CONTEXTO, condition_on_previous_text=False)
-            texto = " ".join(s.text.strip() for s in segmentos).strip()
+            texto = normalizar_fala(" ".join(s.text.strip() for s in segmentos).strip())
         return {"texto": texto, "duracao_s": round(info.duration, 1),
                 "ms": int((time.perf_counter() - inicio) * 1000), "modelo": self.modelo}

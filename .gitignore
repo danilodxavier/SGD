@@ -34,5 +34,6 @@ data/observabilidade/
 !/corpus/*.csv
 !/corpus/*.md
 data/video/
+data/entrega/
 # avaliação com documentos reais: perguntas, respostas e fontes reais nunca vão ao Git
 /avaliacao/real/

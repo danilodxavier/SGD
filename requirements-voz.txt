@@ -1,0 +1,4 @@
+# Voz local (ADR-014). Instalar SEM dependências: pip install --no-deps -r requirements-voz.txt
+# (o onnxruntime não tem versão para o Python 3.15 e só é usado pelo filtro VAD, que o sistema não liga;
+# as demais dependências estão em requirements-ia.txt).
+faster-whisper==1.2.1

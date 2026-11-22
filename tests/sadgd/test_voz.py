@@ -5,7 +5,7 @@ import wave
 import numpy as np
 import pytest
 
-from app.infrastructure.voz.transcritor import AudioInvalido, ler_wav
+from app.infrastructure.voz.transcritor import AudioInvalido, ler_wav, normalizar_fala
 from app.interfaces.api import voz as api_voz
 from tests.helpers import HEADERS, anonymous_client, logged_client
 
@@ -35,6 +35,18 @@ def test_audio_invalido_e_recusado(caso):
              "longo": lambda: wav(segundos=91, taxa=8000)}[caso]()
     with pytest.raises(AudioInvalido):
         ler_wav(dados)
+
+
+@pytest.mark.parametrize("falado, escrito", [
+    ("Quando termina a vigência do contrato 12 barra 2023.", "Quando termina a vigência do contrato nº 12/2023?"),
+    ("Qual o valor do contrato número 44 de 2023.", "Qual o valor do contrato nº 44/2023?"),
+    ("O decreto 7.892 de 2013 ainda está em vigor?", "O decreto nº 7.892/2013 ainda está em vigor?"),
+    ("Devo prorrogar o contrato nº 44/2023.", "Devo prorrogar o contrato nº 44/2023?"),
+    ("Liste os contratos de 2023.", "Liste os contratos de 2023."),
+    ("Em 12 de 2023 houve reunião.", "Em 12 de 2023 houve reunião."),
+])
+def test_normalizar_fala_escreve_numero_do_ato(falado, escrito):
+    assert normalizar_fala(falado) == escrito
 
 
 class TranscritorFalso:

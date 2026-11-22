@@ -49,6 +49,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt -r requirements-ia.txt -r requirements-dev.txt
+          python -m pip install --no-deps -r requirements-voz.txt
       - name: Lint (código SAD-GD)
         run: python -m ruff check .
       - name: Testes v1 + SAD-GD

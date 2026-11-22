@@ -1,0 +1,457 @@
+{
+  "titulo": "SAD-GD — Demo Day 23/11/2026",
+  "voz": "Daniel",
+  "velocidade": 3,
+  "pronuncia": {
+    "SAD-GD": "Sad Gê Dê",
+    "SEMA": "Sema",
+    "LGPD": "L G P D",
+    "MCP": "M C P",
+    "GPU": "Gê Pê U",
+    "OCR": "Ó Cê Érre",
+    "LangGraph": "Lang Gráfi",
+    "Qwen": "Quén",
+    "bge-m3": "B G E M 3",
+    "Ollama": "Olama",
+    "Whisper": "Uísper",
+    "Tesseract": "Tésseráct",
+    "reranker": "rirânker",
+    "Markdown": "Márk dáun",
+    "skills": "isquíls",
+    "plugins": "plâguins",
+    "hooks": "rúks",
+    "Claude Code": "Clód Côde",
+    "Claude Opus": "Clód Ópus",
+    "GitHub Projects": "Guit Râb Prójects",
+    "GitHub": "Guit Râb",
+    "Kanban": "Cã-ban",
+    "Scrum": "Iscrãm",
+    "PMBOK": "Pê Ême Bók",
+    "Playwright": "Plêi-ráit",
+    "Edge": "Édji",
+    "sad.sema.mt.gov.br": "sád, ponto sema, ponto ême tê, ponto gov, ponto bê érre",
+    "F2": "éfe dois",
+    "F1": "éfe um",
+    "RAG": "Rég",
+    "nº 044/2023": "quarenta e quatro de dois mil e vinte e três",
+    "5.691": "cinco mil seiscentos e noventa e um"
+  },
+  "cenas": [
+    {
+      "id": "abertura",
+      "tipo": "apresentador",
+      "capitulo": "Apresentação",
+      "titulo": "Danilo Xavier",
+      "subtitulo": "Analista de Meio Ambiente · Perfil Analista de Sistemas\nCoordenadoria de Infraestrutura e Tecnologia — SEMA-MT",
+      "itens": [
+        "Licenciado em Computação",
+        "Bacharel em Direito",
+        "Especialista em Informática Educativa",
+        "Especialista em Gestão Pública",
+        "Especialista em Direito Digital: Cibersegurança e Inteligência Artificial"
+      ],
+      "fala": "Olá! Eu sou Danilo Xavier, Analista de Meio Ambiente, perfil Analista de Sistemas, lotado na Coordenadoria de Infraestrutura e Tecnologia da SEMA de Mato Grosso. Sou licenciado em Computação e bacharel em Direito, com especializações em Informática Educativa, Gestão Pública e Direito Digital: Cibersegurança e Inteligência Artificial. E hoje eu vou apresentar o SAD-GD."
+    },
+    {
+      "id": "justificativa",
+      "tipo": "apresentador",
+      "capitulo": "Justificativa",
+      "titulo": "Por que o SAD-GD?",
+      "itens": [
+        "Muitos contratos ao mesmo tempo: vigências, aditivos, apostilamentos, notificações",
+        "Normas que mudam, são revogadas e se contradizem",
+        "Fiscalizar de forma inteligente, ágil e assertiva",
+        "Investimento público que retorne em vantajosidade para a SEMA e para o contribuinte"
+      ],
+      "fala": "Por que este sistema? A SEMA gerencia muitos contratos ao mesmo tempo, com vigências, aditivos, apostilamentos e normas que mudam. Fiscalizar tudo isso de forma inteligente, ágil e assertiva é um desafio diário. E cada decisão precisa garantir que o investimento retorne em vantajosidade e benefícios para a SEMA e para todos os contribuintes."
+    },
+    {
+      "id": "solucao",
+      "tipo": "apresentador",
+      "capitulo": "A solução",
+      "titulo": "SAD-GD",
+      "subtitulo": "Sistema de Apoio à Tomada de Decisão e Gestão Documental",
+      "itens": [
+        "Lê o acervo e responde com a fonte: documento, página e trecho",
+        "Apoia a decisão com agentes especialistas de IA",
+        "Escopo atual reduzido pela limitação de hardware (GPU)",
+        "Arquitetura geral: responde a qualquer pergunta sobre o que estiver indexado"
+      ],
+      "fala": "O SAD-GD lê o acervo, responde citando a fonte e apoia a gestão com uma equipe de agentes de inteligência artificial. Importante: o escopo atual foi reduzido pela falta de recursos de hardware, principalmente pela limitação da GPU. Mas a arquitetura é geral: ele pode responder a qualquer pergunta, desde que o material de origem esteja indexado."
+    },
+    {
+      "id": "acesso",
+      "tipo": "demo",
+      "capitulo": "Formas de acesso",
+      "titulo": "Aplicação, web, texto e voz",
+      "tomadas": [
+        {
+          "tela": "00_login",
+          "foco": [
+            560,
+            280,
+            1360,
+            760
+          ],
+          "nota": "Login com perfis de acesso"
+        },
+        {
+          "tela": "01_painel",
+          "foco": [
+            300,
+            180,
+            1920,
+            1080
+          ],
+          "nota": "Rede interna: sad.sema.mt.gov.br"
+        },
+        {
+          "tela": "celular",
+          "nota": "Celular e tablet pelo navegador"
+        }
+      ],
+      "fala": "O acesso é simples. Na estação servidora, a aplicação abre com um clique. Na rede interna, qualquer computador da SEMA acessa pelo navegador, no endereço sad.sema.mt.gov.br, com login e perfis de acesso. E a mesma tela se adapta ao celular e ao tablet."
+    },
+    {
+      "id": "acervo",
+      "tipo": "demo",
+      "capitulo": "Painel e acervo",
+      "titulo": "Painel e acervo",
+      "tomadas": [
+        {
+          "tela": "01_painel",
+          "foco": [
+            320,
+            290,
+            1700,
+            700
+          ],
+          "nota": "186 documentos · 5.691 trechos · 31 processos"
+        },
+        {
+          "tela": "10_acervo",
+          "foco": [
+            320,
+            200,
+            1920,
+            1080
+          ],
+          "nota": "Enviar e indexar no próprio servidor"
+        }
+      ],
+      "fala": "No painel, o gestor acompanha o acervo, os trechos indexados, os processos reconstruídos e as contradições detectadas. No acervo, ele envia um novo documento, e o sistema lê, faz OCR quando é digitalizado e indexa no próprio servidor."
+    },
+    {
+      "id": "f1",
+      "tipo": "demo",
+      "capitulo": "Pergunta por texto",
+      "titulo": "Resposta com a fonte",
+      "tomadas": [
+        {
+          "tela": "03_f1_resposta",
+          "foco": [
+            320,
+            530,
+            1720,
+            1080
+          ],
+          "nota": "Documento, cláusula e trecho literal"
+        },
+        {
+          "tela": "03_f1_resposta",
+          "foco": [
+            340,
+            640,
+            1700,
+            870
+          ],
+          "nota": "Conflito detectado entre documentos"
+        },
+        {
+          "tela": "04_f1_trecho",
+          "foco": [
+            500,
+            360,
+            1420,
+            720
+          ],
+          "nota": "Ver trecho: a fonte original"
+        }
+      ],
+      "fala": "Agora, a pergunta por texto: qual o valor global do contrato nº 044/2023? A resposta vem com o documento, a cláusula e o trecho literal. E veja: o sistema encontrou um relatório de fiscalização com um valor diferente e avisou o conflito, em vez de escondê-lo. Com um clique, o trecho original aparece."
+    },
+    {
+      "id": "voz",
+      "tipo": "demo",
+      "capitulo": "Pergunta por voz",
+      "titulo": "Pergunte falando",
+      "tomadas": [
+        {
+          "tela": "07_voz_gravando",
+          "foco": [
+            320,
+            340,
+            1720,
+            540
+          ],
+          "nota": "Botão Falar: gravação no navegador"
+        },
+        {
+          "tela": "08_voz_transcrita",
+          "foco": [
+            0,
+            330,
+            1720,
+            1080
+          ],
+          "nota": "Transcrição local (Whisper), sem enviar o áudio"
+        },
+        {
+          "tela": "09_voz_resposta",
+          "foco": [
+            320,
+            530,
+            1720,
+            1080
+          ],
+          "nota": "Resposta em 3,6 segundos"
+        }
+      ],
+      "fala": "Também por voz. O gestor clica em falar e faz a pergunta. A transcrição é feita aqui mesmo, com o Whisper, sem enviar o áudio para fora. O texto aparece para conferência, e a resposta chega em poucos segundos, com as fontes."
+    },
+    {
+      "id": "precisao",
+      "tipo": "demo",
+      "capitulo": "Sem alucinação",
+      "titulo": "Vigência e honestidade",
+      "tomadas": [
+        {
+          "tela": "05_f1_vigencia",
+          "foco": [
+            320,
+            300,
+            1720,
+            740
+          ],
+          "nota": "Norma revogada e o ato que a revogou"
+        },
+        {
+          "tela": "06_f1_sem_evidencia",
+          "foco": [
+            320,
+            420,
+            1720,
+            780
+          ],
+          "nota": "\"Não localizei essa informação\""
+        }
+      ],
+      "fala": "O sistema respeita a hierarquia e a vigência das normas: um decreto revogado é identificado, junto com o ato que o revogou. E quando a informação não existe no acervo, a resposta é honesta: não localizei essa informação nos documentos disponibilizados. Sem alucinação e sem imprecisão."
+    },
+    {
+      "id": "linha",
+      "tipo": "demo",
+      "capitulo": "Linha do tempo",
+      "titulo": "Linha do tempo do contrato",
+      "tomadas": [
+        {
+          "tela": "20_linha_do_tempo",
+          "foco": [
+            320,
+            380,
+            1720,
+            1040
+          ],
+          "nota": "Contrato → suspensão → retomada → aditivo"
+        }
+      ],
+      "fala": "A linha do tempo reconstrói cada contrato: assinatura, suspensão, retomada e aditivo, com a evidência de cada relação entre os documentos."
+    },
+    {
+      "id": "f2",
+      "tipo": "demo",
+      "capitulo": "Apoio à decisão",
+      "titulo": "O sistema sugere, o gestor decide",
+      "tomadas": [
+        {
+          "tela": "12_f2_topo",
+          "foco": [
+            320,
+            560,
+            1720,
+            1080
+          ],
+          "nota": "Pergunta de decisão → agentes especialistas"
+        },
+        {
+          "tela": "13_f2_inteira",
+          "rolagem": [
+            760,
+            900
+          ],
+          "foco": [
+            320,
+            0,
+            1720,
+            820
+          ],
+          "nota": "Recomendação, alternativas e riscos"
+        },
+        {
+          "tela": "13_f2_inteira",
+          "rolagem": [
+            1430,
+            1560
+          ],
+          "foco": [
+            320,
+            0,
+            1720,
+            820
+          ],
+          "nota": "Precedentes da gestão, inclusive os negativos"
+        },
+        {
+          "tela": "13_f2_inteira",
+          "rolagem": [
+            1980,
+            2240
+          ],
+          "foco": [
+            320,
+            0,
+            1720,
+            820
+          ],
+          "nota": "Consensos, divergências, lacunas e fontes"
+        }
+      ],
+      "fala": "E o principal: o apoio à decisão. Pergunto: devo prorrogar novamente o contrato de vigilância? Os agentes especialistas, como o Gestor Público e o Fiscal de Contrato, analisam o caso. O relator entrega a recomendação com alternativas, prós e contras, riscos com mitigação, precedentes da própria gestão, inclusive os que deram errado, divergências, lacunas e o nível de confiança, tudo com as fontes citadas. O sistema sugere. O gestor decide."
+    },
+    {
+      "id": "memoria",
+      "tipo": "demo",
+      "capitulo": "Memória de decisões",
+      "titulo": "Memória institucional",
+      "tomadas": [
+        {
+          "tela": "31_precedentes",
+          "foco": [
+            320,
+            330,
+            1720,
+            1000
+          ],
+          "nota": "Decisões anteriores viram precedentes"
+        }
+      ],
+      "fala": "E cada decisão registrada vira memória institucional e precedente para as próximas. A SEMA aprende com a própria experiência."
+    },
+    {
+      "id": "ferramentas",
+      "tipo": "ferramentas",
+      "capitulo": "Como foi construído",
+      "titulo": "Engenharia de IA de ponta a ponta",
+      "cartoes": [
+        [
+          "Claude Code",
+          "Claude Opus como engenheiro, arquiteto e gerente do projeto"
+        ],
+        [
+          "Skills e plugins",
+          "architecture, code-review, testing, docs, pdf, pptx"
+        ],
+        [
+          "Conectores MCP",
+          "Navegador, terminal, Chrome, registro de conectores"
+        ],
+        [
+          "Subagentes e hooks",
+          "Exploração paralela; ações sob permissão"
+        ],
+        [
+          "12 fases + aprovação",
+          "PMBOK 7 · Scrum: cada fase é um sprint"
+        ],
+        [
+          "Kanban",
+          "GitHub Projects: 52 issues concluídas"
+        ],
+        [
+          "GitHub + CI",
+          "Testes, lint, cobertura e varredura de segredos"
+        ],
+        [
+          "15 ADRs + Markdown",
+          "Decisões, fases, manuais e continuidade"
+        ]
+      ],
+      "telas": [
+        "61_github_kanban",
+        "63_github_adr"
+      ],
+      "fala": "Como foi construído? Com engenharia de IA de ponta a ponta. O Claude Code, com o modelo Claude Opus, atuou como engenheiro, arquiteto e gerente do projeto, com skills, plugins, subagentes e conectores MCP, como o navegador e o terminal. Foram doze fases, com a minha aprovação a cada entrega: Scrum e Kanban no GitHub Projects, cinquenta e duas issues, integração contínua, quinze decisões de arquitetura e toda a documentação em Markdown."
+    },
+    {
+      "id": "arquitetura",
+      "tipo": "arquitetura",
+      "capitulo": "Por dentro",
+      "titulo": "Arquitetura multiagentes local",
+      "fala": "Por dentro, um sistema multiagentes com LangGraph: o roteador classifica a pergunta, a busca híbrida com reranker encontra os trechos, os especialistas analisam e o verificador de fontes corta o que não tem prova. Os modelos são abertos e locais: Qwen 2.5 no Ollama, bge-m3, Whisper e Tesseract. Tudo gratuito, na rede da SEMA, sem enviar dados para fora, respeitando a LGPD."
+    },
+    {
+      "id": "resultados",
+      "tipo": "metricas",
+      "capitulo": "Resultados",
+      "titulo": "Resultados medidos",
+      "metricas": [
+        [
+          "0,965",
+          "Recall@5 da busca"
+        ],
+        [
+          "0,964",
+          "Fidelidade às fontes"
+        ],
+        [
+          "0%",
+          "Alucinação numérica"
+        ],
+        [
+          "1,00",
+          "Precedentes (R@3)"
+        ],
+        [
+          "< 5 s",
+          "Respostas das fichas"
+        ],
+        [
+          "R$ 0",
+          "Custo por consulta"
+        ]
+      ],
+      "fala": "E os resultados foram medidos: noventa e seis vírgula cinco por cento de recall na busca, fidelidade às fontes de noventa e seis vírgula quatro por cento, zero alucinação numérica, precedentes encontrados em todos os casos e custo zero por consulta."
+    },
+    {
+      "id": "valor",
+      "tipo": "apresentador",
+      "capitulo": "Ganhos para a SEMA",
+      "titulo": "O ganho para a SEMA",
+      "itens": [
+        "Velocidade e inteligência documental",
+        "Fiscalização de contratos mais efetiva",
+        "Decisões seguras, transparentes e fundamentadas",
+        "Com GPU mais robusta: todo o acervo da Secretaria"
+      ],
+      "fala": "O ganho para a SEMA é enorme: velocidade e inteligência documental, fiscalização mais efetiva dos contratos e, principalmente, decisões mais seguras, transparentes e fundamentadas. Com uma GPU mais robusta, o mesmo sistema cresce para todo o acervo da Secretaria."
+    },
+    {
+      "id": "fechamento",
+      "tipo": "fechamento",
+      "capitulo": "Encerramento",
+      "titulo": "Pergunte. Confira a fonte. Decida.",
+      "subtitulo": "github.com/danilodxavier/SGD",
+      "fala": "O SAD-GD já está funcionando na rede interna da SEMA. Pergunte. Confira a fonte. Decida. Muito obrigado!"
+    }
+  ]
+}

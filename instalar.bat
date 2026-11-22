@@ -62,6 +62,8 @@ if errorlevel 1 goto :erro_pip
 echo [7/11] Instalando dependencias de IA, avaliacao, observabilidade e testes...
 ".venv\Scripts\python.exe" -m pip install --disable-pip-version-check -q -r requirements-ia.txt -r requirements-avaliacao.txt -r requirements-observabilidade.txt -r requirements-dev.txt
 if errorlevel 1 goto :erro_pip
+".venv\Scripts\python.exe" -m pip install --disable-pip-version-check -q --no-deps -r requirements-voz.txt
+if errorlevel 1 goto :erro_pip
 echo [OK] Dependencias de IA instaladas.
 
 echo [8/11] Verificando configuracao .env...
