@@ -189,7 +189,8 @@ class ResponderPorFicha:
         if not achados:
             # ausência no acervo inteiro só com ano e se NENHUM trecho cita o assunto junto com o ano
             termos = [t for tipo in tipos for t in TERMOS_TEXTO.get(tipo, [])]
-            verificar = getattr(self.fichas, "menciona_ano", None)
+            verificar = getattr(self.fichas, "documento_do_tipo_no_ano", None) or getattr(self.fichas, "menciona_ano",
+                                                                                            None)
             if not ano or verificar is None or not termos or verificar(None, None, termos, ano):
                 return None
             resposta = (f"Não localizei {plural}{periodo} no acervo: nenhuma das {len(self._todas())} pastas de "
@@ -243,7 +244,9 @@ class ResponderPorFicha:
         return menciona(ficha.get("pasta"), [d["documento_id"] for d in ficha["documentos"]], termos)
 
     def _mencionado_ano(self, ficha, tipos, ano) -> bool:
-        verificar = getattr(self.fichas, "menciona_ano", None)
+        """Há documento do assunto no ano (pelo início do documento + data)? Sem o método, termo + ano no texto."""
+        verificar = getattr(self.fichas, "documento_do_tipo_no_ano", None) or getattr(self.fichas, "menciona_ano",
+                                                                                        None)
         termos = [t for tipo in tipos for t in TERMOS_TEXTO.get(tipo, [])]
         if verificar is None or not termos:
             return True
@@ -320,10 +323,34 @@ class ResponderPorFicha:
             lacunas.append("Vigência atual depende do termo aditivo mais recente.")
         return linhas, lacunas
 
+    def _numero_de_outro_documento(self, numero, info, inicio):
+        trechos = {t.id: t for t in self.trechos.obter([d["trecho_id"] for d in info["documentos"]])}
+        linhas = []
+        for d in info["documentos"]:
+            t = trechos.get(d["trecho_id"])
+            tipo = ROTULO_TIPO.get(d["tipo"] or "", (d["tipo"] or "documento",))[0]
+            linhas.append(f"- {_data(d.get('data'))}: {(t.titulo or t.arquivo) if t else tipo} ({tipo}) "
+                          f"[T{d['trecho_id']}]")
+        resposta = (f"Não localizei contrato com o nº {numero}: o número não aparece como número de contrato em nenhum "
+                    f"documento do acervo, nem nas {len(self._todas())} pastas de contrato. Ele aparece em "
+                    f"{info['trechos']} trecho(s) de outros documentos — por exemplo:\n" + "\n".join(linhas))
+        return RespostaFicha(resposta, "ausencia", 0.7, list(trechos.values()),
+                             ["Confira se o número se refere a outro documento (apostilamento, empenho, extrato…)."],
+                             latencia_ms=int((time.perf_counter() - inicio) * 1000),
+                             observacoes=["ficha_do_contrato", "assunto:numero_de_outro_documento"])
+
     def _desconhecido(self, numero, inicio):
-        """Contrato citado sem ficha: só afirma ausência se o número não aparece em NENHUM trecho do acervo."""
+        """Contrato citado sem ficha: afirma que não há contrato com esse número se ele não aparece em nenhum trecho
+        — ou se aparece, mas nunca COMO número de contrato (então mostra onde aparece: apostilamento, extrato…)."""
+        detalhar = getattr(self.fichas, "numero_no_acervo", None)
+        if detalhar is not None:
+            info = detalhar(numero)
+            if info["trechos"] and not info["como_contrato"]:
+                return self._numero_de_outro_documento(numero, info, inicio)
+            if info["trechos"]:
+                return None  # citado como contrato em algum documento: o caminho completo lê
         contar = getattr(self.fichas, "ocorrencias_numero", None)
-        if contar is None or contar(numero) != 0:
+        if detalhar is None and (contar is None or contar(numero) != 0):
             return None
         resposta = (f"Não localizei o Contrato nº {numero} no acervo indexado: o número não aparece em nenhum "
                     f"documento, e nenhum dos {len(self._todas())} contratos com pasta própria tem esse número.")

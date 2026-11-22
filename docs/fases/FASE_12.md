@@ -183,3 +183,17 @@ Golden acadêmico: 72 respostas rápidas, todas corretas (2 diferem só na pontu
 R05, R06, R08, R11); demais 33–75 s pelo caminho completo (R09 e R12: o texto cita o assunto com o ano — a ficha não
 afirma ausência); decisão (R02) 243 → 154 s. Recusas: R12 (provável ausência real) e R07 ("há pendência em algum
 contrato?", pergunta vaga pelo caminho completo, que oscila entre rodadas).
+
+## 11. Rodada 9 — números que não são de contrato e ausência pelo início dos documentos (2026-11-21)
+
+- **Número citado que não é de contrato** (R03 e R10): o número aparece no acervo (203 e 11
+  trechos), mas **nunca como "contrato nº"** — sobretudo em apostilamentos, ofícios e extratos. A ficha responde que
+  não há contrato com esse número e mostra até 5 documentos onde ele aparece, citados (caso a pergunta se refira a um
+  deles). Se o número aparecer como contrato em algum trecho, o caminho completo lê.
+- **Ausência com ano pelo início do documento**: em vez de "termo + ano em qualquer trecho" (uma cláusula do contrato
+  que cita "ordem de serviço" num trecho com "2026" bloqueava a resposta), procura documento cujo 1º trecho
+  (título/abertura) cita o assunto e cuja data é do ano pedido — ou sem data (dúvida → caminho completo).
+
+**Rodada 9:** **8 de 11 perguntas não-decisórias em ≤ 4,6 s** (R01, R03, R04, R05, R06, R08, R10, R11); R07, R09 e
+R12 pelo caminho completo (56–85 s; em R09/R12 há documento que começa citando o assunto no ano pedido ou sem data);
+decisão (R02) 149 s. Golden acadêmico inalterado (72 respostas rápidas corretas).

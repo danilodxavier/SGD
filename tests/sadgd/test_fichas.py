@@ -1,4 +1,6 @@
 """Fichas de contrato: agrupamento, extração conferida, consulta sem LLM e atalho no orquestrador."""
+import pytest
+
 from app.application.fichas.agrupamento import (
     DocumentoAcervo,
     agrupar,
@@ -376,3 +378,52 @@ def test_ausencia_com_ano_conferida_no_texto_e_pergunta_de_existencia_sem_contra
         "Foi realizado relatório de apuração de descumprimento contratual em 2025?") is None
     lista = ResponderPorFicha(RepoComAno([FICHA, OUTRA], False), RepoTrechos()).responder("Houve empenho em 2025?")
     assert lista.resposta.startswith("1 contrato(s) com notas de empenho em 2025")
+
+
+def test_numero_que_nao_e_de_contrato_mostra_onde_aparece():
+    class RepoNumero(RepoFichas):
+        def numero_no_acervo(self, chave):
+            return {"trechos": 7, "como_contrato": 0,
+                    "documentos": [{"documento_id": 5, "tipo": "apostilamento", "data": "2024-03-01", "trecho_id": 51}]}
+
+    r = ResponderPorFicha(RepoNumero([FICHA]), RepoTrechos()).responder("O contrato 097/2024 foi encerrado?")
+    assert r.classificacao == "ausencia" and "não aparece como número de contrato" in r.resposta
+    assert "(apostilamento) [T51]" in r.resposta and [t.id for t in r.fontes] == [51]
+
+    class RepoContrato(RepoFichas):
+        def numero_no_acervo(self, chave):
+            return {"trechos": 2, "como_contrato": 1, "documentos": []}
+
+    assert ResponderPorFicha(RepoContrato([FICHA]), RepoTrechos()).responder(
+        "O contrato 097/2024 foi encerrado?") is None  # citado como contrato em algum lugar: caminho completo
+
+
+def test_repositorio_numero_e_documento_do_tipo_no_ano(tmp_path):
+    from app.infrastructure.sqlite.conexao import conectar, migrar
+    from app.infrastructure.sqlite.repositorio_fichas import RepositorioFichasSqlite
+
+    banco = tmp_path / "f.db"
+    pytest.importorskip("sqlite_vec")
+    conn = conectar(banco)
+    migrar(conn)
+    docs = [(1, "CT 012-2023 X/c.pdf", "contrato", "2023-01-01",
+             ["CONTRATO Nº 012/2023", "Cláusula: a ordem de serviço será emitida; reajuste em 2026."]),
+            (2, "CT 012-2023 X/ap.pdf", "apostilamento", "2024-05-01",
+             ["APOSTILAMENTO Nº 097/2024 ao contrato 012/2023"]),
+            (3, "CT 012-2023 X/os.pdf", "oficio", "2025-02-01", ["ORDEM DE SERVIÇO Nº 1/2025"])]
+    for did, rel, tipo, data, textos in docs:
+        conn.execute("INSERT INTO documentos (id, caminho, caminho_relativo, status, corpus_origem, tipo_documental, "
+                     "data_documento) VALUES (?, ?, ?, 'COM_TEXTO', 'real', ?, ?)", (did, rel, rel, tipo, data))
+        for ordem, texto in enumerate(textos, start=1):
+            conn.execute("INSERT INTO trechos (documento_id, ordem, texto, tipo_dispositivo, revogado) "
+                         "VALUES (?, ?, ?, 'paragrafo', 0)", (did, ordem, texto))
+    conn.commit()
+    conn.close()
+    repo = RepositorioFichasSqlite(lambda: conectar(banco, vetores=False))
+    info = repo.numero_no_acervo("097/2024")
+    assert info["trechos"] == 1 and info["como_contrato"] == 0 and info["documentos"][0]["documento_id"] == 2
+    assert repo.numero_no_acervo("012/2023")["como_contrato"] >= 1
+    # a cláusula do contrato cita "ordem de serviço" e "2026", mas não é uma OS de 2026
+    assert repo.documento_do_tipo_no_ano("CT 012-2023 X", None, ["ordem de servi"], "2026") is False
+    assert repo.documento_do_tipo_no_ano("CT 012-2023 X", None, ["ordem de servi"], "2025") is True
+    assert repo.menciona_ano("CT 012-2023 X", None, ["ordem de servi"], "2026") is True  # checagem grosseira

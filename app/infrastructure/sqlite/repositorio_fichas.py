@@ -42,6 +42,61 @@ class RepositorioFichasSqlite:
         finally:
             conn.close()
 
+    def numero_no_acervo(self, chave: str, limite: int = 5) -> dict:
+        """Onde o número aparece: quantos trechos, quantos o citam COMO CONTRATO ("contrato nº X") e até `limite`
+        documentos distintos (id, tipo, data, trecho) que o citam — para responder "não há contrato com esse número;
+        ele aparece em…"."""
+        from app.application.fichas.agrupamento import normalizar
+
+        numero, ano = chave.split("/")
+        n = str(int(numero))
+        padrao = re.compile(rf"(?<!\d)0*{n}\s*[/\-._]\s*{ano}(?!\d)")
+        como_contrato = re.compile(rf"contrato\s*(?:administrativo\s*)?(?:n[º°o]?\.?\s*|numero\s*)?0*{n}\s*[/\-.]\s*"
+                                   rf"{ano}(?!\d)")
+        conn = self._conexao()
+        try:
+            linhas = conn.execute(
+                "SELECT t.id, t.texto, d.id, d.tipo_documental, d.data_documento FROM trechos t JOIN documentos d "
+                "ON d.id = t.documento_id WHERE instr(t.texto, ?) > 0 ORDER BY d.data_documento DESC, t.ordem",
+                (ano,)).fetchall()
+        finally:
+            conn.close()
+        total = contrato = 0
+        documentos: dict[int, dict] = {}
+        for tid, texto, did, tipo, data in linhas:
+            if not padrao.search(texto or ""):
+                continue
+            total += 1
+            contrato += bool(como_contrato.search(normalizar(texto)))
+            if did not in documentos and len(documentos) < limite:
+                documentos[did] = {"documento_id": did, "tipo": tipo, "data": data, "trecho_id": tid}
+        return {"trechos": total, "como_contrato": contrato, "documentos": list(documentos.values())}
+
+    def documento_do_tipo_no_ano(self, pasta: str | None, documento_ids: list[int] | None, termos: list[str],
+                                 ano: str) -> bool:
+        """Há documento cujo INÍCIO (1º trecho: título/abertura) cita o assunto e que é do ano pedido — ou sem data
+        (dúvida)? Mais preciso que procurar o termo em qualquer trecho: uma cláusula que cita "ordem de serviço"
+        num trecho com "2026" não é uma ordem de serviço de 2026."""
+        if not termos:
+            return True
+        filtro = " OR ".join("t.texto LIKE ?" for _ in termos)
+        alvo, params_alvo = "1 = 1", []
+        if pasta:
+            alvo, params_alvo = "(d.caminho_relativo LIKE ? OR d.caminho_relativo LIKE ?)", [f"{pasta}/%",
+                                                                                          f"{pasta}\\%"]
+        elif documento_ids:
+            alvo = f"d.id IN ({','.join('?' * len(documento_ids))})"  # noqa: S608 - só marcadores
+            params_alvo = list(documento_ids)
+        conn = self._conexao()
+        try:
+            return conn.execute(
+                f"SELECT 1 FROM documentos d JOIN trechos t ON t.id = (SELECT id FROM trechos WHERE documento_id = "  # noqa: S608
+                f"d.id ORDER BY ordem LIMIT 1) WHERE {alvo} AND ({filtro}) AND (d.data_documento LIKE ? OR "
+                f"d.data_documento IS NULL OR d.data_documento = '' OR t.texto LIKE ?) LIMIT 1",
+                params_alvo + [f"%{t}%" for t in termos] + [f"{ano}%", f"%{ano}%"]).fetchone() is not None
+        finally:
+            conn.close()
+
     def menciona(self, pasta: str | None, documento_ids: list[int], termos: list[str]) -> bool:
         """Algum trecho da pasta do contrato (ou dos documentos listados) contém algum dos termos? LIKE do SQLite
         ignora caixa em ASCII; os termos são radicais sem acento ("paralis", "ordem de servi")."""

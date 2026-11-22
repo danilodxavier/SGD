@@ -7,7 +7,7 @@
 | Atualizado em | 2026-11-20 |
 | Fase atual | **Fase 12 — implantação na rede interna (chat por texto e voz)** — em execução; aguarda DNS e certificado da STI |
 | Situação da fase | Acervo real indexado; A1 (tipos) e A3 (latência) aplicados; aguardando perguntas reais e conferência da amostra de tipos pela equipe |
-| Última tarefa concluída | Rodada 8: ficha ampliada (panorama de vigência, tipos pelo título, existência sem contrato, ausência com ano conferida no texto); real: mediana das perguntas não-decisórias 89 s → 0,8 s, 6/11 em ≤ 0,8 s; golden: 72 respostas rápidas corretas. Ver `docs/fases/FASE_12.md` §10 |
+| Última tarefa concluída | Rodada 9: 8 de 11 perguntas reais não-decisórias em ≤ 4,6 s (números que não são de contrato; ausência com ano pelo início dos documentos); restantes 56–85 s; decisão 149 s. Ver `docs/fases/FASE_12.md` §11 |
 | Próxima tarefa exata | (1) equipe julga `avaliacao/real/revisao.csv` (rodada 7) e confere `amostra_tipos.csv`; (2) ampliar o que a ficha responde (ex.: notificações/ocorrências por ano com verificação no texto) e reduzir texto por pergunta aberta com base no julgamento; (3) STI: DNS + certificado |
 | Bloqueios | DNS e certificado da STI para o acesso pela rede; julgamento humano das respostas reais |
 
