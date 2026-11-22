@@ -64,6 +64,10 @@ MAX_ITENS = 8
 # apostilado?") exige ler o documento → caminho completo (validação: 1/11 acertos sem essa regra)
 FORMA_EXISTENCIA = re.compile(r"^(ha|tem|existe|existem|houve|foi|foram|quais|quantos|quantas|liste|listar|"
                               r"relacione|teve|tiveram|consta|constam|ja)\b|\b(algum|alguma|alguns|algumas)\b")
+# pergunta sobre regra/procedimento ("quais documentos são exigidos para o pagamento?", "como deve ser feita a
+# fiscalização?"): pede o conteúdo de normas e cláusulas, não o inventário das pastas (antes listava as notas fiscais)
+RE_NORMATIVA = re.compile(r"exigid|exige|necessari|obrigatori|requisit|procediment|\bcomo (?:deve|devo|devem|se faz|"
+                          r"se deve|fazer|e feit|sao feit)|o que (?:diz|preve|determina|estabelece)")
 FORA_DA_FICHA = re.compile(r"preposto|representante|socio|responsavel tecnico|endereco|telefone|e-?mail|"
                            r"\bcpf\b|procurador")
 ROTULO_ASSUNTO = {"paralisacao": ("documento de paralisação, suspensão ou extinção",
@@ -551,6 +555,8 @@ class ResponderPorFicha:
         if tipo_local == "varias":
             assunto = next((a for a in ASSUNTOS if re.search(a[1], texto)), None)
             return self._varias(achado, inicio) if assunto and assunto[0] in ("objeto", "contratada") else None
+        if RE_NORMATIVA.search(texto):
+            return None  # regra ou procedimento: o caminho completo lê as cláusulas e normas
         # "pendência de pagamento/empenho…" tem assunto próprio: segue o fluxo do assunto
         if RE_PENDENCIA.search(texto) and not FORA_DA_FICHA.search(texto) and not any(
                 re.search(a[1], texto) for a in ASSUNTOS):

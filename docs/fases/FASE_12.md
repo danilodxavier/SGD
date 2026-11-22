@@ -348,3 +348,30 @@ removidas pelo verificador). Na rodada 11 eram 124 s e, com o estouro de context
 **Regressão acadêmica:** as 6 decisões da validação acionam 2–3 especialistas (`fase12_f2_orcamento`), portanto
 seguem pelo relator e o resultado da §15 vale sem alteração.
 
+## 17. Rodada 14 — perguntas abertas: diagnóstico, correções e experimentos rejeitados (2026-11-22)
+
+**Diagnóstico** (6 perguntas abertas genéricas no acervo real, só números): as que vão ao LLM levam **37–58 s**;
+≈ 65% é a **leitura do prompt** (3.700–5.800 tokens a ≈ 135 tokens/s) e o resto é geração (≈ 25 tokens/s).
+
+**Correções aplicadas:**
+1. **Pergunta sobre regra ou procedimento não vira inventário** (`RE_NORMATIVA`): "Quais documentos são exigidos
+   para o pagamento da nota fiscal?" era respondida na hora pela ficha **listando as notas fiscais das pastas**
+   (resposta errada, embora rápida). "Exigido", "necessário", "requisito", "como deve…", "o que diz…" seguem
+   para o caminho completo. Golden das fichas 70/72 (igual); nenhuma das 12 perguntas reais afetada.
+2. **Reranker sem memória na GPU passa para a CPU** em vez de derrubar a pergunta. Após ≈ 1 h de avaliações o
+   `llama-server` voltou a passar de 12 GB comprometidos e um processo novo não conseguia carregar o reranker
+   (CUDA OOM); o servidor só carrega o reranker na 1ª pergunta, então um reinício nesse estado faria toda busca
+   falhar.
+
+**Experimentos rejeitados (medidos):**
+
+| Experimento | Resultado | Decisão |
+|---|---|---|
+| Ficha do documento uma vez por documento (bloco DOCUMENTO), em vez de repetida em cada trecho — cabeçalhos eram 23–45% do contexto real | Acadêmico: tokens −3%; exatidão 0,923 =, mas **recusa correta 1,00 → 0,75**. Teste isolado com o mesmo modelo: V036 recusa no formato antigo e responde no agrupado (`avaliacao/execucoes/fase12_contexto_doc/`) | Revertido — recusa correta é salvaguarda contra invenção |
+| Descartar trechos com nota baixa do reranker | Acadêmico: nota ≥ 0,05 manteria 88% dos trechos sem perder evidência; **real: todas as notas entre 0,12 e 0,98** (A3) e quase todas ≥ 0,7 — nada a cortar | Sem ganho no acervo real |
+| Modelo inteiro na GPU (`-gpu`, 29 camadas) | Texto sintético: leitura 135 → 138 tokens/s (igual: a leitura é limitada pela GPU); **geração 24,7 → 39,7 tokens/s**. Mas não cabe junto do reranker (5,2 + 2,3 GB > 6 GB): reranker na CPU custa 16,6 s × 4 s | Mantido o padrão: −9 s na geração × +12,6 s na busca |
+
+**Conclusão:** nesta GPU, o tempo das perguntas abertas é dominado pela leitura do prompt (fixa em ≈ 135
+tokens/s) e o número de tokens já está no mínimo seguro medido; os ganhos restantes passam por responder mais
+perguntas sem o LLM (fichas) ou por hardware.
+

@@ -549,3 +549,18 @@ def test_pendencias_listam_pontos_de_atencao_com_fonte():
     pagamento = ResponderPorFicha(RepoFichas([vencendo]), RepoTrechos()).responder(
         "Há pendência de pagamento no contrato 012/2023?")
     assert pagamento is None or "assunto:pendencias" not in pagamento.observacoes  # assunto próprio
+
+
+def test_pergunta_sobre_regra_ou_procedimento_nao_vira_inventario():
+    """Rodada 14: "Quais documentos são exigidos para o pagamento da nota fiscal?" listava as notas fiscais das
+    pastas; regra/procedimento segue para o caminho completo (cláusulas e normas)."""
+    from app.application.fichas.agrupamento import normalizar
+    from app.application.fichas.consulta import RE_NORMATIVA
+
+    for q in ("Quais documentos são exigidos para o pagamento da nota fiscal?",
+              "Como deve ser feita a fiscalização dos contratos?", "O que diz a cláusula de reajuste?",
+              "Quais os requisitos para prorrogar?"):
+        assert RE_NORMATIVA.search(normalizar(q)), q
+    for q in ("Quais notas fiscais do contrato 012/2023 em 2024?", "Qual o valor do Contrato nº 012/2023?",
+              "Houve notificação em 2025?", "Quem é o fiscal do contrato 015/2023?"):
+        assert not RE_NORMATIVA.search(normalizar(q)), q

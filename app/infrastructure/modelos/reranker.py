@@ -47,8 +47,18 @@ class BgeReranker:
     def pontuar(self, consulta, textos):
         if not textos:
             return []
-        modelo = self._carregar()
-        notas = modelo.predict([(consulta, t) for t in textos], batch_size=self._lote, show_progress_bar=False)
+        try:
+            modelo = self._carregar()
+            notas = modelo.predict([(consulta, t) for t in textos], batch_size=self._lote, show_progress_bar=False)
+        except RuntimeError as exc:
+            # sem memória na GPU (ex.: llama-server do Ollama com >12 GB comprometidos após horas de uso): a busca
+            # segue na CPU (≈ 4× mais lenta) em vez de falhar a pergunta inteira; vale até o processo reiniciar
+            if "out of memory" not in str(exc).lower() or self.dispositivo != "cuda":
+                raise
+            log.warning("GPU sem memória para o reranker; usando CPU até reiniciar o servidor.")
+            self.liberar()
+            self._modelo, self._dispositivo = None, "cpu"
+            return self.pontuar(consulta, textos)
         return [float(n) for n in notas]
 
     def liberar(self):

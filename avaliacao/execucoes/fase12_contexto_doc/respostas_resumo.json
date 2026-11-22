@@ -1,0 +1,44 @@
+{
+  "v2_sadgd-qwen2.5-7b": {
+    "validacao": {
+      "n": 47,
+      "exatidao": 0.9231,
+      "classificacao": 0.9574,
+      "acerto_conflito": 1.0,
+      "acerto_recusa": 0.75,
+      "falsa_recusa": 0.0,
+      "citacao_correta": 0.9302,
+      "precisao_citacoes": 0.6422,
+      "taxa_alucinacao_numerica": 0.0227,
+      "erros": 0,
+      "latencia_ms": {
+        "p50": 20968,
+        "p95": 40514
+      },
+      "tokens_medios": {
+        "entrada": 2928.8723,
+        "saida": 247.8511
+      }
+    },
+    "todos": {
+      "n": 47,
+      "exatidao": 0.9231,
+      "classificacao": 0.9574,
+      "acerto_conflito": 1.0,
+      "acerto_recusa": 0.75,
+      "falsa_recusa": 0.0,
+      "citacao_correta": 0.9302,
+      "precisao_citacoes": 0.6422,
+      "taxa_alucinacao_numerica": 0.0227,
+      "erros": 0,
+      "latencia_ms": {
+        "p50": 20968,
+        "p95": 40514
+      },
+      "tokens_medios": {
+        "entrada": 2928.8723,
+        "saida": 247.8511
+      }
+    }
+  }
+}
