@@ -131,7 +131,7 @@ def gradiente(c1, c2, w=W, h=H, vertical=True) -> np.ndarray:
 
 # ------------------------------------------------------------------ boneco de massinha
 class Massinha:
-    """Boneco de massinha com olhos de contas, pálpebras, boca e mandíbula animadas e movimento de cabeça."""
+    """Boneco de massinha: olhos de contas, sobrancelhas, sorriso e mandíbula animados, movimento de cabeça."""
 
     def __init__(self, altura: int):
         meta = json.loads((MASSA / "meta.json").read_text(encoding="utf-8"))
@@ -145,137 +145,177 @@ class Massinha:
         self.base = self.base.copy()
         self.base[..., 3] = (self.base[..., 3] * (ry[:, None] * rx[None, :]) ** 0.8).astype(np.uint8)
         e = meta["escala"]
-        self.u = e * self.k  # pixels por unidade da foto original
+        self.u = e * self.k * meta.get("cabeca", 1.0)  # pixels por unidade da foto (na cabeça ampliada)
         self.olhos = [(x * self.k, y * self.k) for x, y in meta["olhos"]]
         self.boca = (meta["boca"][0] * self.k, meta["boca"][1] * self.k)
         self.queixo = meta["queixo_y"] * self.k
+        self.sobr = [(x0 * self.k, x1 * self.k, yc * self.k) for x0, x1, yc, _ in meta.get("sobrancelhas", [])]
         yy, xx = np.mgrid[0:self.h, 0:self.w].astype(np.float32)
         self.xx, self.yy = xx, yy
         bx, by = self.boca
-        gy = np.clip((yy - by) / (10 * self.u), 0, 1) * np.clip(1 - (yy - self.queixo) / (55 * self.u), 0, 1)
-        gx = np.exp(-(((xx - bx) / (62 * self.u)) ** 2))
+        gy = np.clip((yy - by) / (10 * self.u), 0, 1) * np.clip(1 - (yy - self.queixo) / (50 * self.u), 0, 1)
+        gx = np.exp(-(((xx - bx) / (60 * self.u)) ** 2))
         self.peso = (gx * gy).astype(np.float32)
-        self.pele = []
-        for ox, oy in self.olhos:
-            p = self.base[int(oy - 24 * self.u):int(oy - 20 * self.u), int(ox - 6 * self.u):int(ox + 6 * self.u), :3]
-            self.pele.append(tuple(int(v) for v in p.reshape(-1, 3).mean(0)))
-        self._olho = {}
-        self._boca = {}
+        self.pele = tuple(meta.get("pele", (232, 182, 150)))
+        self._olho, self._boca, self._sob = {}, {}, {}
 
-    # --- sprites (supersample 3×) ---
-    def sprite_olho(self, lado: int, palpebra: float, gx: float, gy: float) -> np.ndarray:
-        chave = (lado, round(palpebra, 2), round(gx, 1), round(gy, 1))
+    @staticmethod
+    def _luz(z, nx, ny, base, brilho=0.0):
+        """Sombreamento de massinha para um sprite (z: altura 0..1; nx, ny: inclinação)."""
+        L = np.clip(0.62 + 0.38 * z - 0.30 * nx - 0.42 * ny, 0.3, 1.2)
+        return np.dstack([L * base[0], L * base[1], L * base[2]]) + brilho
+
+    # --- olhos (supersample 3×) ---
+    def sprite_olho(self, lado: int, palpebra: float, gx: float, gy: float, feliz: float) -> np.ndarray:
+        chave = (lado, round(palpebra, 1), round(gx, 1), round(gy, 1), round(feliz, 1))
         if chave in self._olho:
             return self._olho[chave]
         s, u = 3, self.u * 3
-        rx, ry = 19 * u, 12.5 * u
-        tam = int(2 * rx + 12 * u), int(2 * ry + 14 * u)
-        cx, cy = tam[0] / 2, tam[1] / 2 + 2 * u
+        rx, ry = 21 * u, 14.5 * u
+        tam = int(2 * rx + 14 * u), int(2 * ry + 16 * u)
+        cx, cy = tam[0] / 2, tam[1] / 2 + 1.5 * u
         yy, xx = np.mgrid[0:tam[1], 0:tam[0]].astype(np.float32)
         en = 1 - ((xx - cx) / rx) ** 2 - ((yy - cy) / ry) ** 2
         dentro = en > 0
         z = np.sqrt(np.clip(en, 0, 1))
-        # esclera (conta branca envernizada)
         nx, ny = (xx - cx) / rx, (yy - cy) / ry
-        luz = np.clip(0.55 + 0.45 * (z * 0.8 - nx * 0.35 - ny * 0.45), 0, 1.1)
-        cor = np.dstack([luz * 246, luz * 242, luz * 234])
-        # íris e pupila
-        ix, iy = cx + gx * 5 * u, cy + gy * 2 * u
+        cor = self._luz(z, nx, ny, (250, 247, 240))
+        ix, iy = cx + gx * 6 * u, cy + gy * 2.5 * u
         di = np.sqrt((xx - ix) ** 2 + (yy - iy) ** 2)
-        ri = 9.5 * u
+        ri = 11.5 * u
         iris = di < ri
         tom = np.clip(1 - di / ri, 0, 1)
-        cor = np.where(iris[..., None], np.dstack([70 + 40 * tom, 45 + 25 * tom, 30 + 12 * tom]), cor)
-        cor = np.where((di < 4.8 * u)[..., None], np.array([12, 10, 10], np.float32), cor)
-        cor = np.where((di > ri - 1.2 * u)[..., None] & iris[..., None], np.array([40, 26, 20], np.float32), cor)
-        # brilho especular
-        dh = np.sqrt((xx - (ix - 3.5 * u)) ** 2 + (yy - (iy - 3.5 * u)) ** 2)
-        cor = cor + (np.clip(1 - dh / (2.6 * u), 0, 1) ** 1.5)[..., None] * 255
-        dh2 = np.sqrt((xx - (ix + 3 * u)) ** 2 + (yy - (iy + 3 * u)) ** 2)
-        cor = cor + (np.clip(1 - dh2 / (1.3 * u), 0, 1))[..., None] * 140
+        cor = np.where(iris[..., None], np.dstack([92 + 50 * tom, 58 + 32 * tom, 34 + 16 * tom]), cor)
+        cor = np.where((di < 5.6 * u)[..., None], np.array([14, 10, 10], np.float32), cor)
+        aro = iris & (di > ri - 1.4 * u)
+        cor = np.where(aro[..., None], np.array([46, 28, 20], np.float32), cor)
+        for ox, oy, r, f in ((-4.2, -4.4, 3.2, 255), (3.6, 3.4, 1.5, 170)):  # brilhos de conta envernizada
+            dh = np.sqrt((xx - (ix + ox * u)) ** 2 + (yy - (iy + oy * u)) ** 2)
+            cor = cor + (np.clip(1 - dh / (r * u), 0, 1) ** 1.3)[..., None] * f
         alfa = np.clip(en * 18, 0, 1)
-        # pálpebra superior de massa (cor da pele, com borda escura e brilho)
-        limite = cy - ry + (0.13 + 0.87 * palpebra) * 2 * ry
-        tampa = (yy < limite) & dentro
-        pele = np.array(self.pele[lado], np.float32)
-        tz = np.clip((limite - yy) / (2 * ry), 0, 1)
-        cor_tampa = pele * (0.92 + 0.12 * np.sqrt(tz))[..., None]
-        cor = np.where(tampa[..., None], cor_tampa, cor)
-        borda = (np.abs(yy - limite) < 1.6 * u) & dentro
-        cor = np.where(borda[..., None], pele * 0.45, cor)
-        brilho = (np.abs(yy - (limite - 3 * u)) < 1.0 * u) & dentro & (nx < 0.2)
-        cor = np.where(brilho[..., None], np.minimum(pele * 1.25, 255), cor)
-        # contorno de massa ao redor do olho (sombra de cavidade)
-        anel = np.clip(1 - np.abs(en) * 9, 0, 1) * (en < 0.05)
-        cor = cor * (1 - 0.35 * anel[..., None])
-        alfa = np.maximum(alfa, anel * 0.5)
+        pele = np.array(self.pele, np.float32)
+        # pálpebra superior (piscar) e inferior (olhar sorridente)
+        sup = cy - ry + (0.04 + 0.96 * palpebra) * 2 * ry
+        inf = cy + ry - (0.10 + 0.22 * feliz) * 2 * ry * (1 - palpebra)
+        tampa = dentro & ((yy < sup) | (yy > inf + 3.5 * u * np.clip(1 - nx ** 2, 0, 1) * feliz))
+        cor = np.where(tampa[..., None], pele * (0.94 + 0.10 * z)[..., None], cor)
+        borda = dentro & (np.abs(yy - sup) < 1.7 * u)
+        cor = np.where(borda[..., None], np.array([60, 36, 28], np.float32), cor)
+        cilios = (np.abs(yy - (sup - 0.6 * u)) < 1.2 * u) & (np.abs(nx) < 1.05) & (en > -0.18)
+        cor = np.where(cilios[..., None], np.array([48, 30, 24], np.float32), cor)
+        alfa = np.maximum(alfa, cilios * 1.0)
+        anel = np.clip(1 - np.abs(en) * 8, 0, 1) * (en < 0.05)
+        cor = cor * (1 - 0.30 * anel[..., None])
+        alfa = np.maximum(alfa, anel * 0.45)
         img = np.dstack([np.clip(cor, 0, 255), alfa * 255]).astype(np.uint8)
         img = cv2.resize(img, (tam[0] // s, tam[1] // s), interpolation=cv2.INTER_AREA)
         self._olho[chave] = img
         return img
 
-    def sprite_boca(self, abre: float, larg: float) -> np.ndarray:
-        chave = (round(abre, 2), round(larg, 2))
+    # --- sobrancelhas: rolinhos de massa no lugar e no comprimento das da foto ---
+    def sprite_sobrancelha(self, lado: int, levanta: float) -> tuple[np.ndarray, int, int]:
+        chave = (lado, round(levanta, 1))
+        if chave in self._sob:
+            return self._sob[chave]
+        s, u = 3, self.u * 3
+        x0, x1, yc = self.sobr[lado]
+        comp = (x1 - x0) * s
+        esp = 5.8 * u
+        tam = int(comp + 8 * esp), int(10 * u + 6 * esp + 14 * u)
+        yy, xx = np.mgrid[0:tam[1], 0:tam[0]].astype(np.float32)
+        t = np.clip((xx - 4 * esp) / comp, 0, 1)
+        interno = t if lado == 1 else 1 - t  # ponta interna (perto do nariz) é mais grossa
+        arco = (3.2 + 4.0 * levanta) * u * np.sin(np.pi * np.clip(t, 0, 1) ** (0.85 if lado == 0 else 1.15))
+        eixo = tam[1] * 0.62 - arco - (interno > 0.5) * 0.0
+        meia = esp * (0.62 + 0.38 * (1 - interno)) * (1 - 0.25 * np.abs(2 * t - 1) ** 6)
+        dy = (yy - eixo) / np.maximum(meia, 1)
+        dx_fora = np.maximum(0, np.maximum(4 * esp - xx, xx - (4 * esp + comp))) / esp
+        r2 = dy ** 2 + dx_fora ** 2 * 1.6
+        dentro = r2 < 1
+        z = np.sqrt(np.clip(1 - r2, 0, 1))
+        cor = self._luz(z, 0 * dy, dy * 0.8, (82, 56, 42))
+        fios = np.sin((xx * 0.9 + yy * 0.5) / (1.3 * u)) * 10 * z
+        cor = cor + fios[..., None]
+        alfa = np.clip((1 - r2) * 10, 0, 1)
+        img = np.dstack([np.clip(cor, 0, 255), alfa * 255]).astype(np.uint8)
+        img = cv2.resize(img, (tam[0] // s, tam[1] // s), interpolation=cv2.INTER_AREA)
+        ox = int(x0 - 4 * esp / s)
+        oy = int(yc - tam[1] * 0.62 / s - levanta * 5 * self.u + 5.0 * self.u)
+        self._sob[chave] = (img, ox, oy)
+        return self._sob[chave]
+
+    # --- boca: sorriso de massa, abre em "D" ao falar ---
+    def sprite_boca(self, abre: float, larg: float, sorriso: float) -> np.ndarray:
+        chave = (round(abre, 2), round(larg, 2), round(sorriso, 1))
         if chave in self._boca:
             return self._boca[chave]
         s, u = 3, self.u * 3
-        rx = (21 + 5 * larg - 3 * abre) * u
-        ry = (1.2 + 13 * abre) * u
-        lab = 4.2 * u
-        tam = int(2 * (rx + lab) + 8 * u), int(2 * (ry + lab) + 10 * u)
-        cx, cy = tam[0] / 2, tam[1] / 2
+        rx = (22 + 4 * larg + 3 * sorriso - 3 * abre) * u
+        ry = (1.0 + 12 * abre) * u
+        lab = 4.0 * u
+        tam = int(2 * (rx + lab) + 22 * u), int(2 * (ry + lab) + 24 * u)
+        cx, cy = tam[0] / 2, tam[1] / 2 - 2 * u
         yy, xx = np.mgrid[0:tam[1], 0:tam[0]].astype(np.float32)
-        # sorriso leve: centro da boca um pouco abaixo dos cantos
-        curva = 2.2 * u * (1 - ((xx - cx) / (rx + lab)) ** 2)
+        nxr = (xx - cx) / (rx + lab)
+        curva = (3.0 + 5.0 * sorriso) * u * (1 - np.clip(nxr, -1, 1) ** 2)   # cantos para cima
         yc = yy - curva
-        e_out = ((xx - cx) / (rx + lab)) ** 2 + ((yc - cy) / (ry + lab)) ** 2
-        e_in = ((xx - cx) / max(rx, 1)) ** 2 + ((yc - cy) / max(ry, 0.6 * u)) ** 2
+        # "D": metade de cima achatada, de baixo arredondada
+        ry_c = np.where(yc < cy, ry * 0.45, ry)
+        e_out = nxr ** 2 + ((yc - cy) / (ry_c + lab)) ** 2
+        e_in = ((xx - cx) / max(rx, 1)) ** 2 + ((yc - cy) / np.maximum(ry_c, 0.6 * u)) ** 2
         labios = (e_out < 1) & (e_in >= 1)
         interior = e_in < 1
-        # perfil do lábio (anel de massa)
         t = np.clip((1 - e_out) / 0.45, 0, 1)
         z = np.sqrt(t)
-        ny = (yc - cy) / (ry + lab)
-        luz = np.clip(0.62 + 0.5 * z - 0.35 * ny * np.sign(yc - cy) * 0.6 - 0.25 * ny, 0.35, 1.25)
-        cor_lab = np.dstack([luz * 178, luz * 96, luz * 92])
+        ny = (yc - cy) / (ry_c + lab)
         cor = np.zeros((tam[1], tam[0], 3), np.float32)
-        cor = np.where(labios[..., None], cor_lab, cor)
+        cor = np.where(labios[..., None], self._luz(z, nxr * 0.3, ny * 0.6, (196, 108, 100)), cor)
         if abre > 0.06:
             prof = np.clip(1 - e_in, 0, 1)
-            cor_int = np.dstack([70 - 30 * prof, 20 + 0 * prof, 26 + 0 * prof])
-            cor = np.where(interior[..., None], cor_int, cor)
-            if abre > 0.22:  # dentes de cima
-                dentes = interior & (yc < cy - ry + (3 + 3 * abre) * u)
-                cor = np.where(dentes[..., None], np.array([238, 232, 220], np.float32), cor)
-            if abre > 0.35:  # língua
-                lingua = interior & (((xx - cx) / (rx * 0.7)) ** 2 + ((yc - (cy + ry * 0.75)) / (ry * 0.55)) ** 2 < 1)
-                cor = np.where(lingua[..., None], np.array([196, 92, 98], np.float32), cor)
+            cor = np.where(interior[..., None], np.dstack([92 - 40 * prof, 28 + 0 * prof, 32 + 0 * prof]), cor)
+            if abre > 0.16:
+                dentes = interior & (yc < cy - ry * 0.45 + (3.5 + 3 * abre) * u)
+                cor = np.where(dentes[..., None], np.array([246, 242, 232], np.float32), cor)
+            if abre > 0.3:
+                lingua = interior & (((xx - cx) / (rx * 0.62)) ** 2 + ((yc - (cy + ry * 0.78)) / (ry * 0.5)) ** 2 < 1)
+                cor = np.where(lingua[..., None], np.array([214, 102, 108], np.float32), cor)
         else:
-            linha = (np.abs(yc - cy) < 1.1 * u) & (e_out < 0.92)
-            cor = np.where(linha[..., None], np.array([92, 40, 40], np.float32), cor)
+            linha = (np.abs(yc - cy) < 1.2 * u) & (e_out < 0.93)
+            cor = np.where(linha[..., None], np.array([110, 46, 46], np.float32), cor)
         alfa = np.clip((1 - e_out) * 14, 0, 1)
+        # covinhas nos cantos do sorriso
+        for lado in (-1, 1):
+            kx, ky = cx + lado * (rx + lab + 2.5 * u), cy - curva.max() * 0.0 - (2 + 3 * sorriso) * u
+            d = np.sqrt(((xx - kx) / (2.2 * u)) ** 2 + ((yy - ky) / (4.5 * u)) ** 2)
+            arco = (np.abs(d - 1) < 0.28) & ((xx - kx) * lado > -0.8 * u)
+            peso = arco * (0.35 + 0.5 * sorriso)
+            cor = np.where(arco[..., None] & ~labios[..., None] & ~interior[..., None],
+                           np.array([150, 92, 76], np.float32), cor)
+            alfa = np.maximum(alfa, peso)
         img = np.dstack([np.clip(cor, 0, 255), alfa * 255]).astype(np.uint8)
         img = cv2.resize(img, (tam[0] // s, tam[1] // s), interpolation=cv2.INTER_AREA)
         self._boca[chave] = img
         return img
 
     def quadro(self, fala: float, larg: float, piscar: float, olhar: tuple[float, float], giro: float,
-               inclina: float, sobe: float) -> np.ndarray:
+               inclina: float, sobe: float, levanta: float = 0.3, sorriso: float = 0.6) -> np.ndarray:
         abre = min(1.0, fala)
-        d = abre * 11 * self.u
+        d = abre * 10 * self.u
         if d > 0.4:
             mapy = np.clip(self.yy - d * self.peso, 0, self.h - 1)
             img = cv2.remap(self.base, self.xx, mapy, cv2.INTER_LINEAR)
         else:
             img = self.base.copy()
-        img = img.copy()
         bx, by = self.boca
-        sb = self.sprite_boca(round(abre * 20) / 20, round(larg * 4) / 4)
+        sb = self.sprite_boca(round(abre * 20) / 20, round(larg * 4) / 4, round(sorriso * 5) / 5)
         _colar_rgba(img, sb, int(bx - sb.shape[1] / 2), int(by - sb.shape[0] / 2 + d * 0.45))
+        feliz = 0.35 + 0.5 * sorriso
         for lado, (ox, oy) in enumerate(self.olhos):
-            so = self.sprite_olho(lado, round(piscar * 10) / 10, olhar[0], olhar[1])
+            so = self.sprite_olho(lado, round(piscar * 10) / 10, olhar[0], olhar[1], round(feliz * 5) / 5)
             _colar_rgba(img, so, int(ox - so.shape[1] / 2), int(oy - so.shape[0] / 2))
-        # movimento de cabeça: giro (achata em x e desloca), inclinação em torno do pescoço, respiração
+        for lado in range(len(self.sobr)):
+            sp, sx, sy = self.sprite_sobrancelha(lado, round(levanta * 10) / 10)
+            _colar_rgba(img, sp, sx, sy)
         cx, cy = self.w / 2, self.h * 0.86
         m = cv2.getRotationMatrix2D((cx, cy), inclina, 1.0)
         m[0, 0] *= 1 - 0.018 * abs(giro)
@@ -356,7 +396,7 @@ class Video:
         self.env = np.array(lt["envelope"], np.float32)
         self.subs = lt["legendas"]
         self.grande = Massinha(980)
-        self.pequeno = Massinha(560)
+        self.pequeno = Massinha(450)
         self.logo = self._logo()
         self.fundo_estudio = self._fundo_estudio()
         self.fundo_demo = self._fundo_demo()
@@ -370,6 +410,18 @@ class Video:
         while t < self.dur:
             self.olhares.append((t, rnd.uniform(-0.5, 0.5), rnd.uniform(-0.3, 0.2)))
             t += rnd.uniform(1.2, 3.2)
+        # ênfases: início de cada frase e picos de fala (sobrancelhas e aceno)
+        self.enfases, ultimo = [], -9.0
+        for a_, _b, _txt in self.subs:
+            if a_ - ultimo > 1.2:
+                self.enfases.append(a_ + 0.1)
+                ultimo = a_
+        for j in range(1, self.n - 1):
+            tt = j / FPS
+            if self.env[j] > 1.0 and self.env[j] >= self.env[j - 1] and tt - ultimo > 2.4 and rnd.random() < 0.35:
+                self.enfases.append(tt)
+                ultimo = tt
+        self.enfases.sort()
         self._cache: dict = {}
 
     # --- fundos estáticos ---
@@ -432,10 +484,19 @@ class Video:
                 olhar = self.olhares[k][1:]
                 break
         larg = 0.5 + 0.5 * math.sin(t * 7.3) * math.sin(t * 2.9)
+        levanta = 0.25
+        for te in self.enfases:
+            dt = t - te
+            if -0.15 < dt < 0.9:
+                levanta = max(levanta, 0.25 + 0.75 * math.sin(math.pi * min(1, (dt + 0.15) / 1.05)))
+        calado = float(np.mean(self.env[max(0, i - 12):i + 1])) < 0.08
+        sorriso = 0.95 if calado else 0.55 + 0.15 * math.sin(t * 1.3)
         giro = 0.9 * math.sin(t * 2 * math.pi / 6.5) + 0.5 * math.sin(t * 2 * math.pi / 2.1) * min(1, fala * 1.6)
         inclina = 1.4 * math.sin(t * 2 * math.pi / 7.7) + 0.9 * fala * math.sin(t * 5.1)
         sobe = math.sin(t * 2 * math.pi / 4.3) + 1.2 * fala * max(0, math.sin(t * 6.2))
-        return dict(fala=fala, larg=larg, piscar=pisc, olhar=olhar, giro=giro, inclina=inclina, sobe=sobe)
+        sobe += 1.6 * sum(max(0.0, math.sin(math.pi * (t - te) / 0.7)) for te in self.enfases if 0 <= t - te < 0.7)
+        return dict(fala=fala, larg=larg, piscar=pisc, olhar=olhar, giro=giro, inclina=inclina, sobe=sobe,
+                    levanta=levanta, sorriso=sorriso)
 
     def boneco_grande(self, quadro: np.ndarray, est: dict, x: int, y: int) -> None:
         img = self.grande.quadro(**est)
@@ -455,7 +516,7 @@ class Video:
         # recorte circular: cabeça e ombros
         lado = 2 * r
         ox = int(self.pequeno.w / 2 - r)
-        oy = int(self.pequeno.h * 0.02)
+        oy = int(self.pequeno.h * 0.0)
         rec = np.zeros((lado, lado, 4), np.uint8)
         sub = img[max(0, oy):oy + lado, max(0, ox):ox + lado]
         rec[:sub.shape[0], :sub.shape[1]] = sub

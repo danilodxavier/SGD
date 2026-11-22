@@ -5,7 +5,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 ## [Não lançado] — Reestruturação SAD-GD
 
 ### Adicionado
-- Demo Day (23/11/2026): vídeo de 4 min 57 s com apresentador em massinha 3D gerado localmente a partir da foto (`scripts/video/avatar_massinha.py`, `gerar_video_demoday.py`, roteiro `cenas_demoday.json`), captura das telas reais com o corpus acadêmico (`scripts/video/capturar_telas.py`) e PDF de pitch + guia completo (`scripts/entrega/gerar_guia_pdf.py`). Saídas em `data/video/demoday/` e `data/entrega/` (fora do Git).
+- Demo Day (23/11/2026): vídeo de 4 min 57 s com apresentador em massinha 3D gerado localmente a partir da foto (`scripts/video/avatar_massinha.py`, `gerar_video_demoday.py`, roteiro `cenas_demoday.json`), captura das telas reais com o corpus acadêmico (`scripts/video/capturar_telas.py`) e PDF de pitch + guia completo (`scripts/entrega/gerar_guia_pdf.py`). Saídas em `data/video/demoday/` e `data/entrega/` (fora do Git). Personagem v2: rosto fiel ao contorno da foto, proporção de personagem, olhos e sorriso expressivos, sobrancelhas animadas nas ênfases.
 
 ### Corrigido
 - Voz: números de atos falados viram a forma escrita ("contrato 12 barra 2023" / "contrato número 44 de 2023" → "contrato nº 12/2023"), e a pergunta ganha "?" — antes a busca não reconhecia o contrato e respondia sobre outros (6 testes).

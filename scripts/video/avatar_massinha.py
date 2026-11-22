@@ -221,9 +221,9 @@ def iluminar(cor: np.ndarray, h: np.ndarray, masc: np.ndarray, tex: np.ndarray) 
              ((0.2, 0.9, 0.3), 0.15, (1.0, 0.95, 0.9))]           # rebatida de baixo
     base = cor.astype(np.float32) / 255
     base = cv2.cvtColor(base, cv2.COLOR_BGR2HSV)
-    base[..., 1] = np.clip(base[..., 1] * 1.25, 0, 1)  # massinha é saturada
+    base[..., 1] = np.clip(base[..., 1] * 1.08, 0, 1)  # massinha levemente saturada
     base = cv2.cvtColor(base, cv2.COLOR_HSV2BGR)
-    tot = np.zeros_like(base) + 0.22  # ambiente
+    tot = np.zeros_like(base) + 0.20  # ambiente
     espec = np.zeros(hh.shape, np.float32)
     v = np.array([0, 0, 1.0])
     for d, inten, tint in luzes:
@@ -231,39 +231,184 @@ def iluminar(cor: np.ndarray, h: np.ndarray, masc: np.ndarray, tex: np.ndarray) 
         ndl = np.clip((n @ L + 0.25) / 1.25, 0, 1)  # luz envolvente (subsuperfície)
         tot += ndl[..., None] * inten * np.array(tint[::-1], np.float32)
         hv = (L + v) / np.linalg.norm(L + v)
-        espec += np.clip(n @ hv, 0, 1) ** 38 * inten * 0.55
+        espec += np.clip(n @ hv, 0, 1) ** 22 * inten * 0.28
     # oclusão nos vincos entre placas
     ao = np.clip((cv2.GaussianBlur(h, (0, 0), 6) - h) / 10, 0, 1)
     tot *= (1 - 0.55 * ao)[..., None]
-    out = base * tot + espec[..., None] * np.array([0.95, 0.97, 1.0], np.float32)
+    out = base * tot * 0.8 + espec[..., None] * np.array([0.95, 0.97, 1.0], np.float32)
     # contorno com luz de recorte e sombra de contato
     borda = np.clip(cv2.GaussianBlur(masc, (0, 0), 4) * (1 - cv2.erode(masc, np.ones((9, 9)))), 0, 1)
     out += borda[..., None] * 0.08
     return np.clip(out * 255, 0, 255).astype(np.uint8)
 
 
+# ------------------------------------------------------------------ versão 2: personagem simpático
+# Contorno do rosto medido na foto (altura, x esquerdo, x direito), suavizado — mantém o formato real
+CONTORNO = [(150, 245, 392), (170, 228, 410), (200, 220, 418), (240, 216, 422), (280, 216, 422), (320, 222, 416),
+            (350, 232, 405), (380, 246, 390), (405, 259, 378), (425, 276, 362), (440, 296, 342), (447, 318, 320)]
+ORELHAS = [(213, 276), (426, 274)]
+PIVO = (318, 452)          # ponto do queixo/pescoço em torno do qual a cabeça é ampliada
+CABECA = 1.10              # cabeça um pouco maior: proporção de personagem
+CABECA_X, CABECA_Y = 1.16, 1.04  # e mais arredondada (larga, menos comprida)
+PELE_RGB = (232, 182, 150)
+CABELO_RGB = (84, 56, 40)
+BARBA_RGB = (118, 84, 62)
+CAMISA_RGB = (238, 237, 233)
+
+
+def _poligono_rosto(shape) -> np.ndarray:
+    s = ESC
+    esq = [(xl, y) for y, xl, _ in CONTORNO]
+    dir_ = [(xr, y) for y, _, xr in CONTORNO][::-1]
+    pts = np.array(esq + dir_, np.float32) * s
+    m = np.zeros(shape, np.float32)
+    cv2.fillPoly(m, [pts.astype(np.int32)], 1.0)
+    cv2.ellipse(m, (int(318 * s), int(175 * s)), (int(92 * s), int(60 * s)), 0, 180, 360, 1.0, -1)
+    m = cv2.GaussianBlur(m, (0, 0), 7)
+    return m > 0.5
+
+
+def _sobrancelhas_da_foto(p) -> list[list[float]]:
+    """Extremos e espessura de cada sobrancelha na foto (a peça animada fica no mesmo lugar)."""
+    lab, n = ndi.label(p["sobrancelhas"])
+    itens = []
+    for j in range(1, n + 1):
+        ys, xs = np.where(lab == j)
+        if len(xs) < 200:
+            continue
+        itens.append([xs.min() / ESC, xs.max() / ESC, ys.mean() / ESC, (ys.max() - ys.min()) / ESC])
+    itens.sort()
+    if len(itens) < 2:
+        itens = [[236, 300, 229, 10], [334, 396, 229, 10]]
+    return itens[:2]
+
+
+def construir_v2(img: np.ndarray) -> tuple[np.ndarray, np.ndarray, dict]:
+    masc_foto = segmentar(img)
+    p = pecas(img, masc_foto)
+    H_, W_ = masc_foto.shape
+    s = ESC
+    yy, xx = np.mgrid[0:H_, 0:W_].astype(np.float32)
+    y = yy / s
+
+    def suave(en):
+        t = np.clip(en, 0, 1)
+        return t * t * (3 - 2 * t)
+
+    def elip(cx, cy, rx, ry):
+        return 1 - ((xx - cx * s) / (rx * s)) ** 2 - ((yy - cy * s) / (ry * s)) ** 2
+
+    rosto = _poligono_rosto((H_, W_))
+    orelhas = np.zeros_like(rosto)
+    for ox, oy in ORELHAS:
+        orelhas |= elip(ox, oy, 13, 29) > 0
+    cab_foto = _limpar(p["cabelo"], 9, 31)
+    cabelo = (cab_foto & (y < 236))
+    barba = ndi.binary_fill_holes(_limpar(p["barba"], 7, 33)) & rosto & (y > 341)
+    pesc = np.zeros((H_, W_), np.uint8)
+    cv2.fillPoly(pesc, [(np.array([[278, 400], [358, 400], [368, 482], [268, 482]]) * s).astype(np.int32)], 1)
+    pesc = pesc.astype(bool) | (p["pele"] & (y > 462))
+    pesc = _limpar(pesc, 25, 31)
+    camisa = _limpar(p["camisa"] | p["acessorio"] | ((masc_foto > 0.5) & (y > 470) & ~pesc), 15, 41)
+    camisa = ndi.binary_fill_holes(camisa)
+    pesc &= ~camisa
+
+    # ---- cores (BGR)
+    pele = np.array(PELE_RGB[::-1], np.float32)
+    cor = np.broadcast_to(pele, (H_, W_, 3)).copy()
+    for cx in (262, 374):  # bochechas rosadas
+        b = suave(elip(cx, 335, 34, 24) * 1.2)[..., None]
+        cor = cor * (1 - 0.38 * b) + np.array([150, 150, 236], np.float32) * 0.38 * b
+    lum = cv2.GaussianBlur(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY).astype(np.float32), (0, 0), 6)
+    med = np.median(lum[p["pele"] & (y > 250) & (y < 320)])
+    rala = np.clip((med - lum) / 45, 0, 1) * (y > 345) * rosto * suave(1 - elip(318, 330, 70, 40))
+    cor = cor * (1 - 0.32 * rala[..., None]) + np.array([120, 140, 170], np.float32) * 0.32 * rala[..., None]
+    cor[pesc] = pele * 0.93
+    cor[barba] = np.array(BARBA_RGB[::-1], np.float32)
+    cor[cabelo] = np.array(CABELO_RGB[::-1], np.float32)
+    cor[camisa] = np.array(CAMISA_RGB[::-1], np.float32)
+    cor = cv2.GaussianBlur(cor, (0, 0), 1.2)
+
+    # ---- relevo do corpo
+    hb = np.zeros((H_, W_), np.float32)
+    hb += _almofada(camisa, 40, 0.9)
+    lum_c = cv2.GaussianBlur(p["_lab"][..., 0], (0, 0), 5)
+    hb += np.where(camisa, (lum_c - 200) * 0.34, 0)  # gola e dobras da polo
+    hb += np.where(pesc, 18, 0) + _almofada(pesc, 46, 0.9)
+
+    # ---- relevo da cabeça
+    cab_m = rosto | orelhas | cabelo
+    d = ndi.distance_transform_edt(rosto).astype(np.float32)
+    hh = np.where(rosto, np.sqrt(np.clip(d / (60 * s), 0, 1)) * 70, 0).astype(np.float32)
+    hh += suave(elip(318, 290, 120, 175)) * 70 * rosto
+    formas = [  # (cx, cy, rx, ry, altura): testa, nariz, ponta, asas, maçãs do sorriso, queixo, lábio, arco
+        (318, 190, 95, 45, 12), (318, 287, 13, 38, 16), (318, 322, 19, 16, 30), (301, 330, 10, 8, 12),
+        (335, 330, 10, 8, 12), (262, 332, 34, 25, 16), (374, 332, 34, 25, 16), (318, 430, 38, 22, 14),
+        (318, 352, 40, 13, 6), (318, 236, 92, 12, 8)]
+    for cx, cy, rx, ry, alt in formas:
+        hh += suave(elip(cx, cy, rx * 1.2, ry * 1.2)) * alt
+    for ox, oy in OLHOS:
+        hh -= suave(elip(ox, oy + 2, 36, 21)) * 10
+    hh = np.where(orelhas & ~rosto, 0, hh)
+    for (ox, oy), lado in zip(ORELHAS, (-1, 1)):
+        hh += suave(elip(ox, oy, 13, 29)) * 46 - suave(elip(ox - lado * 2, oy + 2, 6, 17)) * 8
+    hh += _almofada(cabelo, 36, 1.1)
+    hh += np.where(cabelo, suave(elip(330, 112, 105, 52)) * 34, 0)  # topete
+    u = (xx - 318 * s) * np.cos(0.35) + (yy - 60 * s) * np.sin(0.35)
+    fios = np.sin(u / 6.5 + np.sin(yy / 31) * 1.6) * 2.0  # mechas penteadas para cima e para o lado
+    hh += np.where(cabelo, fios, 0)
+    hh += _almofada(barba, 9, 0.5)
+    hh += 40  # cabeça à frente do corpo
+
+    # ---- ampliar a cabeça em torno do queixo (cor, relevo e máscara)
+    px, py = PIVO[0] * s, PIVO[1] * s
+    M = np.float32([[CABECA_X, 0, px * (1 - CABECA_X)], [0, CABECA_Y, py * (1 - CABECA_Y)]])
+    ac = cv2.warpAffine(cab_m.astype(np.float32), M, (W_, H_), flags=cv2.INTER_LINEAR)
+    cc = cv2.warpAffine(cor, M, (W_, H_), flags=cv2.INTER_LINEAR)
+    hc = cv2.warpAffine(hh, M, (W_, H_), flags=cv2.INTER_LINEAR)
+    bc = cv2.warpAffine(barba.astype(np.float32), M, (W_, H_), flags=cv2.INTER_LINEAR) > 0.5
+    ac = np.clip((cv2.GaussianBlur(ac, (0, 0), 1.5) - 0.5) * 4 + 0.5, 0, 1)
+    corpo = cv2.GaussianBlur((camisa | pesc).astype(np.float32), (0, 0), 2.5)
+    corpo = np.clip((corpo - 0.5) * 4 + 0.5, 0, 1)
+    a = ac[..., None]
+    cor_f = cc * a + cor * (1 - a)
+    h_f = hc * ac + hb * (1 - ac)
+    masc = np.maximum(ac, corpo)
+    sombra = cv2.GaussianBlur(ac, (0, 0), 14) * (1 - ac) * (corpo > 0.5)
+    cor_f *= (1 - 0.35 * sombra)[..., None]
+
+    rng = np.random.default_rng(3)
+    tex = textura((H_, W_), rng) + granulado(bc, rng)
+    clay = iluminar(np.clip(cor_f, 0, 255).astype(np.uint8), h_f, masc, tex)
+
+    def tf(x, y_):
+        return [PIVO[0] + (x - PIVO[0]) * CABECA_X, PIVO[1] + (y_ - PIVO[1]) * CABECA_Y]
+
+    sob = _sobrancelhas_da_foto(p)
+    meta = {"escala": ESC, "cabeca": CABECA,
+            "olhos": [[v * ESC for v in tf(x, y_)] for x, y_ in OLHOS],
+            "boca": [v * ESC for v in tf(*BOCA)],
+            "queixo_y": tf(0, QUEIXO_Y)[1] * ESC,
+            "sobrancelhas": [[tf(x0, yc)[0] * ESC, tf(x1, yc)[0] * ESC, tf(0, yc)[1] * ESC,
+                              max(9.0, esp) * CABECA * ESC] for x0, x1, yc, esp in sob],
+            "pele": list(PELE_RGB), "tamanho": [W_, H_]}
+    return clay, masc, meta
+
+
 def main() -> None:
     SAIDA.mkdir(parents=True, exist_ok=True)
     foto = cv2.imread(str(FOTO))
     img = cv2.resize(foto, None, fx=ESC, fy=ESC, interpolation=cv2.INTER_CUBIC)
-    masc = segmentar(img)
-    p = pecas(img, masc)
-    cor = colorir(p, masc)
-    h = relevo(p, masc)
-    rng = np.random.default_rng(3)
-    tex = textura(masc.shape, rng) + granulado(p["barba"], rng)
-    clay = iluminar(cor, h, masc, tex)
+    clay, masc, meta = construir_v2(img)
     rgba = np.dstack([clay, (masc * 255).astype(np.uint8)])
     cv2.imwrite(str(SAIDA / "base.png"), rgba)
     cv2.imwrite(str(SAIDA / "mascara.png"), (masc * 255).astype(np.uint8))
-    meta = {"escala": ESC, "olhos": [[x * ESC, y * ESC] for x, y in OLHOS], "boca": [BOCA[0] * ESC, BOCA[1] * ESC],
-            "queixo_y": QUEIXO_Y * ESC, "tamanho": [img.shape[1], img.shape[0]]}
     (SAIDA / "meta.json").write_text(json.dumps(meta), encoding="utf-8")
     fundo = np.full_like(clay, (150, 190, 215))
     a = masc[..., None]
     prev = (clay * a + fundo * (1 - a)).astype(np.uint8)
     cv2.imwrite(str(SAIDA / "previa.png"), cv2.resize(prev, None, fx=0.6, fy=0.6, interpolation=cv2.INTER_AREA))
-    print("ok", img.shape)
+    print("ok", img.shape, [[round(v) for v in s_] for s_ in meta["sobrancelhas"]])
 
 
 if __name__ == "__main__":
