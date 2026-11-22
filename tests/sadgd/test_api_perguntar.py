@@ -165,3 +165,10 @@ def test_consulta_pela_fila_devolve_numero_na_hora_e_resultado_ao_dono(falso):
     assert s["resultado"]["fontes"][0]["trecho_id"] == 10 and s["resultado"]["consulta_id"]
     with logged_client("outro.gestor", "consulta") as outro:
         assert outro.get(f"/api/sadgd/consultas/{cid}").status_code == 404
+
+
+def test_linha_do_tempo_limitada_traz_os_eventos_mais_recentes(grafo):  # noqa: F811
+    """Rodada 12: com limite de eventos, entram os mais recentes (antes, os mais antigos e os sem data)."""
+    texto = grafo.resumo({1}, max_processos=1, max_eventos=2)
+    assert "2024-03-08" in texto and "2023-12-04" in texto and "2023-03-01" not in texto
+    assert texto.index("2023-12-04") < texto.index("2024-03-08")  # exibidos em ordem cronológica

@@ -69,10 +69,14 @@ class RepositorioGrafoSqlite:
             partes = []
             for pid in processos:
                 p = conn.execute("SELECT tipo, chave FROM processos WHERE id = ?", (pid,)).fetchone()
+                # os eventos MAIS RECENTES (datados primeiro), exibidos em ordem cronológica: antes eram os mais
+                # antigos, e os sem data (ordenados no início) ocupavam as vagas no acervo real
                 docs = conn.execute(
                     "SELECT d.id, d.data_documento, d.titulo, d.tipo_documental FROM documentos d JOIN "
                     "documento_processo dp ON dp.documento_id = d.id WHERE dp.processo_id = ? "
-                    "ORDER BY d.data_documento LIMIT ?", (pid, max_eventos)).fetchall()
+                    "ORDER BY coalesce(d.data_documento, '') = '', d.data_documento DESC, d.id DESC LIMIT ?",
+                    (pid, max_eventos)).fetchall()
+                docs.sort(key=lambda d: (not d[1], d[1] or "", d[0]))
                 if len(docs) < 2:
                     continue
                 titulos = {d[0]: (d[2] or "")[:80] for d in docs}

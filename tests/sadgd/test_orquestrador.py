@@ -310,3 +310,47 @@ def test_pergunta_simples_nao_recebe_linha_do_tempo_nem_modo_lista():
                        linha_do_tempo=lambda docs: "LT")
     orq.executar("Qual o valor global do Contrato nº 012/2023?")
     assert "RELAÇÃO" not in llm.chamadas[0][0]["content"] and "LINHA DO TEMPO" not in llm.chamadas[0][1]["content"]
+
+
+def _trecho(i, texto):
+    return TrechoRecuperado(i, i, texto, f"{i}.txt", f"sintetico/{i}.txt", f"DOC {i}", None, 1, "contrato",
+                            "sintetico", "2024-01-01", False, None)
+
+
+def test_contexto_da_decisao_respeita_o_orcamento_e_preserva_ficha_e_precedentes():
+    """Rodada 12: contexto comum da F2 com ≈ 17 mil caracteres estourava o num_ctx 8192 (JSON cortado, cache de
+    prefixo perdido). Os trechos entram até o orçamento (mínimo 4) e só a linha do tempo é cortada."""
+    from app.application.agentes.especialistas import MAX_CHARS_CONTEXTO_F2, MIN_TRECHOS_F2
+
+    trechos = [_trecho(100 + i, f"Cláusula {i}: texto do contrato. " * 40) for i in range(12)]
+    llm = LLMRegistraTudo()
+    linha = "\n".join(f"- 2024-01-{d:02d}: evento {d}" for d in range(1, 29)) * 6
+    chamadas_tl = []
+
+    def tl(docs, **kw):
+        chamadas_tl.append(kw)
+        return "LINHA DO TEMPO (contrato 012/2023):\n" + linha
+
+    orq = Orquestrador(lambda p, k, **kw: trechos, ResponderF1(llm, verificador=verificar), llm, linha_do_tempo=tl,
+                       ficha_decisao=lambda p: ("FICHA DO CONTRATO Nº 012/2023: objeto [T100]", trechos[:1]),
+                       fichas=lambda p: None)
+    estado = orq.executar("Devo prorrogar o Contrato nº 012/2023?")
+    assert chamadas_tl == [{"max_processos": 1, "max_eventos": 8}]  # a ficha já resume: só eventos recentes
+    assert MIN_TRECHOS_F2 <= len(estado["trechos"]) < len(trechos)
+    assert estado["contexto_extra"].startswith("FICHA DO CONTRATO") and estado["contexto_extra"].endswith("[…]")
+    usuario = llm.chamadas[0][1]["content"]
+    assert len(usuario) < MAX_CHARS_CONTEXTO_F2 + 500
+
+
+def test_relator_recebe_pareceres_enxutos_quando_sao_muitos():
+    from app.application.agentes.especialistas import MAX_CHARS_PARECERES, Parecer, relatar_f2
+
+    dados = {"parecer": "P" * 600, "recomendacao": "R" * 300, "afirmacoes": [
+        {"texto": "A" * 250, "citacoes": ["T11"], "tipo": "fato"}] * 6, "riscos": [
+        {"descricao": "r", "probabilidade": "media", "impacto": "medio", "mitigacao": "M" * 200}] * 4,
+        "alternativas": [], "lacunas": ["l"] * 3, "confianca": 0.7}
+    pareceres = [Parecer(f"agente{i}", dados, True, True) for i in range(4)]
+    llm = LLMRegistraTudo()
+    relatar_f2(llm, "Devo prorrogar?", TRECHOS, pareceres)
+    enviado = llm.chamadas[0][-1]["content"].split("PARECERES VERIFICADOS:\n")[1]
+    assert len(enviado) <= MAX_CHARS_PARECERES and "M" * 200 not in enviado

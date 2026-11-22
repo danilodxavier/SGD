@@ -14,7 +14,13 @@ from typing import Annotated, Any, TypedDict
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import Send
 
-from app.application.agentes.especialistas import executar_especialista, relatar_f2
+from app.application.agentes.especialistas import (
+    MAX_CHARS_EXTRA_F2,
+    ajustar_contexto,
+    cortar_linhas,
+    executar_especialista,
+    relatar_f2,
+)
 from app.application.agentes.politica_llm import LLMComReserva, LLMProtegido
 from app.application.agentes.roteador import rotear
 from app.domain.politicas import avaliar_envio_externo
@@ -150,15 +156,27 @@ class Orquestrador:
 
     def _contexto_f2(self, s):
         documentos = {t.documento_id for t in s["trechos"]}
-        resumo = self._tl(documentos) if self._tl else ""
-        if s.get("ficha_f2"):
-            resumo = s["ficha_f2"][0] + ("\n\n" + resumo if resumo else "")
+        resumo = ""
+        if self._tl and s.get("ficha_f2"):  # a ficha já resume o contrato: só os eventos recentes do processo
+            try:
+                resumo = self._tl(documentos, max_processos=1, max_eventos=8)
+            except TypeError:  # linha do tempo sem limites (avaliações antigas)
+                resumo = self._tl(documentos)
+        elif self._tl:
+            resumo = self._tl(documentos)
+        ficha = s["ficha_f2"][0] if s.get("ficha_f2") else ""
         precedentes = self._prec(s["pergunta"], documentos) if self._prec else []
+        texto_prec = "\n\n".join(p.como_contexto() for p in precedentes)
+        # a linha do tempo é a parte que cede ao orçamento (ficha e precedentes ficam inteiros)
+        resumo = cortar_linhas(resumo or "", max(600, MAX_CHARS_EXTRA_F2 - len(ficha) - len(texto_prec)))
+        resumo = ficha + ("\n\n" + resumo if ficha and resumo else resumo)
         if precedentes:
             resumo += ("\n\nPRECEDENTES DA GESTÃO (decisões anteriores semelhantes; informam, não vinculam):\n"
-                       + "\n\n".join(p.como_contexto() for p in precedentes))
-        return {"contexto_extra": resumo.strip(), "precedentes": precedentes,
-                "provedor_f2": self._decidir_provedor(s["trechos"], precedentes)}
+                       + texto_prec)
+        # orçamento do contexto comum (num_ctx do modelo local): especialistas, relator e verificador veem os mesmos
+        trechos, extra = ajustar_contexto(s["pergunta"], s["trechos"], resumo.strip(), self._ctx)
+        return {"contexto_extra": extra, "precedentes": precedentes, "trechos": trechos,
+                "provedor_f2": self._decidir_provedor(trechos, precedentes)}
 
     def _decidir_provedor(self, trechos, precedentes):
         if self._remoto is None:

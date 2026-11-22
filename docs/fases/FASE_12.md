@@ -288,3 +288,47 @@ aceitava o fecho ("Cuiabá, 10 de março de 2025.") no fim da última linha. Tod
 
 Agora **11 das 12 perguntas reais respondem em menos de 5 s**; só a decisão (R02, F2) segue no caminho dos
 especialistas. Regressão acadêmica das fichas: 70/72 (as 2 diferenças são pontuação de "Ltda."), igual à anterior.
+
+## 15. Rodada 12 — tempo da decisão: contexto dentro do limite do modelo (2026-11-22)
+
+**Diagnóstico** (decisão real R02, só números; modelo recém-reiniciado): **334 s** — especialista 225 s com **2
+tentativas** e relator 105 s. O contexto comum tinha ≈ 17 mil caracteres (**≈ 7.500 tokens**; o texto real rende
+≈ 2,3 caracteres/token) e o modelo local roda com `num_ctx 8192`: prompt + resposta passavam do limite, o JSON do
+especialista era cortado (nova tentativa = outra geração inteira) e o deslocamento do contexto anulava o cache de
+prefixo, então o relator relia tudo. A linha do tempo ocupava ≈ 4.900 caracteres e trazia os eventos **mais
+antigos** (os sem data, ordenados no início, ocupavam as vagas).
+
+**Mudanças:**
+1. **Orçamento do contexto da decisão** (`ajustar_contexto`, 8.500 caracteres para ficha + linha do tempo +
+   precedentes + trechos): trechos na ordem (origem da ficha, depois os mais relevantes) até o limite, mínimo 4;
+   a linha do tempo é a parte que cede (ficha e precedentes ficam inteiros). Especialistas, relator e verificador
+   veem os mesmos trechos.
+2. **Linha do tempo com os eventos mais recentes** (datados primeiro, exibidos em ordem cronológica); com ficha do
+   contrato, só 1 processo e 8 eventos — a ficha já resume o contrato.
+3. **Parecer mais enxuto** (até 3 afirmações, 2 fundamentos, 2 riscos, 2 alternativas, 2 lacunas; raciocínio curto)
+   e teto de 1.200 tokens: com 900, o JSON completo (≈ 850 tokens) era cortado.
+4. **Pareceres para o relator em níveis de compactação** até caberem em 3.500 caracteres (vários especialistas
+   somados ao contexto passariam do limite).
+
+**Resultado na decisão real (R02):**
+
+| | Antes | Agora |
+|---|---|---|
+| Tokens de entrada do especialista | 7.563 | 4.743 |
+| Tentativas do especialista | 2 | **1** |
+| Especialista | 225 s | 35 s (cache) / 63 s (modelo descarregado antes) |
+| Relator | 105 s | 33–36 s (cache de prefixo voltou a valer) |
+| **Total** | **334 s** (124 s na medição anterior) | **78 s** com o modelo carregado; **103 s** com o modelo descarregado antes |
+
+**Regressão acadêmica da decisão** (validação, 6 F2, LLM local, `avaliacao/execucoes/fase12_f2_orcamento/` ×
+`fase12_f2/`; uma falha transitória do Ollama no V030 foi repetida automaticamente):
+
+| | Antes | Orçamento |
+|---|---|---|
+| JSON do especialista válido sem reparo | 0,714 | **1,00** |
+| Afirmações removidas pelo verificador (por consulta) | 1,0 | **0,0** |
+| Relator válido / RF-20 com os 6 elementos preenchidos | 1,00 / 0,83 | 1,00 / 0,83 |
+| Recall / precisão de documentos | 0,639 / 0,442 | 0,639 / **0,511** |
+| Base legal (média de itens) | 4,5 | 3,5 (presente em 100%) |
+| p50 / p95 | 235 / 265 s | **150 / 185 s (−36% / −30%)** |
+

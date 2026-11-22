@@ -21,7 +21,11 @@ ORDEM_PARECER = ("Responda SOMENTE com um objeto JSON com as chaves nesta ordem:
                  "\"alternativas\" (lista de {\"descricao\", \"pros\": [\"...\"], \"contras\": [\"...\"]}), "
                  "\"recomendacao\", \"lacunas\", "
                  "\"conflitos\" (lista de {\"descricao\", \"trechos\"}), \"confianca\" (0 a 1). Seja conciso: no "
-                 "máximo 4 afirmações, 3 fundamentos, 3 riscos, 2 alternativas e 3 lacunas, cada texto com uma frase.")
+                 "máximo 3 afirmações, 2 fundamentos, 2 riscos, 2 alternativas e 2 lacunas, cada texto com uma frase "
+                 "curta; \"raciocinio\" com até 15 palavras.")
+# Teto de tokens do parecer: com 900, o JSON completo (≈ 850 tokens no acervo real) era cortado e a 2ª tentativa
+# custava outra geração inteira (≈ 80 s). O pedido mais enxuto reduz a saída; o teto maior evita a repetição.
+MIN_TOKENS_PARECER = 1200
 ORDEM_RELATOR = ("Modo F2. Responda SOMENTE com um objeto JSON com as chaves nesta ordem: \"resposta\" "
                  "(síntese com citações [T<id>] e, se houver, [P<id>] dos precedentes), \"recomendacao\" (1 a 2 "
                  "frases), \"consensos\" (lista de frases curtas, texto simples), "
@@ -157,6 +161,39 @@ def _chat_json(llm, mensagens, max_tokens, temperatura):
         return None, 2
 
 
+# Orçamento do contexto comum da F2 (ficha + linha do tempo + trechos), em caracteres. O modelo local tem
+# num_ctx 8192 e o texto real rende ≈ 2,3 caracteres/token: com ≈ 17 mil caracteres (7.500 tokens), prompt + resposta
+# passavam do limite, o JSON do especialista era cortado (2ª tentativa) e o deslocamento do contexto anulava o cache
+# de prefixo do relator (decisão real: 334 s). 8.500 caracteres + regras + papel + resposta cabem com folga.
+MAX_CHARS_CONTEXTO_F2 = 8500
+MAX_CHARS_EXTRA_F2 = 3000  # ficha + linha do tempo + precedentes (o restante do orçamento fica para os trechos)
+MIN_TRECHOS_F2 = 4
+MAX_CHARS_PARECERES = 3500  # pareceres compactados enviados ao relator (vários especialistas)
+
+
+def cortar_linhas(texto: str, limite: int) -> str:
+    if len(texto) <= limite:
+        return texto
+    corte = texto.rfind("\n", 0, limite)
+    return texto[:corte if corte > 0 else limite].rstrip() + "\n[…]"
+
+
+def ajustar_contexto(pergunta, trechos, contexto_extra="", contexto_max_chars=0,
+                     max_chars=MAX_CHARS_CONTEXTO_F2) -> tuple[list, str]:
+    """Mantém o contexto comum da F2 dentro do orçamento: os trechos entram na ordem recebida (origem da ficha,
+    depois os mais relevantes da busca) até o limite, com um mínimo de MIN_TRECHOS_F2. O extra já chega limitado
+    (a linha do tempo é cortada antes, preservando ficha e precedentes)."""
+    extra = contexto_extra or ""
+    usados, total = [], len(extra)
+    for t in trechos:
+        tamanho = len(montar_contexto([t], pergunta, contexto_max_chars)) + 2
+        if len(usados) >= MIN_TRECHOS_F2 and total + tamanho > max_chars:
+            break
+        usados.append(t)
+        total += tamanho
+    return usados, extra
+
+
 def contexto_compartilhado(pergunta, trechos, contexto_extra="", contexto_max_chars=0) -> list:
     """Início IDÊNTICO das mensagens de todos os especialistas e do relator (regras comuns + pergunta + ficha/linha
     do tempo + trechos): o Ollama lê esse bloco uma vez e as chamadas seguintes reaproveitam o cache de prefixo. As
@@ -176,7 +213,8 @@ def executar_especialista(llm, agente, pergunta, trechos, contexto_extra="", con
     _, papel = partes_prompt(agente)
     mensagens = contexto_compartilhado(pergunta, trechos, contexto_extra, contexto_max_chars) + [
         {"role": "user", "content": papel + "\n\n" + ORDEM_PARECER}]
-    r, tentativas = _chat_json(llm, mensagens, int(meta.get("max_tokens", 800)), float(meta.get("temperatura", 0)))
+    r, tentativas = _chat_json(llm, mensagens, max(int(meta.get("max_tokens", 800)), MIN_TOKENS_PARECER),
+                               float(meta.get("temperatura", 0)))
     if r is None:  # o especialista falhou: parecer vazio e inválido (o relator o ignora), sem derrubar o grafo
         return Parecer(agente, _reparar_parecer({}, agente, set()), False, False, ["sem_json_valido"], tentativas=2)
     bruto = r.json if isinstance(r.json, dict) else {}
@@ -196,13 +234,31 @@ def executar_especialista(llm, agente, pergunta, trechos, contexto_extra="", con
                    + (antes - len(reparado["afirmacoes"])), r.tokens_entrada, r.tokens_saida, r.latencia_ms, tentativas)
 
 
-def _compactar(p: Parecer):
+# níveis de compactação dos pareceres para o relator: (parecer, recomendação, afirmações, texto da afirmação,
+# riscos, alternativas, lacunas, mitigação)
+NIVEIS_COMPACTACAO = [(600, 300, 6, 250, 4, 3, 3, True), (300, 200, 2, 200, 2, 2, 2, False),
+                      (200, 150, 1, 150, 1, 1, 1, False)]
+
+
+def _compactar(p: Parecer, nivel: int = 0):
     d = p.dados
-    return {"agente": p.agente, "parecer": d["parecer"][:600], "recomendacao": d.get("recomendacao", "")[:300],
-            "afirmacoes": [{"texto": a["texto"][:250], "citacoes": a["citacoes"], "tipo": a["tipo"]}
-                           for a in d["afirmacoes"][:6]],
-            "riscos": d["riscos"][:4], "alternativas": d["alternativas"][:3], "lacunas": d["lacunas"][:3],
-            "confianca": d["confianca"]}
+    parecer, recom, n_afirm, t_afirm, n_risco, n_alt, n_lac, mitigacao = NIVEIS_COMPACTACAO[nivel]
+    return {"agente": p.agente, "parecer": d["parecer"][:parecer], "recomendacao": d.get("recomendacao", "")[:recom],
+            "afirmacoes": [{"texto": a["texto"][:t_afirm], "citacoes": a["citacoes"], "tipo": a["tipo"]}
+                           for a in d["afirmacoes"][:n_afirm]],
+            "riscos": [{k: v for k, v in r.items() if mitigacao or k != "mitigacao"} for r in d["riscos"][:n_risco]],
+            "alternativas": d["alternativas"][:n_alt], "lacunas": d["lacunas"][:n_lac], "confianca": d["confianca"]}
+
+
+def pareceres_para_relator(pareceres) -> list:
+    """Pareceres válidos compactados no nível mais detalhado que cabe em MAX_CHARS_PARECERES (vários especialistas
+    somados ao contexto comum passariam do num_ctx do modelo local)."""
+    validos = [p for p in pareceres if p.dados.get("parecer")]
+    for nivel in range(len(NIVEIS_COMPACTACAO)):
+        compactos = [_compactar(p, nivel) for p in validos]
+        if len(json.dumps(compactos, ensure_ascii=False)) <= MAX_CHARS_PARECERES:
+            break
+    return compactos
 
 
 @dataclass
@@ -221,7 +277,7 @@ class RespostaF2:
 
 def relatar_f2(llm, pergunta, trechos, pareceres, contexto_extra="", precedentes=(),
                contexto_max_chars=0) -> RespostaF2:
-    validos = [_compactar(p) for p in pareceres if p.dados.get("parecer")]
+    validos = pareceres_para_relator(pareceres)
     _, papel = partes_prompt("relator", versao=2)
     mensagens = contexto_compartilhado(pergunta, trechos, contexto_extra, contexto_max_chars) + [
         {"role": "user", "content": papel + "\n\n" + ORDEM_RELATOR + "\n\nPARECERES VERIFICADOS:\n"
