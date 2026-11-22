@@ -234,7 +234,16 @@ diferente.
 4. **LLM carregado por 12 h** (`OLLAMA_KEEP_ALIVE`, `ollama.ps1`): o padrão do Ollama descarregava após 5 min e a 1ª
    pergunta depois de uma pausa pagava 10–15 s de recarga.
 
-**Regressão acadêmica da decisão** (validação, 6 F2, ctx 800, `avaliacao/execucoes/fase12_f2/`) — **parcial: 3/6**
-(a execução foi encerrada pelo sistema por falta de memória): nos 3 itens, relator válido e 6 elementos RF-20 iguais
-aos anteriores, recall de documentos igual (0,33 / 0,50 / 0,50) e tempo 342 → 236 s, 304 → 229 s, 272 → 194 s
-(≈ −27%). Completar os 3 itens restantes quando houver memória livre.
+**Regressão acadêmica da decisão** (validação, 6 F2, LLM local, `avaliacao/execucoes/fase12_f2/` ×
+`fase11_f2ctx/`; os 3 últimos itens rodados em primeiro plano após a 1ª execução ser encerrada por falta de memória):
+
+| | Antes | Contexto compartilhado |
+|---|---|---|
+| Relator válido | 1,00 | 1,00 |
+| RF-20 completo (6 elementos presentes) | 0,83 | 0,83 |
+| Recall de documentos | 0,639 | 0,639 |
+| Precisão de documentos | 0,456 | 0,442 |
+| p50 | 319 s | **236 s (−26%)** |
+
+Item a item, mesmo número de pareceres (2–3) e o mesmo resultado estrutural; ganho de tempo em todos (283 → 265 s a
+372 → 235 s).

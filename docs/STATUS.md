@@ -7,8 +7,8 @@
 | Atualizado em | 2026-11-20 |
 | Fase atual | **Fase 12 — implantação na rede interna (chat por texto e voz)** — em execução; aguarda DNS e certificado da STI |
 | Situação da fase | Acervo real indexado; A1 (tipos) e A3 (latência) aplicados; aguardando perguntas reais e conferência da amostra de tipos pela equipe |
-| Última tarefa concluída | Decisão (F2): contexto compartilhado (cache de prefixo; relator 58 → 25 s) + ficha do contrato no contexto; volta ao modelo padrão (a variante 100% GPU é mais lenta com o reranker); LLM carregado por 12 h. Regressão acadêmica parcial (3/6): qualidade igual, tempo −27%. Ver `docs/fases/FASE_12.md` §13 |
-| Próxima tarefa exata | (1) completar a regressão F2 (3 itens restantes: `avaliar_f2.py --rotulo fase12_f2 --conjunto validacao --contexto-max-chars 800 --max-minutos 4`, com memória livre); (2) equipe julga `avaliacao/real/revisao.csv` e confere `amostra_tipos.csv`; (3) STI: DNS + certificado |
+| Última tarefa concluída | Decisão (F2): contexto compartilhado + ficha do contrato; regressão acadêmica completa (6/6): qualidade igual (relator 1,00; RF-20 0,83; recall 0,639) e p50 319 → 236 s (−26%); modelo padrão (variante 100% GPU mais lenta com o reranker); LLM carregado por 12 h. Ver `docs/fases/FASE_12.md` §13 |
+| Próxima tarefa exata | (1) equipe julga `avaliacao/real/revisao.csv` e confere `amostra_tipos.csv`; (2) STI: DNS + certificado (HTTPS e voz para os gestores) |
 | Bloqueios | DNS e certificado da STI para o acesso pela rede; julgamento humano das respostas reais |
 
 ## Histórico de fases

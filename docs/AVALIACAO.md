@@ -171,6 +171,7 @@ entrada. O benefício decisivo está no acervo real, onde os trechos longos esto
 | 2026-11-17 | fase10_cache | golden set | Limiar do cache semântico | maior par diferente 0,883 → limiar 0,93 |
 | 2026-11-17 | fase10_fidelidade | validação (calibração) + teste | LLM-juiz Llama 3.1 8B | κ 0,71; faithfulness 0,964 adjudicada; alucinação 5,4% |
 | 2026-11-17 | fase11 (F2 Gemini v1) | validação + teste (21) | Especialistas e relator no Gemini 3.5 Flash-Lite | schema relator 0,333 (`consensos` em objeto); p95 213 s |
+| 2026-11-22 | fase12_f2 | validação (6 F2) | Contexto compartilhado (cache de prefixo) entre especialistas e relator | Relator 1,00 =; RF-20 completo 0,83 =; recall docs 0,639 =; precisão 0,456 → 0,442; p50 319 → 236 s (−26%) |
 | 2026-11-21 | fase12_rapido | validação (47 F1, com verificador) | Modelo 100% na GPU (`num_gpu 29`), compressão 800, relator v3 enxuto, detalhe reprovado sem nova chamada | Exatidão 0,923 =; classificação 0,915 → 0,979; citação 0,907 → 0,954; recusa 1,00; aluc. 0; LLM p50 23,1 → 16,9 s, p95 48,5 → 31,1 s. Ver `fases/FASE_12.md` §6 |
 | 2026-11-21 | fase11_respostas_completas | validação (47 F1, **com verificador**) | Resposta direta + detalhes citados; verificador por frase; modos lista/histórico | Exatidão 0,923 =; recusa 1,00; aluc. num. 0; citação 0,907; resposta 129 → 273 caracteres; p50 23 s / p95 50 s. Ver `AVALIACAO_REAL.md` §9 |
 | 2026-11-21 | fase11_detalhes / fase11_detalhes_verif | validação (47 F1) | Descartados: detalhes sem disciplina de citação | Aluc. num. 0,231 (sem verificador); recusa 0,75 |
