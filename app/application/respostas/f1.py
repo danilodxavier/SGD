@@ -87,13 +87,21 @@ ORDEM_EVIDENCIAS = ("Responda SOMENTE com um objeto JSON com as chaves nesta ord
 VERSAO_INSTRUCAO = 5
 
 
+def _corpo_prompt(arquivo: str) -> str:
+    texto = (PROMPTS / arquivo).read_text(encoding="utf-8")
+    return texto.split("---", 2)[2].strip() if texto.startswith("---") else texto.strip()
+
+
+@cache
+def partes_prompt(nome: str, versao: int = 1, versao_regras: int = 2) -> tuple[str, str]:
+    """(regras comuns, instruções do papel) — separadas para o contexto compartilhado da F2 (cache de prefixo)."""
+    return _corpo_prompt(f"_regras_comuns.v{versao_regras}.md"), _corpo_prompt(f"{nome}.v{versao}.md")
+
+
 @cache
 def carregar_prompt(nome: str, versao: int = 1, versao_regras: int = 2) -> str:
-    def corpo(arquivo):
-        texto = (PROMPTS / arquivo).read_text(encoding="utf-8")
-        return texto.split("---", 2)[2].strip() if texto.startswith("---") else texto.strip()
-
-    return corpo(f"_regras_comuns.v{versao_regras}.md") + "\n\n" + corpo(f"{nome}.v{versao}.md")
+    regras, papel = partes_prompt(nome, versao, versao_regras)
+    return regras + "\n\n" + papel
 
 
 @cache

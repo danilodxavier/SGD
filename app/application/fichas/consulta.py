@@ -159,6 +159,50 @@ class ResponderPorFicha:
         ids = da_pasta(achado["pasta"]) if achado.get("pasta") and da_pasta else set()
         return ids or {d["documento_id"] for d in achado["documentos"]} or None
 
+    def contexto_decisao(self, pergunta: str, max_trechos: int = 4):
+        """Para a decisão (F2) sobre um contrato com ficha: (texto da ficha com citações [T<id>], trechos de origem).
+        Os trechos entram no contexto dos especialistas para que os dados da ficha possam ser citados e conferidos.
+        None se a pergunta não identifica um contrato com ficha."""
+        tipo, ficha = self.localizar(pergunta)
+        if tipo != "ficha":
+            return None
+        c = ficha["campos"]
+        linhas, ids = [], []
+
+        def campo(rotulo, *nomes):
+            for nome in nomes:
+                item = c.get(nome)
+                if item and len(ids) < max_trechos or (item and item.get("trecho_id") in ids):
+                    if item.get("trecho_id") not in ids:
+                        ids.append(item["trecho_id"])
+                    valor = _data(item["valor"]) if nome.startswith("aditivo_") else item["valor"]
+                    linhas.append(f"- {rotulo}: {valor} [T{item['trecho_id']}]")
+                    return
+
+        campo("Objeto", "objeto")
+        campo("Valor", "valor_atual", "valor_global")
+        campo("Vigência (término)", "vigencia_atual_fim", "vigencia_fim", "vigencia")
+        campo("Fiscal", "fiscal")
+        campo("Contratada", "contratada")
+        campo("Gestor", "gestor")
+        fim, fonte, _ = termino(ficha)
+        if fim:
+            import datetime as dt
+
+            situacao = "vigente" if fim >= dt.date.today() else "vigência encerrada"
+            linhas.append(f"- Situação pela data: {situacao} (término {fim:%d/%m/%Y}, {fonte})")
+        contagem = {}
+        for d in ficha["documentos"]:
+            contagem[d["tipo"]] = contagem.get(d["tipo"], 0) + 1
+        resumo_docs = ", ".join(f"{n} {ROTULO_TIPO.get(t, (t, t))[0 if n == 1 else 1]}" for t, n in
+                                sorted(contagem.items(), key=lambda kv: -kv[1]) if t in ROTULO_TIPO)
+        if resumo_docs:
+            linhas.append(f"- Documentos na pasta do contrato: {resumo_docs}")
+        numero = (c.get("numero") or {}).get("valor") or ficha["chave"]
+        texto = (f"FICHA DO CONTRATO Nº {numero} (dados conferidos contra os trechos citados; use-os e cite os mesmos "
+                 f"[T<id>]):\n" + "\n".join(linhas))
+        return texto, self.trechos.obter(ids)
+
     def identificar(self, pergunta: str) -> dict | None:
         tipo, achado = self.localizar(pergunta)
         return achado if tipo == "ficha" else None

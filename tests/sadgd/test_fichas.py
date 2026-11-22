@@ -447,3 +447,27 @@ def test_orquestrador_restringe_a_busca_ao_contrato_quando_a_ficha_nao_basta():
     escopo = ResponderPorFicha(RepoFichas([FICHA]), RepoTrechos()).escopo("Qual a multa do contrato 012/2023?")
     assert escopo == {1, 2, 3}  # sem pasta: o inventário
     assert ResponderPorFicha(RepoFichas([FICHA]), RepoTrechos()).escopo("Qual a multa?") is None
+
+
+def test_decisao_sobre_contrato_recebe_a_ficha_com_trechos_citaveis():
+    from app.application.agentes.orquestrador import Orquestrador
+    from app.application.respostas.f1 import ResponderF1
+    from tests.sadgd.test_orquestrador import TRECHOS, LLMQueRegistra
+
+    consulta = ResponderPorFicha(RepoFichas([FICHA]), RepoTrechos())
+    texto, trechos = consulta.contexto_decisao("Devo prorrogar o contrato 012/2023?")
+    assert "FICHA DO CONTRATO Nº 012/2023" in texto and "suporte técnico [T12]" in texto
+    assert "2 notas de empenho" in texto and {t.id for t in trechos} == {11, 12}
+    assert consulta.contexto_decisao("Devo prorrogar o contrato?") is None
+
+    pedidos, llm = [], LLMQueRegistra()
+
+    def recuperar(pergunta, k, **kw):
+        pedidos.append(k)
+        return TRECHOS
+
+    orq = Orquestrador(recuperar, ResponderF1(llm), llm, fichas=lambda p: None, escopo_contrato=lambda p: None,
+                       ficha_decisao=consulta.contexto_decisao)
+    estado = orq.executar("Devo prorrogar o contrato 012/2023?")
+    assert pedidos == [4] and [t.id for t in estado["trechos"]][:2] == [12, 11]
+    assert all("FICHA DO CONTRATO" in p for p in llm.prompts_usuario)  # especialistas e relator veem a ficha

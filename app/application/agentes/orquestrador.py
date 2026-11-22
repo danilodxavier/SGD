@@ -21,6 +21,7 @@ from app.domain.politicas import avaliar_envio_externo
 
 MAX_TRECHOS_F1 = 12  # trechos + aberturas que chegam à F1 (compressão de 1.200 caracteres mantém o prompt < contexto)
 K_LISTA = 16  # perguntas de lista: documentos distintos (2 trechos/documento, 700 caracteres por trecho)
+K_A_MENOS_COM_FICHA = 4  # decisão sobre contrato com ficha: 4 trechos da busca + até 4 de origem da ficha
 
 
 class Estado(TypedDict, total=False):
@@ -37,12 +38,14 @@ class Estado(TypedDict, total=False):
     tempos: Annotated[list, operator.add]
     via_ficha: bool
     escopo: Any  # documentos do contrato citado (busca restrita quando a ficha não basta)
+    ficha_f2: Any  # (texto da ficha, trechos de origem) para os especialistas da decisão
 
 
 class Orquestrador:
     def __init__(self, recuperar, responder_f1, llm_especialistas, *, linha_do_tempo=None, precedentes=None,
                  tracer=None, checkpointer=None, k=8, llm_relator=None, llm_f2_remoto=None,
-                 envio_externo_permitido=False, contexto_max_chars=0, fichas=None, escopo_contrato=None):
+                 envio_externo_permitido=False, contexto_max_chars=0, fichas=None, escopo_contrato=None,
+                 ficha_decisao=None):
         """recuperar(pergunta, k) -> list[TrechoRecuperado]; responder_f1: ResponderF1;
         linha_do_tempo(documento_ids) -> str (resumo para F2);
         precedentes(pergunta, documento_ids) -> list[Precedente] (memória de decisões, RF-19);
@@ -57,6 +60,7 @@ class Orquestrador:
         self._ctx = contexto_max_chars  # compressão do contexto dos especialistas e do relator (0 = desligada)
         self._fichas = fichas
         self._escopo = escopo_contrato  # escopo_contrato(pergunta) -> set[documento_id] | None
+        self._ficha_decisao = ficha_decisao  # ficha_decisao(pergunta) -> (texto, trechos) | None — F2
         g = StateGraph(Estado)
         g.add_node("rotear", self._no(self._rotear))
         if fichas is not None:
@@ -106,7 +110,10 @@ class Orquestrador:
             return {"via_ficha": False}
         r = None if s["decisao"].rota == "F2" else self._fichas(s["pergunta"])
         if r is None:  # a ficha não basta: a busca fica no contrato citado (também na decisão)
-            return {"via_ficha": False, "escopo": self._escopo(s["pergunta"]) if self._escopo else None}
+            ficha_f2 = (self._ficha_decisao(s["pergunta"]) if self._ficha_decisao and s["decisao"].rota == "F2"
+                        else None)
+            return {"via_ficha": False, "escopo": self._escopo(s["pergunta"]) if self._escopo else None,
+                    "ficha_f2": ficha_f2}
         return {"via_ficha": True, "resposta": r, "trechos": list(r.fontes)}
 
     def _recuperar_no(self, s):
@@ -115,12 +122,20 @@ class Orquestrador:
                 return {"trechos": self._recuperar(s["pergunta"], K_LISTA, max_por_documento=2)}
             except TypeError:  # recuperador sem diversificação (avaliações antigas)
                 pass
+        ficha_f2 = s.get("ficha_f2")
+        k = max(4, self._k - K_A_MENOS_COM_FICHA) if ficha_f2 else self._k  # a ficha cobre os dados básicos
+        trechos = None
         if s.get("escopo"):
             try:
-                return {"trechos": self._recuperar(s["pergunta"], self._k, documentos=s["escopo"])}
+                trechos = self._recuperar(s["pergunta"], k, documentos=s["escopo"])
             except TypeError:  # recuperador sem escopo (avaliações antigas)
-                pass
-        return {"trechos": self._recuperar(s["pergunta"], self._k)}
+                trechos = None
+        if trechos is None:
+            trechos = self._recuperar(s["pergunta"], k)
+        if ficha_f2:  # trechos de origem da ficha primeiro (citáveis), sem repetir
+            vistos = {t.id for t in ficha_f2[1]}
+            trechos = list(ficha_f2[1]) + [t for t in trechos if t.id not in vistos]
+        return {"trechos": trechos}
 
     def _responder_f1(self, s):
         """Até 12 trechos (antes 6: com as aberturas na frente, trechos relevantes ficavam de fora); perguntas de
@@ -136,6 +151,8 @@ class Orquestrador:
     def _contexto_f2(self, s):
         documentos = {t.documento_id for t in s["trechos"]}
         resumo = self._tl(documentos) if self._tl else ""
+        if s.get("ficha_f2"):
+            resumo = s["ficha_f2"][0] + ("\n\n" + resumo if resumo else "")
         precedentes = self._prec(s["pergunta"], documentos) if self._prec else []
         if precedentes:
             resumo += ("\n\nPRECEDENTES DA GESTÃO (decisões anteriores semelhantes; informam, não vinculam):\n"

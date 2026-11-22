@@ -213,3 +213,28 @@ trechos no contrato, busca no acervo inteiro.
 
 Acervo real (rodada 10 × 9): R12 76 → 55 s (recusa mantida, agora com a busca no contrato certo); decisão R02
 149 → 139 s; demais inalteradas (8 de 11 em ≤ 5 s).
+
+## 13. Decisão (F2): ficha para os especialistas e contexto compartilhado (2026-11-22)
+
+**Diagnóstico** (decisão real, só números): o relator relia ≈ 5.600 tokens de trechos que o especialista já tinha
+lido (≈ 40 s) — o cache de prefixo do Ollama não ajudava porque cada papel começava com um prompt de sistema
+diferente.
+
+**Mudanças:**
+1. **Contexto compartilhado**: sistema = regras comuns (igual para todos); 1ª mensagem = pergunta + ficha + linha do
+   tempo + trechos (igual para todos); 2ª mensagem = instruções do papel (+ pareceres, no relator). O Ollama lê o
+   bloco comum uma vez; o relator só lê o que é novo (medido: 58 s → 25 s com o modelo carregado).
+2. **Ficha no contexto da decisão** sobre contrato com ficha: objeto, valor, vigência e situação, fiscal, contratada,
+   gestor e contagem de documentos por tipo, com citação; os trechos de origem (até 4) entram no contexto (citáveis e
+   conferidos pelo verificador) e a busca traz 4 trechos em vez de 8.
+3. **Correção de uma conclusão anterior (§6)**: com o reranker carregado na GPU (situação de produção), a variante
+   `sadgd-qwen2.5-7b-gpu` (`num_gpu 29`) é **mais lenta** que o padrão — a VRAM não comporta os dois e o excesso vai
+   para a RAM. Medido com o modelo descarregado antes: pergunta aberta 89 → 80 s, decisão 149 → 124 s com o padrão.
+   `.env` voltou a `sadgd-qwen2.5-7b`; a variante fica disponível para uma placa maior.
+4. **LLM carregado por 12 h** (`OLLAMA_KEEP_ALIVE`, `ollama.ps1`): o padrão do Ollama descarregava após 5 min e a 1ª
+   pergunta depois de uma pausa pagava 10–15 s de recarga.
+
+**Regressão acadêmica da decisão** (validação, 6 F2, ctx 800, `avaliacao/execucoes/fase12_f2/`) — **parcial: 3/6**
+(a execução foi encerrada pelo sistema por falta de memória): nos 3 itens, relator válido e 6 elementos RF-20 iguais
+aos anteriores, recall de documentos igual (0,33 / 0,50 / 0,50) e tempo 342 → 236 s, 304 → 229 s, 272 → 194 s
+(≈ −27%). Completar os 3 itens restantes quando houver memória livre.

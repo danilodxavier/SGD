@@ -9,7 +9,7 @@ from pathlib import Path
 from app.application.agentes.verificador import suporte, verificar
 from app.application.avaliacao.metricas_resposta import numeros_nao_suportados
 from app.application.decisoes.recomendacao import completar
-from app.application.respostas.f1 import carregar_prompt, montar_contexto
+from app.application.respostas.f1 import montar_contexto, partes_prompt
 from app.domain.politicas import AVISO_DECISAO
 
 AGENTES = Path(__file__).resolve().parent
@@ -157,13 +157,25 @@ def _chat_json(llm, mensagens, max_tokens, temperatura):
         return None, 2
 
 
-def executar_especialista(llm, agente, pergunta, trechos, contexto_extra="", contexto_max_chars=0) -> Parecer:
-    meta = _meta(agente)
-    mensagens = [
-        {"role": "system", "content": carregar_prompt(agente) + "\n\n" + ORDEM_PARECER},
+def contexto_compartilhado(pergunta, trechos, contexto_extra="", contexto_max_chars=0) -> list:
+    """Início IDÊNTICO das mensagens de todos os especialistas e do relator (regras comuns + pergunta + ficha/linha
+    do tempo + trechos): o Ollama lê esse bloco uma vez e as chamadas seguintes reaproveitam o cache de prefixo. As
+    instruções de cada papel vêm depois. Medição (decisão real): o relator relia ≈ 5.600 tokens (≈ 40 s)."""
+    regras, _ = partes_prompt("relator", versao=2)
+    return [
+        {"role": "system", "content": regras + "\n\nVocê integra o colegiado do SAD-GD. O contexto vem primeiro; "
+                                               "as instruções do seu papel e o formato da resposta vêm na última "
+                                               "mensagem."},
         {"role": "user", "content": f"PERGUNTA: {pergunta}\n\n{contexto_extra}\n\n"
                                     f"TRECHOS:\n{montar_contexto(trechos, pergunta, contexto_max_chars)}"},
     ]
+
+
+def executar_especialista(llm, agente, pergunta, trechos, contexto_extra="", contexto_max_chars=0) -> Parecer:
+    meta = _meta(agente)
+    _, papel = partes_prompt(agente)
+    mensagens = contexto_compartilhado(pergunta, trechos, contexto_extra, contexto_max_chars) + [
+        {"role": "user", "content": papel + "\n\n" + ORDEM_PARECER}]
     r, tentativas = _chat_json(llm, mensagens, int(meta.get("max_tokens", 800)), float(meta.get("temperatura", 0)))
     if r is None:  # o especialista falhou: parecer vazio e inválido (o relator o ignora), sem derrubar o grafo
         return Parecer(agente, _reparar_parecer({}, agente, set()), False, False, ["sem_json_valido"], tentativas=2)
@@ -210,12 +222,10 @@ class RespostaF2:
 def relatar_f2(llm, pergunta, trechos, pareceres, contexto_extra="", precedentes=(),
                contexto_max_chars=0) -> RespostaF2:
     validos = [_compactar(p) for p in pareceres if p.dados.get("parecer")]
-    mensagens = [
-        {"role": "system", "content": carregar_prompt("relator", versao=2) + "\n\n" + ORDEM_RELATOR},
-        {"role": "user", "content": f"PERGUNTA: {pergunta}\n\n{contexto_extra}\n\nPARECERES VERIFICADOS:\n"
-                                    f"{json.dumps(validos, ensure_ascii=False)}\n\n"
-                                    f"TRECHOS:\n{montar_contexto(trechos, pergunta, contexto_max_chars)}"},
-    ]
+    _, papel = partes_prompt("relator", versao=2)
+    mensagens = contexto_compartilhado(pergunta, trechos, contexto_extra, contexto_max_chars) + [
+        {"role": "user", "content": papel + "\n\n" + ORDEM_RELATOR + "\n\nPARECERES VERIFICADOS:\n"
+                                    + json.dumps(validos, ensure_ascii=False)}]
     r, tentativas = _chat_json(llm, mensagens, 1200, 0.1)
     d = r.json if r is not None and isinstance(r.json, dict) else {}
     if r is None:

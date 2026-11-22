@@ -28,7 +28,7 @@ class LLMRoteiro:
         self.papeis, self._trava = [], threading.Lock()
 
     def chat(self, mensagens, *, schema=None, max_tokens=700, temperatura=0.0, json_livre=False):
-        sistema = mensagens[0]["content"]
+        sistema = "\n".join(m["content"] for m in mensagens)  # F2: papel e formato vêm na última mensagem
         papel = sistema.split("Papel: ")[1].split(".")[0].split(" ")[0] if "Papel: " in sistema else "?"
         with self._trava:
             self.papeis.append(papel)
@@ -128,7 +128,7 @@ class LLMQueRegistra(LLMRoteiro):
 
     def chat(self, mensagens, **kw):
         with self._trava:
-            self.prompts_usuario.append(mensagens[-1]["content"])
+            self.prompts_usuario.append("\n".join(m["content"] for m in mensagens if m["role"] == "user"))
         return super().chat(mensagens, **kw)
 
 
@@ -242,7 +242,7 @@ def test_relator_com_consensos_no_formato_de_divergencia_e_reparado():
     class LLMConsensoObjeto(LLMRoteiro):
         def chat(self, mensagens, **kw):
             r = super().chat(mensagens, **kw)
-            if "Modo F2" in mensagens[0]["content"]:
+            if any("Modo F2" in m["content"] for m in mensagens):
                 r.json["consensos"] = [{"tema": "Prorrogação", "posicoes": [
                     {"agente": "gestor_publico", "posicao": "viável"}, {"agente": "fiscal_contrato",
                                                                          "posicao": "com pesquisa de preços"}]}]

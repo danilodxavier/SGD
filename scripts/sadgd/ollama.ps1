@@ -23,6 +23,8 @@ $Url = "http://127.0.0.1:11434"
 $env:OLLAMA_MODELS = $Modelos
 $env:OLLAMA_HOST = "127.0.0.1:11434"
 $env:OLLAMA_NOPRUNE = "1"
+# Mantem o LLM carregado entre perguntas (padrao do Ollama: 5 min; recarregar custa 10-15 s na 1a pergunta)
+if (-not $env:OLLAMA_KEEP_ALIVE) { $env:OLLAMA_KEEP_ALIVE = "12h" }
 
 function Testar-Servidor {
     try { Invoke-RestMethod "$Url/api/version" -TimeoutSec 2 | Out-Null; return $true } catch { return $false }
