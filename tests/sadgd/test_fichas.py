@@ -93,8 +93,25 @@ def test_responde_objeto_pelo_numero_ou_pelo_nome_com_citacao():
 def test_documentos_por_tipo_com_filtro_de_ano_e_ausencia_explicita():
     r = responder("Há empenho para o contrato 012/2023 em 2025?")
     assert "1 nota de empenho em 2025" in r.resposta and "[T22]" in r.resposta and "[T21]" not in r.resposta
-    vazio = responder("Há notificação para o contrato 012/2023?")
+    assert responder("Há notificação para o contrato 012/2023?") is None  # repositório sem checagem de texto
+
+    class SemMencao(RepoFichas):
+        def __init__(self, fichas, cita):
+            super().__init__(fichas)
+            self.cita = cita
+
+        def menciona(self, pasta, ids, termos):
+            return self.cita
+
+    vazio = ResponderPorFicha(SemMencao([FICHA], False), RepoTrechos()).responder(
+        "Há notificação para o contrato 012/2023?")
     assert vazio.classificacao == "ausencia" and "Não localizei notificações" in vazio.resposta and vazio.lacunas
+    citado = ResponderPorFicha(SemMencao([FICHA], True), RepoTrechos()).responder(
+        "Há notificação para o contrato 012/2023?")
+    assert citado is None  # o texto da pasta fala em notificação: a classificação pode ter falhado
+    outro_ano = responder("Houve empenho para o contrato 012/2023 em 2023?")
+    assert outro_ano.classificacao == "ausencia" and "de outros anos" in outro_ano.resposta
+    assert "[T22]" in outro_ano.resposta
 
 
 def test_sem_contrato_assunto_ou_dado_segue_o_caminho_completo():
@@ -224,6 +241,91 @@ def test_pergunta_transversal_junta_os_inventarios_das_fichas():
     r = ResponderPorFicha(RepoFichas([FICHA, b]), RepoTrechos()).responder("Quais contratos tiveram empenho em 2025?")
     assert r.resposta.startswith("2 contrato(s) com notas de empenho em 2025") and "[T22]" in r.resposta
     assert "[T90]" in r.resposta and "transversal" in r.observacoes
-    vazio = ResponderPorFicha(RepoFichas([FICHA, b]), RepoTrechos()).responder("Quais contratos tiveram rescisão?")
-    assert vazio.classificacao == "ausencia"
+    assert ResponderPorFicha(RepoFichas([FICHA, b]), RepoTrechos()).responder("Quais contratos tiveram rescisão?") \
+        is None  # ausência no acervo inteiro não se afirma pela classificação
     assert ResponderPorFicha(RepoFichas([FICHA]), RepoTrechos()).responder("Quais contratos têm fiscal?") is None
+
+
+class LLMComplemento(LLMExtrator):
+    def chat(self, mensagens, **kw):
+        from app.application.portas import RespostaLLM
+
+        self.chamadas += 1
+        sistema = mensagens[0]["content"]
+        if "vigencia_atual_fim" in sistema:
+            dados = {"vigencia_atual_fim": {"valor": "31/08/2099", "trecho": "T50"}}
+        elif '"fiscal"' in sistema:
+            dados = {"fiscal": {"valor": "Maria Souza", "trecho": "T40"},
+                     "valor_global": {"valor": "R$ 5,00", "trecho": "T40"}}  # valor não consta do T40
+        else:
+            dados = {"numero": {"valor": "012/2023", "trecho": "T10"}, "objeto": {"valor": "limpeza predial",
+                                                                                 "trecho": "T10"}}
+        return RespostaLLM("{}", "falso", 10, 10, 1, json=dados)
+
+
+def test_segunda_passada_completa_campos_e_vigencia_atual_uma_vez_so():
+    docs = [doc(1, "CT 012-2023 X/c.pdf", "contrato", "CONTRATO Nº 012/2023", "2023-01-01"),
+            doc(4, "CT 012-2023 X/p.pdf", "portaria_designacao", "PORTARIA", "2023-02-01"),
+            doc(5, "CT 012-2023 X/a.pdf", "aditivo", "PRIMEIRO TERMO ADITIVO", "2024-01-01")]
+    trechos = {1: [(10, "CONTRATO Nº 012/2023 — objeto: limpeza predial.")],
+               4: [(40, "Designa a servidora Maria Souza como fiscal do contrato.")],
+               5: [(50, "TERMO ADITIVO"), (51, "Fica prorrogada a vigência até 31/08/2099.")]}
+    trechos[5] = [(50, "Fica prorrogada a vigência do contrato até 31/08/2099.")]
+    repo, llm = RepoGerar(docs, trechos), LLMComplemento()
+    gerar = GerarFichas(repo, llm)
+    gerar.executar()
+    c = gerar.complementar()
+    campos = repo.salvas["012/2023"]["campos"]
+    assert c["complementadas"] == 1 and c["vigencia_atual"] == 1
+    assert campos["fiscal"]["valor"] == "Maria Souza" and "valor_global" not in campos
+    assert campos["vigencia_atual_fim"]["valor"] == "31/08/2099" and campos["aditivo_vigencia"]["documento_id"] == 5
+    chamadas = llm.chamadas
+    assert gerar.complementar()["complementadas"] == 0 and llm.chamadas == chamadas  # já feito: não repete
+
+
+def test_vigencia_atual_mostra_situacao_e_so_avisa_se_ha_aditivo_mais_recente():
+    base = {**FICHA, "documentos": [{"documento_id": 3, "tipo": "aditivo", "data": "2025-01-10", "trecho_id": 23}]}
+    base["campos"] = {**FICHA["campos"], "vigencia_atual_fim": {"valor": "31/08/2099", "trecho_id": 24},
+                      "aditivo_vigencia": {"valor": "2025-01-10", "trecho_id": 23, "documento_id": 3}}
+    r = ResponderPorFicha(RepoFichas([base]), RepoTrechos()).responder("O contrato 012/2023 está vigente?")
+    assert "prorrogada até: 31/08/2099 [T24]" in r.resposta and "vigente até 31/08/2099" in r.resposta
+    assert "Atenção" not in r.resposta and "10/01/2025" in r.resposta
+    novo = {**base, "documentos": base["documentos"] + [{"documento_id": 7, "tipo": "aditivo", "data": "2026-05-01",
+                                                          "trecho_id": 70}]}
+    r2 = ResponderPorFicha(RepoFichas([novo]), RepoTrechos()).responder("O contrato 012/2023 foi encerrado?")
+    assert "Atenção" in r2.resposta and "01/05/2026" in r2.resposta
+    vencido = {**base, "campos": {**base["campos"], "vigencia_atual_fim": {"valor": "31/12/2020", "trecho_id": 24}}}
+    r3 = ResponderPorFicha(RepoFichas([vencido]), RepoTrechos()).responder("O contrato 012/2023 foi encerrado?")
+    assert "vigência encerrada em 31/12/2020" in r3.resposta
+
+
+def test_pergunta_de_conteudo_valor_alterado_e_garantia_seguem_o_caminho_completo():
+    assert responder("Qual reajuste foi apostilado ao contrato 012/2023?") is None
+    assert responder("Qual o valor da garantia do contrato 012/2023?") is None
+    com_valor = {**FICHA, "campos": {**FICHA["campos"], "valor_global": {"valor": "R$ 100,00", "trecho_id": 14}}}
+    assert ResponderPorFicha(RepoFichas([com_valor]), RepoTrechos()).responder(
+        "Qual o valor global do contrato 012/2023?") is None  # há aditivo e não há valor atualizado
+    atualizado = {**com_valor, "campos": {**com_valor["campos"],
+                                          "valor_atual": {"valor": "R$ 125,00", "trecho_id": 25},
+                                          "aditivo_valor": {"valor": "2025-01-10", "trecho_id": 23,
+                                                            "documento_id": 3}}}
+    r = ResponderPorFicha(RepoFichas([atualizado]), RepoTrechos()).responder(
+        "Qual o valor global do contrato 012/2023?")
+    assert "R$ 125,00 [T25]" in r.resposta and "R$ 100,00 [T14]" in r.resposta and "10/01/2025" in r.resposta
+
+
+def test_contradicao_registrada_e_dados_fora_da_ficha_seguem_o_caminho_completo():
+    class Conflito:
+        campo = "valor_global"
+
+    class Grafo:
+        def entre(self, ids):
+            return [Conflito()]
+
+    sem_alterador = {**FICHA, "documentos": [], "campos": {**FICHA["campos"],
+                                                           "valor_global": {"valor": "R$ 100,00", "trecho_id": 14}}}
+    assert ResponderPorFicha(RepoFichas([sem_alterador]), RepoTrechos()).responder(
+        "Qual o valor global do contrato 012/2023?") is not None
+    assert ResponderPorFicha(RepoFichas([sem_alterador]), RepoTrechos(), conflitos=Grafo()).responder(
+        "Qual o valor global do contrato 012/2023?") is None
+    assert responder("Qual o nome do preposto da contratada no contrato 012/2023?") is None

@@ -42,12 +42,33 @@ class RepositorioFichasSqlite:
         finally:
             conn.close()
 
+    def menciona(self, pasta: str | None, documento_ids: list[int], termos: list[str]) -> bool:
+        """Algum trecho da pasta do contrato (ou dos documentos listados) contém algum dos termos? LIKE do SQLite
+        ignora caixa em ASCII; os termos são radicais sem acento ("paralis", "ordem de servi")."""
+        if not termos or not (pasta or documento_ids):
+            return False
+        filtro_termos = " OR ".join("t.texto LIKE ?" for _ in termos)
+        params = [f"%{t}%" for t in termos]
+        if pasta:
+            alvo, params_alvo = "(d.caminho_relativo LIKE ? OR d.caminho_relativo LIKE ?)", [f"{pasta}/%",
+                                                                                          f"{pasta}\\%"]
+        else:
+            alvo = f"d.id IN ({','.join('?' * len(documento_ids))})"  # noqa: S608 - só marcadores
+            params_alvo = list(documento_ids)
+        conn = self._conexao()
+        try:
+            return conn.execute(
+                f"SELECT 1 FROM trechos t JOIN documentos d ON d.id = t.documento_id WHERE {alvo} "  # noqa: S608
+                f"AND ({filtro_termos}) LIMIT 1", params_alvo + params).fetchone() is not None
+        finally:
+            conn.close()
+
     def _linha(self, r) -> dict:
         campos = json.loads(r[3] or "{}")
         return {"id": r[0], "chave": r[1], "pasta": r[2],
-                "campos": {k: v for k, v in campos.items() if k != "_apelidos"},
-                "apelidos": campos.get("_apelidos", []), "documentos": json.loads(r[4] or "[]"), "texto_busca": r[5],
-                "extracao": r[6], "gerada_em": r[7]}
+                "campos": {k: v for k, v in campos.items() if not k.startswith("_")},
+                "apelidos": campos.get("_apelidos", []), "complemento": campos.get("_complemento", 0),
+                "documentos": json.loads(r[4] or "[]"), "texto_busca": r[5], "extracao": r[6], "gerada_em": r[7]}
 
     def ficha(self, chave: str) -> dict | None:
         conn = self._conexao()
@@ -67,7 +88,8 @@ class RepositorioFichasSqlite:
             conn.close()
 
     def salvar(self, ficha: dict) -> None:
-        campos = {**ficha.get("campos", {}), "_apelidos": ficha.get("apelidos", [])}
+        campos = {**ficha.get("campos", {}), "_apelidos": ficha.get("apelidos", []),
+                  "_complemento": ficha.get("complemento", 0)}
         conn = self._conexao()
         try:
             conn.execute(

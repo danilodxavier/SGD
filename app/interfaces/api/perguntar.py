@@ -98,9 +98,11 @@ def fichas():
         from app.application.fichas.consulta import ResponderPorFicha
         from app.infrastructure.sqlite.busca import RepositorioTrechosSqlite
         from app.infrastructure.sqlite.repositorio_fichas import RepositorioFichasSqlite
+        from app.infrastructure.sqlite.repositorio_grafo import RepositorioGrafoSqlite
 
         _componentes["fichas"] = ResponderPorFicha(RepositorioFichasSqlite(_fabrica_sem_vetores),
-                                                   RepositorioTrechosSqlite(_fabrica_sem_vetores))
+                                                   RepositorioTrechosSqlite(_fabrica_sem_vetores),
+                                                   conflitos=RepositorioGrafoSqlite(_fabrica_sem_vetores))
     return _componentes["fichas"]
 
 

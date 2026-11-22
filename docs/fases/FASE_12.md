@@ -127,3 +127,31 @@ Pedido do responsável: respostas em até 10 s. Medido: nenhuma configuração g
 
 Atualização: `python scripts/sadgd/gerar_fichas.py` após cada indexação (extrai só contratos novos; o inventário é
 sempre refeito).
+
+## 8. Rodada 7 — 2ª passada das fichas e regras de precisão (2026-11-21)
+
+**2ª passada** (`gerar_fichas.py`, automática após a 1ª): campos que faltaram, buscados no extrato de publicação, nas
+portarias de designação e no resto do instrumento; **vigência atual e valor atualizado** pelo termo aditivo mais
+recente. Real: 104 → **170 campos** (vigência 7 → 16, fiscal 7 → 11, gestor 10 → 15, contratada 12 → 15, vigência
+atual 5, valor atual 7). Acadêmico: +66 campos, vigência atual em 14/20.
+
+**Conferência contra o golden acadêmico** (156 perguntas não-F2) revelou erros das respostas rápidas, corrigidos:
+
+| Erro | Correção |
+|---|---|
+| "Até quando vigora após o aditivo?" caía na lista de aditivos | vigência tem prioridade sobre "aditivo" |
+| Valor após aditivo/reajuste; "valor da garantia" | só valor DO contrato; com aditivo/apostilamento, só se o valor atualizado veio do mais recente |
+| "Qual reajuste foi apostilado?" (conteúdo) | ficha responde só existência/listas; conteúdo → caminho completo |
+| "Houve paralisação?" → "não localizei" (documento classificado como ordem de suspensão) | assunto abrange suspensão/reinício/rescisão; **antes de afirmar ausência, confere o texto da pasta** |
+| Valor com **contradição registrada no grafo** (RF-09) respondido pela ficha | contradição sobre o campo → caminho completo, que mostra as duas fontes |
+| "Preposto da contratada" respondido como contratada | preposto, representante, endereço, CPF… → caminho completo |
+| Ausência no acervo inteiro (pergunta transversal) | não se afirma pela classificação → caminho completo |
+
+Resultado no acadêmico: a ficha responde **71** perguntas, **69 corretas pelo critério automático (as 2 restantes
+diferem só na pontuação de "Ltda.")** — antes 101 respondidas com 67 corretas. Menos cobertura, nenhuma resposta
+rápida errada.
+
+**Acervo real (rodada 7 × rodada 4):** mediana F1 89 s → **47 s**; até 10 s: 4/11 (R01, R04, R05, R11, em 0–1,6 s);
+recusas 2 → 1 (R12, provável ausência real); R03 e R10 passaram a ser respondidas. Pergunta transversal sem
+ocorrência no ano (R08) e ausência com o assunto citado no texto da pasta (R12) agora vão ao caminho completo
+(46–89 s) — troca deliberada de tempo por segurança.

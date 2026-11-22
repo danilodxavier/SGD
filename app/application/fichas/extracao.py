@@ -28,13 +28,28 @@ PALAVRAS_CHAVE = {
     "fiscal": r"\bfiscal\b|\bgestor\b|fiscaliza|acompanhamento",
 }
 MAX_CARACTERES = 900
-SISTEMA = (
-    "Você extrai dados de contratos administrativos a partir dos TRECHOS fornecidos, identificados como [T<id>]. "
-    "Use SOMENTE o que está escrito nos trechos; copie valores, datas e nomes exatamente como aparecem; não deduza nem "
-    "calcule. Se um campo não constar, use null. Responda SOMENTE com um objeto JSON cujas chaves são: "
-    + ", ".join(f'"{c}" ({d})' for c, d in CAMPOS.items())
-    + '. Cada chave tem o valor {"valor": "<texto copiado>", "trecho": "T<id>"} ou null.'
-)
+# 2ª passada (2026-11-21): só os campos que faltaram, em fontes que costumam resumi-los — extrato de publicação
+# (contratada, objeto, valor, vigência) e portarias de designação (fiscal, gestor)
+COMPLEMENTAVEIS = ("contratada", "cnpj_contratada", "data_assinatura", "vigencia", "vigencia_inicio", "vigencia_fim",
+                   "valor_global", "fiscal", "gestor")
+# Vigência atual: do termo aditivo mais recente que prorroga o prazo
+CAMPOS_ADITIVO = {
+    "vigencia_atual_fim": "nova data final da vigência após a prorrogação, como escrita",
+    "prazo_prorrogacao": "período da prorrogação, como escrito (ex.: 12 (doze) meses)",
+    "valor_atual": "novo valor global do contrato após o aditivo (R$), como escrito",
+}
+PALAVRAS_ADITIVO = r"prorrog|vigencia|\bprazo\b|\bvalor\b|r\$|acresc|supress"
+
+
+def sistema(campos: dict) -> str:
+    return ("Você extrai dados de contratos administrativos a partir dos TRECHOS fornecidos, identificados como "
+            "[T<id>]. Use SOMENTE o que está escrito nos trechos; copie valores, datas e nomes exatamente como "
+            "aparecem; não deduza nem calcule. Se um campo não constar, use null. Responda SOMENTE com um objeto JSON "
+            "cujas chaves são: " + ", ".join(f'"{c}" ({d})' for c, d in campos.items())
+            + '. Cada chave tem o valor {"valor": "<texto copiado>", "trecho": "T<id>"} ou null.')
+
+
+SISTEMA = sistema(CAMPOS)
 
 
 def janela(texto: str, padrao: str | None, tamanho: int = MAX_CARACTERES) -> str:
@@ -65,9 +80,43 @@ def selecionar_trechos(trechos_instrumento: list, trechos_portarias: list, max_t
     return list(escolhidos.items())[:max_trechos]
 
 
-def mensagens(trechos: list) -> list:
+def mensagens(trechos: list, campos: dict | None = None) -> list:
     corpo = "\n\n".join(f"[T{tid}]\n{texto}" for tid, texto in trechos)
-    return [{"role": "system", "content": SISTEMA}, {"role": "user", "content": f"TRECHOS:\n{corpo}"}]
+    return [{"role": "system", "content": sistema(campos) if campos else SISTEMA},
+            {"role": "user", "content": f"TRECHOS:\n{corpo}"}]
+
+
+def trechos_complemento(fontes: list[list], faltantes: list[str], ja_enviados: set, max_trechos: int = 8) -> list:
+    """fontes: listas de [(id, texto)] em ordem de preferência (extratos, portarias, resto do instrumento). Escolhe
+    trechos com palavras-chave dos campos que faltam, ainda não enviados na 1ª passada."""
+    padroes = [PALAVRAS_CHAVE["vigencia"]] if any(c.startswith("vigencia") for c in faltantes) else []
+    padroes += [PALAVRAS_CHAVE["valor"]] if "valor_global" in faltantes else []
+    padroes += [PALAVRAS_CHAVE["fiscal"]] if {"fiscal", "gestor"} & set(faltantes) else []
+    padroes += [r"contratad|cnpj|assinatura"] if {"contratada", "cnpj_contratada", "data_assinatura"} & set(faltantes) \
+        else []
+    escolhidos: dict[int, str] = {}
+    for fonte in fontes:
+        for tid, texto in fonte:
+            if len(escolhidos) >= max_trechos:
+                return list(escolhidos.items())
+            if tid in ja_enviados or tid in escolhidos:
+                continue
+            norm = normalizar(texto)
+            achou = next((p for p in padroes if re.search(p, norm)), None)
+            if achou:
+                escolhidos[tid] = janela(texto, achou)
+    return list(escolhidos.items())
+
+
+def trechos_aditivo(trechos_doc: list, max_trechos: int = 4) -> list:
+    """Abertura do aditivo + trechos que falam de prorrogação/vigência."""
+    escolhidos = {tid: janela(texto, None) for tid, texto in trechos_doc[:1]}
+    for tid, texto in trechos_doc[1:]:
+        if len(escolhidos) >= max_trechos:
+            break
+        if re.search(PALAVRAS_ADITIVO, normalizar(texto)):
+            escolhidos[tid] = janela(texto, PALAVRAS_ADITIVO)
+    return list(escolhidos.items())
 
 
 def _confere(campo: str, valor: str, texto: str) -> bool:
@@ -82,11 +131,11 @@ def _confere(campo: str, valor: str, texto: str) -> bool:
     return False
 
 
-def validar(dados: dict, trechos: list) -> dict:
+def validar(dados: dict, trechos: list, campos=None) -> dict:
     """Mantém só os campos cujo valor consta do trecho citado (que precisa estar entre os enviados)."""
     por_id = {f"T{tid}": texto for tid, texto in trechos}
     aceitos = {}
-    for campo in CAMPOS:
+    for campo in campos or CAMPOS:
         item = dados.get(campo)
         if not isinstance(item, dict):
             continue

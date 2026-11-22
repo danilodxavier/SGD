@@ -39,11 +39,21 @@ def main():
         print(f"  ficha: {len(ficha['campos'])} campos conferidos, {len(ficha['documentos'])} documentos, "
               f"{len(ficha.get('apelidos', []))} apelido(s), extração={ficha['extracao']}", flush=True)
 
-    r = GerarFichas(repo, llm).executar(a.max_minutos * 60 if a.max_minutos else None, a.refazer, progresso)
-    print(f"[{'PARCIAL' if r['pendentes'] else 'OK'}] contratos={r['contratos']} extraídas={r['extraidas']} "
+    import time
+
+    inicio, limite = time.perf_counter(), a.max_minutos * 60 if a.max_minutos else None
+    gerar = GerarFichas(repo, llm)
+    r = gerar.executar(limite, a.refazer, progresso)
+    estado = "PARCIAL" if r["pendentes"] else "OK"
+    print(f"[{estado}] 1ª passada: contratos={r['contratos']} extraídas={r['extraidas']} "
           f"já prontas={r['puladas']} sem instrumento={r['sem_documento']} falhas={r['falhas']} "
           f"pendentes={r['pendentes']} campos aceitos={r['campos_aceitos']}")
-    return 3 if r["pendentes"] else 0
+    restante = None if limite is None else max(0.0, limite - (time.perf_counter() - inicio))
+    c = gerar.complementar(restante, a.refazer, progresso)
+    estado = "PARCIAL" if c["pendentes"] else "OK"
+    print(f"[{estado}] 2ª passada: fichas={c['fichas']} complementadas={c['complementadas']} "
+          f"campos novos={c['campos_novos']} vigência atual={c['vigencia_atual']} pendentes={c['pendentes']}")
+    return 3 if r["pendentes"] or c["pendentes"] else 0
 
 
 if __name__ == "__main__":

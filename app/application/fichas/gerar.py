@@ -9,7 +9,16 @@ from app.application.fichas.agrupamento import (
     documento_principal,
     normalizar,
 )
-from app.application.fichas.extracao import mensagens, selecionar_trechos, validar
+from app.application.fichas.extracao import (
+    CAMPOS,
+    CAMPOS_ADITIVO,
+    COMPLEMENTAVEIS,
+    mensagens,
+    selecionar_trechos,
+    trechos_aditivo,
+    trechos_complemento,
+    validar,
+)
 
 TIPOS_INVENTARIO = {"contrato", "aditivo", "apostilamento", "nota_empenho", "nota_fiscal", "pagamento",
                     "termo_recebimento", "portaria", "portaria_designacao", "extrato_publicacao", "notificacao",
@@ -25,7 +34,8 @@ class RepositorioFichasPort(Protocol):
     def salvar(self, ficha: dict) -> None: ...
 
 
-TIPOS_PELO_TITULO = [("ordem_servico", re.compile(r"orde(?:m|ns) de servic"))]  # tipos que o classificador não tem
+VERSAO_COMPLEMENTO = 2  # 2: valor atualizado pelo aditivo (fichas com versão menor são complementadas de novo)
+TIPOS_PELO_TITULO =[("ordem_servico", re.compile(r"orde(?:m|ns) de servic"))]  # tipos que o classificador não tem
 
 
 def _tipo(d) -> str | None:
@@ -97,6 +107,74 @@ class GerarFichas:
             ficha["texto_busca"] = normalizar(" ".join(filter(None, [
                 g.pasta or "", (campos.get("contratada") or {}).get("valor", ""),
                 (campos.get("objeto") or {}).get("valor", "")])))
+            self.repo.salvar(ficha)
+            if ao_progredir:
+                ao_progredir(k, ficha)
+        return resumo
+
+    def complementar(self, limite_s: float | None = None, refazer: bool = False, ao_progredir=None) -> dict:
+        """2ª passada: campos que faltaram (extratos de publicação, portarias de designação, resto do instrumento) e
+        vigência atual pelo termo aditivo mais recente que prorroga o prazo. Uma vez por ficha (marca `complemento`)."""
+        inicio = time.perf_counter()
+        grupos = agrupar(self.repo.documentos_acervo())
+        resumo = {"fichas": 0, "complementadas": 0, "campos_novos": 0, "vigencia_atual": 0, "pendentes": 0}
+        for k, g in sorted(grupos.items()):
+            ficha = self.repo.ficha(k)
+            if not ficha or ficha.get("extracao") != "ok":
+                continue
+            resumo["fichas"] += 1
+            if ficha.get("complemento", 0) >= VERSAO_COMPLEMENTO and not refazer:
+                continue
+            if limite_s and time.perf_counter() - inicio > limite_s:
+                resumo["pendentes"] += 1
+                continue
+            antes = len(ficha["campos"])
+            faltantes = [c for c in COMPLEMENTAVEIS if c not in ficha["campos"]]
+            por_data = sorted(g.documentos, key=lambda d: (d.data or "", d.id))
+            if faltantes:
+                extratos = [d for d in por_data if d.tipo == "extrato_publicacao"][:2]
+                portarias = [d for d in reversed(por_data) if d.tipo in ("portaria_designacao", "portaria")][:3]
+                principal = documento_principal(g)
+                fontes = [t for d in extratos for t in self.repo.trechos_do_documento(d.id)[:2]]
+                fontes_port = [t for d in portarias for t in self.repo.trechos_do_documento(d.id)[:1]]
+                resto = self.repo.trechos_do_documento(principal.id) if principal else []
+                enviados = {c["trecho_id"] for c in ficha["campos"].values()}
+                trechos = trechos_complemento([fontes, fontes_port, resto], faltantes, enviados)
+                if trechos:
+                    pedido = {c: CAMPOS[c] for c in faltantes}
+                    try:
+                        r = self.llm.chat(mensagens(trechos, pedido), max_tokens=self.max_tokens, temperatura=0.0,
+                                          json_livre=True)
+                        novos = validar(r.json if isinstance(r.json, dict) else {}, trechos, pedido)
+                        ficha["campos"].update({c: v for c, v in novos.items() if c not in ficha["campos"]})
+                    except Exception:  # noqa: BLE001, S110 - segue sem o complemento; nova tentativa com --refazer
+                        pass
+            vigencia_ok = valor_ok = False
+            for aditivo in [d for d in reversed(por_data) if d.tipo == "aditivo"][:2]:  # do mais recente
+                if vigencia_ok and valor_ok:
+                    break
+                trechos = trechos_aditivo(self.repo.trechos_do_documento(aditivo.id))
+                try:
+                    r = self.llm.chat(mensagens(trechos, CAMPOS_ADITIVO), max_tokens=250, temperatura=0.0,
+                                      json_livre=True)
+                    achados = validar(r.json if isinstance(r.json, dict) else {}, trechos, CAMPOS_ADITIVO)
+                except Exception:  # noqa: BLE001
+                    achados = {}
+                origem = {"valor": aditivo.data or "", "trecho_id": aditivo.primeiro_trecho,
+                          "documento_id": aditivo.id}
+                if "vigencia_atual_fim" in achados and not vigencia_ok:
+                    ficha["campos"].update({c: achados[c] for c in ("vigencia_atual_fim", "prazo_prorrogacao")
+                                            if c in achados})
+                    ficha["campos"]["aditivo_vigencia"] = origem
+                    vigencia_ok = True
+                    resumo["vigencia_atual"] += 1
+                if "valor_atual" in achados and not valor_ok:
+                    ficha["campos"]["valor_atual"] = achados["valor_atual"]
+                    ficha["campos"]["aditivo_valor"] = origem
+                    valor_ok = True
+            ficha["complemento"] = VERSAO_COMPLEMENTO
+            resumo["complementadas"] += 1
+            resumo["campos_novos"] += len(ficha["campos"]) - antes
             self.repo.salvar(ficha)
             if ao_progredir:
                 ao_progredir(k, ficha)
