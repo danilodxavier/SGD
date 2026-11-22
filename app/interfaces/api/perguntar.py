@@ -89,7 +89,7 @@ def construir_orquestrador(tracer=None):
     return Orquestrador(lambda p, k, **kw: rec.recuperar(p, k=k, **kw).trechos, f1, llm, linha_do_tempo=grafo.resumo,
                         precedentes=lambda p, docs: memoria.precedentes(p, documento_ids=docs), tracer=tracer,
                         llm_f2_remoto=llm_f2_remoto(), envio_externo_permitido=settings.ai_allow_remote,
-                        contexto_max_chars=contexto, fichas=fichas().responder)
+                        contexto_max_chars=contexto, fichas=fichas().responder, escopo_contrato=fichas().escopo)
 
 
 def fichas():

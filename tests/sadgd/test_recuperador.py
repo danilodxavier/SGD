@@ -105,3 +105,25 @@ def test_textos_identicos_de_copias_ocupam_uma_vaga_so():
                                 False, None)
     saida = sem_duplicatas([t(1, "Cláusula 1. Objeto."), t(2, "Cláusula  1.\nObjeto."), t(3, "Cláusula 2. Prazo.")])
     assert [x.id for x in saida] == [1, 3]  # mantém a primeira (maior pontuação); espaços não contam
+
+
+def test_escopo_do_contrato_mistura_contrato_e_reserva_do_acervo():
+    from app.application.portas import ResultadoBusca
+    from app.application.recuperacao.hibrida import RecuperadorHibrido
+    from app.application.recuperacao.regras import TrechoRecuperado
+
+    class Lexical:
+        def buscar(self, expr, k):
+            return [ResultadoBusca(i, 1.0 / i, "bm25") for i in range(1, 11)]
+
+    class Repo:
+        def obter(self, ids):
+            return [TrechoRecuperado(i, i, f"texto distinto {i}", "a.pdf", f"p/{i}.pdf", None, None, None, None,
+                                     "real", None, False, None) for i in ids]
+
+    rec = RecuperadorHibrido(Lexical(), Repo())
+    trechos = rec.recuperar("pergunta de teste", k=8, modo="bm25", documentos={6, 7, 8, 9, 10}).trechos
+    ids = {t.id for t in trechos}
+    assert {6, 7, 8, 9, 10} <= ids and len(ids - {6, 7, 8, 9, 10}) == 3  # 5 do contrato + 3 do acervo
+    poucos = rec.recuperar("pergunta de teste", k=8, modo="bm25", documentos={10}).trechos
+    assert [t.id for t in poucos] == list(range(1, 9))  # menos de 3 no escopo: acervo inteiro

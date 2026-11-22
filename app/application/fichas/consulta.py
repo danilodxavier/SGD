@@ -149,6 +149,16 @@ class ResponderPorFicha:
             return "varias", sorted((f for f in fichas if f["chave"] in comuns), key=lambda f: f["chave"])
         return None, None
 
+    def escopo(self, pergunta: str) -> set[int] | None:
+        """Documentos do contrato citado (pasta inteira; sem pasta, o inventário) — para a busca do caminho completo
+        ficar no contrato quando a ficha não basta. None se a pergunta não identifica um contrato."""
+        tipo, achado = self.localizar(pergunta)
+        if tipo != "ficha":
+            return None
+        da_pasta = getattr(self.fichas, "documentos_da_pasta", None)
+        ids = da_pasta(achado["pasta"]) if achado.get("pasta") and da_pasta else set()
+        return ids or {d["documento_id"] for d in achado["documentos"]} or None
+
     def identificar(self, pergunta: str) -> dict | None:
         tipo, achado = self.localizar(pergunta)
         return achado if tipo == "ficha" else None

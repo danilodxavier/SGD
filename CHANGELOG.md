@@ -5,6 +5,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 ## [Não lançado] — Reestruturação SAD-GD
 
 ### Adicionado
+- Busca restrita ao contrato citado quando a ficha não basta (F1 e decisão): documentos da pasta + 3 vagas do acervo inteiro, reranqueados juntos — validação: documento esperado 37/37, foco 18% → 27%, busca 1,8 → 1,0 s.
 - Ficha responde "contrato nº X" quando o número existe no acervo só em outros documentos (mostra onde aparece) e confere ausência com ano pelo início dos documentos (título/abertura + data).
 - Ficha responde mais na hora: panorama de vigência de todos os contratos (vencendo em 120 dias, encerrados, vigentes), relatório de apuração e notificação extrajudicial reconhecidos pelo título, perguntas de existência sem contrato citado e ausência com ano conferida no texto dos documentos.
 - Fichas de contrato atualizadas automaticamente ao fim de cada indexação (tela Acervo e `indexar.py`; `SADGD_FICHAS_APOS_INDEXAR`).

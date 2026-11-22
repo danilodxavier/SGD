@@ -97,6 +97,16 @@ class RepositorioFichasSqlite:
         finally:
             conn.close()
 
+    def documentos_da_pasta(self, pasta: str) -> set[int]:
+        """Todos os documentos da pasta do contrato (inclusive os de tipo "outro", fora do inventário)."""
+        conn = self._conexao()
+        try:
+            return {r[0] for r in conn.execute(
+                "SELECT id FROM documentos WHERE caminho_relativo LIKE ? OR caminho_relativo LIKE ?",
+                (f"{pasta}/%", f"{pasta}\\%"))}
+        finally:
+            conn.close()
+
     def menciona(self, pasta: str | None, documento_ids: list[int], termos: list[str]) -> bool:
         """Algum trecho da pasta do contrato (ou dos documentos listados) contém algum dos termos? LIKE do SQLite
         ignora caixa em ASCII; os termos são radicais sem acento ("paralis", "ordem de servi")."""

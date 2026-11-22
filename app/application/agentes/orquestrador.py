@@ -36,12 +36,13 @@ class Estado(TypedDict, total=False):
     resposta: Any
     tempos: Annotated[list, operator.add]
     via_ficha: bool
+    escopo: Any  # documentos do contrato citado (busca restrita quando a ficha não basta)
 
 
 class Orquestrador:
     def __init__(self, recuperar, responder_f1, llm_especialistas, *, linha_do_tempo=None, precedentes=None,
                  tracer=None, checkpointer=None, k=8, llm_relator=None, llm_f2_remoto=None,
-                 envio_externo_permitido=False, contexto_max_chars=0, fichas=None):
+                 envio_externo_permitido=False, contexto_max_chars=0, fichas=None, escopo_contrato=None):
         """recuperar(pergunta, k) -> list[TrechoRecuperado]; responder_f1: ResponderF1;
         linha_do_tempo(documento_ids) -> str (resumo para F2);
         precedentes(pergunta, documento_ids) -> list[Precedente] (memória de decisões, RF-19);
@@ -55,6 +56,7 @@ class Orquestrador:
         self._tl, self._prec, self._tracer, self._k = linha_do_tempo, precedentes, tracer, k
         self._ctx = contexto_max_chars  # compressão do contexto dos especialistas e do relator (0 = desligada)
         self._fichas = fichas
+        self._escopo = escopo_contrato  # escopo_contrato(pergunta) -> set[documento_id] | None
         g = StateGraph(Estado)
         g.add_node("rotear", self._no(self._rotear))
         if fichas is not None:
@@ -100,11 +102,11 @@ class Orquestrador:
     def _ficha(self, s):
         """Perguntas sobre um contrato conhecido (objeto, valor, vigência, fiscal, documentos de um tipo) são
         respondidas pela ficha pré-processada; decisões (F2) e o que a ficha não cobre seguem o caminho completo."""
-        if self._fichas is None or s["decisao"].rota == "F2":
+        if self._fichas is None:
             return {"via_ficha": False}
-        r = self._fichas(s["pergunta"])
-        if r is None:
-            return {"via_ficha": False}
+        r = None if s["decisao"].rota == "F2" else self._fichas(s["pergunta"])
+        if r is None:  # a ficha não basta: a busca fica no contrato citado (também na decisão)
+            return {"via_ficha": False, "escopo": self._escopo(s["pergunta"]) if self._escopo else None}
         return {"via_ficha": True, "resposta": r, "trechos": list(r.fontes)}
 
     def _recuperar_no(self, s):
@@ -112,6 +114,11 @@ class Orquestrador:
             try:  # pergunta de lista: mais documentos distintos (no máximo 2 trechos de cada)
                 return {"trechos": self._recuperar(s["pergunta"], K_LISTA, max_por_documento=2)}
             except TypeError:  # recuperador sem diversificação (avaliações antigas)
+                pass
+        if s.get("escopo"):
+            try:
+                return {"trechos": self._recuperar(s["pergunta"], self._k, documentos=s["escopo"])}
+            except TypeError:  # recuperador sem escopo (avaliações antigas)
                 pass
         return {"trechos": self._recuperar(s["pergunta"], self._k)}
 

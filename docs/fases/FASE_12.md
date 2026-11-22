@@ -197,3 +197,19 @@ contrato?", pergunta vaga pelo caminho completo, que oscila entre rodadas).
 **Rodada 9:** **8 de 11 perguntas não-decisórias em ≤ 4,6 s** (R01, R03, R04, R05, R06, R08, R10, R11); R07, R09 e
 R12 pelo caminho completo (56–85 s; em R09/R12 há documento que começa citando o assunto no ano pedido ou sem data);
 decisão (R02) 149 s. Golden acadêmico inalterado (72 respostas rápidas corretas).
+
+## 12. Rodada 10 — busca no contrato citado quando a ficha não basta (2026-11-21)
+
+Quando a pergunta identifica um contrato com ficha, mas a ficha não responde (inclusive na **decisão**), a busca do
+caminho completo fica no contrato: candidatos lexicais e vetoriais ampliados para 400, filtrados pelos documentos da
+pasta (sem pasta: inventário), **misturados com 3 vagas do acervo inteiro** e reranqueados juntos; com menos de 3
+trechos no contrato, busca no acervo inteiro.
+
+| Golden acadêmico (37 perguntas com contrato identificado que a ficha não responde) | Sem escopo | Filtro só no contrato | **Contrato + 3 do acervo** |
+|---|---|---|---|
+| Documento esperado entre os 8 trechos | 37/37 | 33/37 (perdeu lei/portaria fora do grupo) | **37/37** |
+| Trechos dos documentos esperados | 18% | — | **27%** |
+| Tempo da busca | 1,8 s | 0,7 s | **1,0 s** |
+
+Acervo real (rodada 10 × 9): R12 76 → 55 s (recusa mantida, agora com a busca no contrato certo); decisão R02
+149 → 139 s; demais inalteradas (8 de 11 em ≤ 5 s).

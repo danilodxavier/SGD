@@ -427,3 +427,23 @@ def test_repositorio_numero_e_documento_do_tipo_no_ano(tmp_path):
     assert repo.documento_do_tipo_no_ano("CT 012-2023 X", None, ["ordem de servi"], "2026") is False
     assert repo.documento_do_tipo_no_ano("CT 012-2023 X", None, ["ordem de servi"], "2025") is True
     assert repo.menciona_ano("CT 012-2023 X", None, ["ordem de servi"], "2026") is True  # checagem grosseira
+
+
+def test_orquestrador_restringe_a_busca_ao_contrato_quando_a_ficha_nao_basta():
+    from app.application.agentes.orquestrador import Orquestrador
+    from app.application.respostas.f1 import ResponderF1
+    from tests.sadgd.test_orquestrador import TRECHOS, LLMRoteiro
+
+    pedidos = []
+
+    def recuperar(pergunta, k, **kw):
+        pedidos.append(kw)
+        return TRECHOS
+
+    llm = LLMRoteiro()
+    orq = Orquestrador(recuperar, ResponderF1(llm), llm, fichas=lambda p: None, escopo_contrato=lambda p: {1, 2})
+    orq.executar("Qual o valor global do Contrato nº 012/2023?")
+    assert pedidos == [{"documentos": {1, 2}}]
+    escopo = ResponderPorFicha(RepoFichas([FICHA]), RepoTrechos()).escopo("Qual a multa do contrato 012/2023?")
+    assert escopo == {1, 2, 3}  # sem pasta: o inventário
+    assert ResponderPorFicha(RepoFichas([FICHA]), RepoTrechos()).escopo("Qual a multa?") is None
