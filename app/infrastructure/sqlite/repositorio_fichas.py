@@ -63,6 +63,27 @@ class RepositorioFichasSqlite:
         finally:
             conn.close()
 
+    def menciona_ano(self, pasta: str | None, documento_ids: list[int] | None, termos: list[str], ano: str) -> bool:
+        """Algum trecho cita um dos termos E o ano? Sem pasta e sem documentos: o acervo inteiro."""
+        if not termos:
+            return True
+        filtro = " OR ".join("t.texto LIKE ?" for _ in termos)
+        params = [f"%{ano}%"] + [f"%{t}%" for t in termos]
+        alvo, params_alvo = "1 = 1", []
+        if pasta:
+            alvo, params_alvo = "(d.caminho_relativo LIKE ? OR d.caminho_relativo LIKE ?)", [f"{pasta}/%",
+                                                                                          f"{pasta}\\%"]
+        elif documento_ids:
+            alvo = f"d.id IN ({','.join('?' * len(documento_ids))})"  # noqa: S608 - só marcadores
+            params_alvo = list(documento_ids)
+        conn = self._conexao()
+        try:
+            return conn.execute(
+                f"SELECT 1 FROM trechos t JOIN documentos d ON d.id = t.documento_id WHERE {alvo} "  # noqa: S608
+                f"AND t.texto LIKE ? AND ({filtro}) LIMIT 1", params_alvo + params).fetchone() is not None
+        finally:
+            conn.close()
+
     def _linha(self, r) -> dict:
         campos = json.loads(r[3] or "{}")
         return {"id": r[0], "chave": r[1], "pasta": r[2],

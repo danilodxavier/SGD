@@ -35,7 +35,9 @@ class RepositorioFichasPort(Protocol):
 
 
 VERSAO_COMPLEMENTO = 2  # 2: valor atualizado pelo aditivo (fichas com versão menor são complementadas de novo)
-TIPOS_PELO_TITULO =[("ordem_servico", re.compile(r"orde(?:m|ns) de servic"))]  # tipos que o classificador não tem
+TIPOS_PELO_TITULO = [("ordem_servico", re.compile(r"orde(?:m|ns) de servic")),
+                     ("relatorio_apuracao", re.compile(r"\bapuracao\b|\bapurar\b|apuracao de responsabilidade")),
+                     ("notificacao", re.compile(r"notificacao extrajudicial|\bnotificacao\b"))]
 
 
 def _tipo(d) -> str | None:
@@ -46,7 +48,7 @@ def _tipo(d) -> str | None:
 def inventario(grupo) -> list[dict]:
     itens = [(d, _tipo(d)) for d in sorted(grupo.documentos, key=lambda d: (d.data or "", d.id))]
     return [{"documento_id": d.id, "tipo": t, "data": d.data, "trecho_id": d.primeiro_trecho}
-            for d, t in itens if t in TIPOS_INVENTARIO or t == "ordem_servico"]
+            for d, t in itens if t in TIPOS_INVENTARIO or t in ("ordem_servico", "relatorio_apuracao")]
 
 
 def apelidos(grupos) -> dict[str, str]:

@@ -25,6 +25,7 @@ ROTULO_TIPO = {
     "ordem_reinicio": ("ordem de reinício", "ordens de reinício"), "garantia": ("garantia", "garantias"),
     "contrato": ("instrumento contratual", "instrumentos contratuais"),
     "ordem_servico": ("ordem de serviço", "ordens de serviço"),
+    "relatorio_apuracao": ("relatório de apuração", "relatórios de apuração"),
 }
 # (assunto, padrão na pergunta normalizada, campos da ficha, tipos de documento) — os de documento vêm primeiro
 ASSUNTOS = [
@@ -32,6 +33,7 @@ ASSUNTOS = [
     ("recebimento", r"recebimento", [], ["termo_recebimento"]),
     ("rescisao", r"rescis|rescind", [], ["termo_rescisao"]),
     ("notificacao", r"notifica", [], ["notificacao"]),
+    ("apuracao", r"apuracao|\bapurar\b|descumprimento contratual", [], ["relatorio_apuracao"]),
     ("apostilamento", r"apostil", [], ["apostilamento"]),
     ("nota_fiscal", r"notas? fisca|\bnf\b", [], ["nota_fiscal"]),
     ("pagamento", r"pagament|\bpago\b|\bpagos\b", [], ["pagamento"]),
@@ -73,7 +75,13 @@ TERMOS_TEXTO = {  # palavras (sem acento) que confirmam a ausência no texto da 
     "ordem_reinicio": ["reinicio", "rein"], "termo_retomada": ["retomad"], "ordem_servico": ["ordem de servi"],
     "aditivo": ["aditiv"], "portaria_designacao": ["designa"], "extrato_publicacao": ["extrato"],
     "relatorio_fiscalizacao": ["relatorio de fiscaliza"], "garantia": ["garantia"],
+    "relatorio_apuracao": ["apura"],
 }
+# "Quais contratos/processos estão em fase de renovação / vencem / vencidos / vigentes?" → panorama de vigência
+RE_PANORAMA = re.compile(r"(fase de renova|renovac|renovar|a vencer|vencend|vencem|vencer|vencimento|expira|"
+                         r"encerrad|vigentes|proximos? do (fim|vencimento))")
+RE_PLURAL_CONTRATOS = re.compile(r"\b(quais|que|quantos)\b|\bcontratos\b|\bprocessos\b")
+JANELA_RENOVACAO_DIAS = 120
 RE_TRANSVERSAL = re.compile(r"\b(quais|quantos|algum|alguns|em que|que)\s+contratos?\b|\bcontratos\b")
 RE_NOME = re.compile(r"contrat\w*\s+(?:d[aoe]s?|com(?:\s+[ao])?|junto\s+[aà])\s+([a-z0-9][a-z0-9 .&-]{2,50})")
 
@@ -179,7 +187,17 @@ class ResponderPorFicha:
             if docs:
                 achados.append((f, docs))
         if not achados:
-            return None  # ausência no acervo inteiro não se afirma pela classificação: o caminho completo procura
+            # ausência no acervo inteiro só com ano e se NENHUM trecho cita o assunto junto com o ano
+            termos = [t for tipo in tipos for t in TERMOS_TEXTO.get(tipo, [])]
+            verificar = getattr(self.fichas, "menciona_ano", None)
+            if not ano or verificar is None or not termos or verificar(None, None, termos, ano):
+                return None
+            resposta = (f"Não localizei {plural}{periodo} no acervo: nenhuma das {len(self._todas())} pastas de "
+                        f"contrato tem documento desse tipo{periodo}, e nenhum trecho dos documentos cita o assunto "
+                        f"junto com o ano {ano}.")
+            return RespostaFicha(resposta, "ausencia", 0.7, [], ["Conferido no inventário e no texto dos documentos."],
+                                 latencia_ms=int((time.perf_counter() - inicio) * 1000),
+                                 observacoes=["ficha_do_contrato", f"assunto:{nome}", "transversal"])
         ultimos = [docs[-1]["trecho_id"] for _, docs in achados if docs[-1].get("trecho_id")]
         trechos = {t.id: t for t in self.trechos.obter(ultimos)}
         linhas = []
@@ -223,6 +241,59 @@ class ResponderPorFicha:
         if menciona is None or not termos:
             return True
         return menciona(ficha.get("pasta"), [d["documento_id"] for d in ficha["documentos"]], termos)
+
+    def _mencionado_ano(self, ficha, tipos, ano) -> bool:
+        verificar = getattr(self.fichas, "menciona_ano", None)
+        termos = [t for tipo in tipos for t in TERMOS_TEXTO.get(tipo, [])]
+        if verificar is None or not termos:
+            return True
+        return verificar(ficha.get("pasta"), [d["documento_id"] for d in ficha["documentos"]], termos, ano)
+
+    def _panorama(self, texto, inicio):
+        """Situação de vigência de todos os contratos: encerrados, vencendo em até 120 dias (fase de renovação) e
+        vigentes — pela vigência atual (aditivo), pelo término do instrumento ou calculada (início/assinatura +
+        prazo). Cada data cita o trecho; datas calculadas e aditivos posteriores são sinalizados."""
+        import datetime as dt
+
+        hoje = dt.date.today()
+        grupos = {"encerrados": [], "vencendo": [], "vigentes": [], "sem_data": []}
+        citados = []
+        for f in sorted(self._todas(), key=lambda f: f["chave"]):
+            fim, fonte, trechos_ids = termino(f)
+            c = f["campos"]
+            ident = f"Contrato nº {(c.get('numero') or {}).get('valor') or f['chave']}" + (
+                f" — {c['contratada']['valor']}" if "contratada" in c else "")
+            if fim is None:
+                grupos["sem_data"].append(f"- {ident}")
+                continue
+            citados += trechos_ids
+            aviso = " (há termo aditivo posterior: pode ter sido prorrogado)" if aditivo_posterior(f, fonte) else ""
+            linha = f"- {ident}: término {fim:%d/%m/%Y} ({fonte}){''.join(f' [T{t}]' for t in trechos_ids)}{aviso}"
+            if fim < hoje:
+                grupos["encerrados"].append((fim, linha))
+            elif (fim - hoje).days <= JANELA_RENOVACAO_DIAS:
+                grupos["vencendo"].append((fim, linha))
+            else:
+                grupos["vigentes"].append((fim, linha))
+        if not any(grupos[g] for g in ("encerrados", "vencendo", "vigentes")):
+            return None  # nenhuma ficha com data: o caminho completo procura nos documentos
+        partes = []
+        foco_renovacao = re.search(r"renova|vencend|a vencer|vencem|vencer|vencimento|expira|proximo", texto)
+        ordem = ["vencendo", "encerrados", "vigentes"] if foco_renovacao else ["vigentes", "vencendo", "encerrados"]
+        titulos = {"vencendo": f"Vencem nos próximos {JANELA_RENOVACAO_DIAS} dias (fase de renovação/nova contratação)",
+                   "encerrados": "Vigência encerrada pela data", "vigentes": "Vigentes por mais de 120 dias"}
+        for g in ordem:
+            itens = [linha for _, linha in sorted(grupos[g])]
+            partes.append(f"{titulos[g]}: {len(itens)}" + (":\n" + "\n".join(itens) if itens else "."))
+        if grupos["sem_data"]:
+            partes.append(f"Sem data de término identificada na ficha: {len(grupos['sem_data'])}.")
+        resposta = (f"Situação de vigência dos {len(self._todas())} contratos do acervo em {hoje:%d/%m/%Y}:\n"
+                    + "\n".join(partes))
+        lacunas = ["Datas \"calculadas\" = início ou assinatura + prazo de vigência do instrumento.",
+                   "Situação pela data; termos de rescisão ou aditivos posteriores podem alterá-la."]
+        return RespostaFicha(resposta, "inferencia", 0.75, self.trechos.obter(list(dict.fromkeys(citados))),
+                             lacunas, latencia_ms=int((time.perf_counter() - inicio) * 1000),
+                             observacoes=["ficha_do_contrato", "assunto:panorama_vigencia", "transversal"])
 
     @staticmethod
     def _situacao_vigencia(ficha, linhas, lacunas):
@@ -269,8 +340,13 @@ class ResponderPorFicha:
         if tipo_local == "varias":
             assunto = next((a for a in ASSUNTOS if re.search(a[1], texto)), None)
             return self._varias(achado, inicio) if assunto and assunto[0] in ("objeto", "contratada") else None
-        if tipo_local is None and RE_TRANSVERSAL.search(texto):
-            return self._transversal(texto, inicio)
+        if tipo_local is None and RE_PANORAMA.search(texto) and RE_PLURAL_CONTRATOS.search(texto):
+            return self._panorama(texto, inicio)
+        if tipo_local is None:
+            assunto_doc = next((a for a in ASSUNTOS if re.search(a[1], texto)), None)
+            existencia = bool(assunto_doc and assunto_doc[3] and not assunto_doc[2] and FORMA_EXISTENCIA.search(texto))
+            if RE_TRANSVERSAL.search(texto) or existencia:  # "houve notificação em 2025?" sem contrato: todos
+                return self._transversal(texto, inicio)
         if tipo_local != "ficha":
             return None
         ficha = achado
@@ -337,8 +413,9 @@ class ResponderPorFicha:
                     descricao = (t.titulo or t.arquivo) if t else singular
                     linhas.append(f"- {_data(d.get('data'))}: {descricao}{cita(d.get('trecho_id'))}")
                 lacunas.append("Datas dos documentos extraídas automaticamente; confira a pasta do contrato.")
-            elif not presentes and self._mencionado(ficha, tipos):
-                return None  # nada classificado, mas o texto da pasta cita o assunto (ou há filtro de ano): ler
+            elif not presentes and self._mencionado(ficha, tipos) and not (ano and not self._mencionado_ano(
+                    ficha, tipos, ano)):
+                return None  # nada classificado, mas o texto da pasta cita o assunto (no ano pedido): ler
             elif not presentes:
                 classificacao = "ausencia"
                 linhas.append(f"Não localizei {plural}{periodo} entre os {len(ficha['documentos'])} documentos "
@@ -379,6 +456,44 @@ def data_do_texto(valor: str):
         return dt.date(a, mes, d)
     except ValueError:
         return None
+
+
+def _somar_meses(data, meses):
+    import calendar
+    import datetime as dt
+
+    ano, mes = divmod(data.month - 1 + meses, 12)
+    ano, mes = data.year + ano, mes + 1
+    return dt.date(ano, mes, min(data.day, calendar.monthrange(ano, mes)[1]))
+
+
+def termino(ficha):
+    """(data, fonte, [trechos]) do término: aditivo > instrumento > calculada; (None, None, []) se não há."""
+    import datetime as dt
+
+    c = ficha["campos"]
+    for campo, fonte in (("vigencia_atual_fim", "vigência atual, por termo aditivo"), ("vigencia_fim", "instrumento")):
+        data = data_do_texto((c.get(campo) or {}).get("valor", ""))
+        if data:
+            return data, fonte, [c[campo]["trecho_id"]]
+    m = re.search(r"(\d{1,3})\s*(?:\([^)]*\))?\s*(mes|meses|ano|anos)\b", normalizar((c.get("vigencia") or {})
+                                                                                    .get("valor", "")))
+    for campo in ("vigencia_inicio", "data_assinatura"):
+        inicio = data_do_texto((c.get(campo) or {}).get("valor", ""))
+        if m and inicio:
+            meses = int(m.group(1)) * (12 if m.group(2).startswith("ano") else 1)
+            return (_somar_meses(inicio, meses) - dt.timedelta(days=1), f"calculada: {campo.replace('_', ' ')} + prazo",
+                    [c[campo]["trecho_id"], c["vigencia"]["trecho_id"]])
+    return None, None, []
+
+
+def aditivo_posterior(ficha, fonte) -> bool:
+    aditivos = sorted((d for d in ficha["documentos"] if d["tipo"] == "aditivo"),
+                      key=lambda d: (d.get("data") or "", d["documento_id"]))
+    if not aditivos:
+        return False
+    usado = (ficha["campos"].get("aditivo_vigencia") or {}).get("documento_id")
+    return not (fonte and fonte.startswith("vigência atual") and usado == aditivos[-1]["documento_id"])
 
 
 ROTULO_CAMPO = {"numero": "Número", "contratada": "Contratada", "cnpj_contratada": "CNPJ da contratada",

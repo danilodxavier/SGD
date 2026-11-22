@@ -119,7 +119,6 @@ def test_sem_contrato_assunto_ou_dado_segue_o_caminho_completo():
     assert responder("Há pendência em algum contrato?") is None          # sem contrato identificado
     assert responder("O contrato 012/2023 é bom?") is None               # assunto não reconhecido
     assert responder("Qual o valor do contrato 012/2023?") is None       # dado ausente da ficha
-    assert responder("Quais processos estão em fase de renovação?") is None
 
 
 def test_vigencia_avisa_que_aditivos_podem_ter_prorrogado():
@@ -329,3 +328,51 @@ def test_contradicao_registrada_e_dados_fora_da_ficha_seguem_o_caminho_completo(
     assert ResponderPorFicha(RepoFichas([sem_alterador]), RepoTrechos(), conflitos=Grafo()).responder(
         "Qual o valor global do contrato 012/2023?") is None
     assert responder("Qual o nome do preposto da contratada no contrato 012/2023?") is None
+
+
+def test_panorama_de_vigencia_separa_vencendo_encerrados_e_vigentes():
+    import datetime as dt
+
+    hoje = dt.date.today()
+    perto, longe, passado = hoje + dt.timedelta(days=30), hoje + dt.timedelta(days=400), hoje - dt.timedelta(days=10)
+    a = {**FICHA, "documentos": [], "campos": {"vigencia_fim": {"valor": f"{perto:%d/%m/%Y}", "trecho_id": 1}}}
+    b = {**OUTRA, "chave": "015/2023", "campos": {"vigencia_fim": {"valor": f"{passado:%d/%m/%Y}", "trecho_id": 2}}}
+    assinatura = f"{longe - dt.timedelta(days=364):%d/%m/%Y}"
+    c = {**OUTRA, "chave": "020/2024", "campos": {"vigencia": {"valor": "12 (doze) meses", "trecho_id": 3},
+                                                  "data_assinatura": {"valor": assinatura, "trecho_id": 4}}}
+    d = {**OUTRA, "chave": "021/2024", "campos": {}}
+    r = ResponderPorFicha(RepoFichas([a, b, c, d]), RepoTrechos()).responder(
+        "Quais processos estão em fase de renovação?")
+    assert r.classificacao == "inferencia" and r.resposta.index("Vencem nos próximos") < r.resposta.index("encerrada")
+    assert f"término {perto:%d/%m/%Y}" in r.resposta and f"término {passado:%d/%m/%Y}" in r.resposta
+    assert "calculada: data assinatura + prazo" in r.resposta and "Sem data de término identificada na ficha: 1" \
+        in r.resposta
+    assert ResponderPorFicha(RepoFichas([d]), RepoTrechos()).responder("Quais contratos vencem este ano?") is None
+
+
+class RepoComAno(RepoFichas):
+    def __init__(self, fichas, ano_citado):
+        super().__init__(fichas)
+        self.ano_citado = ano_citado
+
+    def menciona(self, pasta, ids, termos):
+        return True
+
+    def menciona_ano(self, pasta, ids, termos, ano):
+        return self.ano_citado
+
+
+def test_ausencia_com_ano_conferida_no_texto_e_pergunta_de_existencia_sem_contrato():
+    sem_os = {**FICHA, "documentos": []}
+    r = ResponderPorFicha(RepoComAno([sem_os], False), RepoTrechos()).responder(
+        "Foi aberta ordem de serviço para o contrato 012/2023 no ano de 2026?")
+    assert r.classificacao == "ausencia"
+    assert ResponderPorFicha(RepoComAno([sem_os], True), RepoTrechos()).responder(
+        "Foi aberta ordem de serviço para o contrato 012/2023 no ano de 2026?") is None
+    geral = ResponderPorFicha(RepoComAno([FICHA, OUTRA], False), RepoTrechos()).responder(
+        "Foi realizado relatório de apuração de descumprimento contratual em 2025?")
+    assert geral.classificacao == "ausencia" and "transversal" in geral.observacoes
+    assert ResponderPorFicha(RepoComAno([FICHA, OUTRA], True), RepoTrechos()).responder(
+        "Foi realizado relatório de apuração de descumprimento contratual em 2025?") is None
+    lista = ResponderPorFicha(RepoComAno([FICHA, OUTRA], False), RepoTrechos()).responder("Houve empenho em 2025?")
+    assert lista.resposta.startswith("1 contrato(s) com notas de empenho em 2025")

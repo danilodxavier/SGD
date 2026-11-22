@@ -5,6 +5,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 ## [Não lançado] — Reestruturação SAD-GD
 
 ### Adicionado
+- Ficha responde mais na hora: panorama de vigência de todos os contratos (vencendo em 120 dias, encerrados, vigentes), relatório de apuração e notificação extrajudicial reconhecidos pelo título, perguntas de existência sem contrato citado e ausência com ano conferida no texto dos documentos.
 - Fichas de contrato atualizadas automaticamente ao fim de cada indexação (tela Acervo e `indexar.py`; `SADGD_FICHAS_APOS_INDEXAR`).
 - Fichas de contrato pré-processadas (ADR-015): agrupamento por pasta/número, extração conferida com o LLM local (`scripts/sadgd/gerar_fichas.py`), inventário por tipo e resposta sem LLM em milissegundos para objeto, partes, valor, vigência, fiscal, documentos de um tipo, contratos de um fornecedor e perguntas transversais; o resto segue o caminho completo.
 - Fase 12 (implantação na rede): fila de consultas com posição/etapa (`/api/sadgd/consultas`), chat por texto e **voz** na tela Perguntar (transcrição local com faster-whisper, `/api/sadgd/transcrever`), instalação/validação do certificado da STI (`scripts/rede/instalar_certificado.py`) e publicação com firewall e início automático (`scripts/rede/publicar_rede.ps1`).

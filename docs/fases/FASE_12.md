@@ -166,3 +166,20 @@ ocorrência no ano (R08) e ausência com o assunto citado no texto da pasta (R12
 - **GPU**: o responsável informou que a troca da placa **não é possível agora**. Perguntas abertas e de decisão
   seguem limitadas pelo hardware (abertas ≈ 45–90 s; decisão ≈ 3–4 min); a estratégia passa a ser ampliar o que é
   preparado antes (fichas) e reduzir texto por pergunta sem perder acerto.
+
+## 10. Rodada 8 — a ficha responde mais (2026-11-21)
+
+| Ampliação | Exemplo | Salvaguarda |
+|---|---|---|
+| **Panorama de vigência** de todos os contratos: vencem em até 120 dias (fase de renovação), encerrados, vigentes | "Quais processos estão em fase de renovação?" | término pela vigência atual (aditivo), pelo instrumento ou **calculado** (início/assinatura + prazo), sempre identificado e citado; aditivo posterior sinalizado; classificação "inferência" |
+| **Tipos pelo título**: relatório de apuração; notificação extrajudicial classificada como outro tipo | "Quais contratos tiveram notificação extrajudicial em 2025?" | lista com o documento mais recente citado |
+| **Existência sem contrato citado** ("houve…?", "foi realizado…?") percorre todas as fichas | "Foi realizado relatório de apuração em 2025?" | — |
+| **Ausência com ano conferida no texto** (contrato ou acervo inteiro) | "Foi aberta OS em 2026?" | só afirma se nenhum trecho cita o assunto **junto com o ano**; senão, caminho completo |
+
+Golden acadêmico: 72 respostas rápidas, todas corretas (2 diferem só na pontuação de "Ltda."). Acervo real: 16 dos
+19 contratos com data de término na ficha.
+
+**Rodada 8 × rodada 4:** mediana das perguntas não-decisórias **89 s → 0,8 s**; **6 de 11 em ≤ 0,8 s** (R01, R04,
+R05, R06, R08, R11); demais 33–75 s pelo caminho completo (R09 e R12: o texto cita o assunto com o ano — a ficha não
+afirma ausência); decisão (R02) 243 → 154 s. Recusas: R12 (provável ausência real) e R07 ("há pendência em algum
+contrato?", pergunta vaga pelo caminho completo, que oscila entre rodadas).
