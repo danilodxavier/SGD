@@ -354,3 +354,25 @@ def test_relator_recebe_pareceres_enxutos_quando_sao_muitos():
     relatar_f2(llm, "Devo prorrogar?", TRECHOS, pareceres)
     enviado = llm.chamadas[0][-1]["content"].split("PARECERES VERIFICADOS:\n")[1]
     assert len(enviado) <= MAX_CHARS_PARECERES and "M" * 200 not in enviado
+
+
+def test_parecer_unico_vira_a_sintese_sem_segunda_chamada_ao_modelo():
+    """Rodada 13: com um só especialista, a resposta é montada do parecer (afirmações verificadas, com citação);
+    o relator (≈ 35 s no acervo real) só é chamado quando há pareceres a consolidar."""
+    llm = LLMRegistraTudo()
+    estado = criar(llm).executar("Devemos aprovar a proposta apresentada?")
+    assert estado["decisao"].agentes == ["gestor_publico"]
+    assert len(llm.chamadas) == 1 and "Modo F2" not in json.dumps(llm.chamadas, ensure_ascii=False)
+    r = estado["resposta"]
+    assert "relator_dispensado_parecer_unico" in r.observacoes and r.valido
+    assert "[T11]" in r.resposta and "T999" not in r.resposta and AVISO_DECISAO in r.resposta
+    assert r.dados["fontes"] == ["T11"] and r.dados["recomendacao"] == "prorrogar"
+    assert r.dados["consensos"] == [] and r.dados["divergencias"] == []
+
+
+def test_varios_pareceres_continuam_no_relator():
+    llm = LLMRegistraTudo()
+    estado = criar(llm).executar("Devo prorrogar o Contrato nº 044/2023? Recomende a melhor decisão.")
+    assert len(estado["decisao"].agentes) >= 2
+    assert "Modo F2" in llm.chamadas[-1][-1]["content"]
+    assert "relator_dispensado_parecer_unico" not in estado["resposta"].observacoes

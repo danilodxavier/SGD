@@ -9,6 +9,7 @@ from pathlib import Path
 from app.application.agentes.verificador import suporte, verificar
 from app.application.avaliacao.metricas_resposta import numeros_nao_suportados
 from app.application.decisoes.recomendacao import completar
+from app.application.portas import RespostaLLM
 from app.application.respostas.f1 import montar_contexto, partes_prompt
 from app.domain.politicas import AVISO_DECISAO
 
@@ -275,14 +276,43 @@ class RespostaF2:
     observacoes: list = field(default_factory=list)
 
 
+def parecer_unico(pareceres) -> Parecer | None:
+    """O único parecer da decisão, se válido e com ao menos uma afirmação citada (senão, o relator é chamado)."""
+    if len(pareceres) != 1:
+        return None
+    p = pareceres[0]
+    return p if p.valido_reparado and p.dados.get("parecer") and p.dados.get("afirmacoes") else None
+
+
+def sintese_de_parecer_unico(p: Parecer) -> dict:
+    """Síntese montada sem LLM a partir de um único parecer (rodada 13): com um só especialista não há consensos
+    nem divergências a consolidar, e a 2ª chamada ao modelo custava ≈ 35 s só para reorganizar o parecer. Usa só o
+    que o especialista escreveu (afirmações já verificadas); o resto passa pelas mesmas salvaguardas do relator."""
+    d = p.dados
+    linhas = [d["parecer"].strip()] + [
+        f"- {a['texto'].strip().rstrip('.')} [{', '.join(a['citacoes'])}]." for a in d["afirmacoes"]]
+    fontes = list(dict.fromkeys([c for a in d["afirmacoes"] for c in a["citacoes"]]
+                                + [f["trecho"] for f in d.get("fundamentacao_legal", [])]))
+    return {"resposta": "\n".join(x for x in linhas if x), "recomendacao": d.get("recomendacao") or "",
+            "consensos": [], "divergencias": [], "alternativas": list(d.get("alternativas", [])),
+            "riscos": list(d.get("riscos", [])), "lacunas": list(d.get("lacunas", [])), "fontes": fontes,
+            "classificacao": "inferencia", "confianca": d.get("confianca", 0.0)}
+
+
 def relatar_f2(llm, pergunta, trechos, pareceres, contexto_extra="", precedentes=(),
                contexto_max_chars=0) -> RespostaF2:
-    validos = pareceres_para_relator(pareceres)
-    _, papel = partes_prompt("relator", versao=2)
-    mensagens = contexto_compartilhado(pergunta, trechos, contexto_extra, contexto_max_chars) + [
-        {"role": "user", "content": papel + "\n\n" + ORDEM_RELATOR + "\n\nPARECERES VERIFICADOS:\n"
-                                    + json.dumps(validos, ensure_ascii=False)}]
-    r, tentativas = _chat_json(llm, mensagens, 1200, 0.1)
+    unico = parecer_unico(pareceres)
+    if unico is not None:  # um só especialista: síntese sem 2ª chamada ao modelo
+        sintese = sintese_de_parecer_unico(unico)
+        r, tentativas = RespostaLLM(json.dumps(sintese, ensure_ascii=False), "parecer-unico", 0, 0, 0,
+                                    json=sintese), 1
+    else:
+        validos = pareceres_para_relator(pareceres)
+        _, papel = partes_prompt("relator", versao=2)
+        mensagens = contexto_compartilhado(pergunta, trechos, contexto_extra, contexto_max_chars) + [
+            {"role": "user", "content": papel + "\n\n" + ORDEM_RELATOR + "\n\nPARECERES VERIFICADOS:\n"
+                                        + json.dumps(validos, ensure_ascii=False)}]
+        r, tentativas = _chat_json(llm, mensagens, 1200, 0.1)
     d = r.json if r is not None and isinstance(r.json, dict) else {}
     if r is None:
         d = {"resposta": FALHA_RELATOR, "classificacao": "inferencia", "confianca": 0.0}
@@ -323,6 +353,7 @@ def relatar_f2(llm, pergunta, trechos, pareceres, contexto_extra="", precedentes
     for campo, chaves in permitidas.items():
         d[campo] = [{k: v for k, v in item.items() if k in chaves} for item in d[campo] if isinstance(item, dict)]
     obs = ["relator_sem_json_valido"] if r is None else (["relator_nova_tentativa"] if tentativas > 1 else [])
+    obs += ["relator_dispensado_parecer_unico"] if unico is not None else []
     v = verificar(d["resposta"], fontes, pergunta)
     if not v.aprovada:  # remove frases sem suporte da síntese
         restantes = [f for f in re.split(r"(?<=[.!?])\s+", d["resposta"]) if f.strip() and f.strip() not in

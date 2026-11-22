@@ -7,7 +7,7 @@
 | Atualizado em | 2026-11-22 |
 | Fase atual | **Fase 12 — implantação na rede interna (chat por texto e voz)** — em execução; aguarda DNS e certificado da STI |
 | Situação da fase | Acervo real indexado; A1 (tipos) e A3 (latência) aplicados; aguardando perguntas reais e conferência da amostra de tipos pela equipe |
-| Última tarefa concluída | Rodada 12: tempo da decisão — contexto da F2 dentro do `num_ctx 8192` (antes estourava: JSON do especialista cortado e cache de prefixo perdido), linha do tempo recente, parecer enxuto. Decisão real R02 334 → 78 s (103 s com o modelo descarregado antes); validação acadêmica p50 236 → 150 s, qualidade igual ou melhor. Rodada 11: 11/12 perguntas reais em < 5 s. Ver `docs/fases/FASE_12.md` §14–15 |
+| Última tarefa concluída | Rodada 13: decisão com um só especialista sem 2ª chamada ao modelo (R02 103 → 71 s, modelo descarregado antes). Rodada 12: tempo da decisão — contexto da F2 dentro do `num_ctx 8192` (antes estourava: JSON do especialista cortado e cache de prefixo perdido), linha do tempo recente, parecer enxuto. Decisão real R02 334 → 78 s (103 s com o modelo descarregado antes); validação acadêmica p50 236 → 150 s, qualidade igual ou melhor. Rodada 11: 11/12 perguntas reais em < 5 s. Ver `docs/fases/FASE_12.md` §14–16 |
 | Próxima tarefa exata | (1) equipe julga `avaliacao/real/revisao.csv` e confere `amostra_tipos.csv`; (2) STI: DNS + certificado (HTTPS e voz para os gestores) |
 | Bloqueios | DNS e certificado da STI para o acesso pela rede; julgamento humano das respostas reais |
 

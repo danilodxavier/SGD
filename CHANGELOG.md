@@ -5,6 +5,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 ## [Não lançado] — Reestruturação SAD-GD
 
 ### Adicionado
+- Decisão com um só especialista: síntese montada do parecer (afirmações verificadas, mesmas salvaguardas do relator), sem 2ª chamada ao modelo — decisão real 103 → 71 s.
 - Decisão (F2) mais rápida: orçamento do contexto dentro do `num_ctx` do modelo local (sem JSON cortado nem cache de prefixo perdido), linha do tempo com os eventos mais recentes, parecer enxuto e pareceres compactados para o relator — decisão real 334 → 78–103 s; validação acadêmica p50 236 → 150 s com qualidade igual ou melhor.
 - Datas complementares dos documentos (último fecho, assinatura, emissão; ano igual em 98,5% no fecho) e `scripts/sadgd/datar_documentos.py`: 1.492 documentos reais datados (81% → 56% sem data). Ficha responde pendências dos contratos (vencimento, execução após o término, prorrogação a conferir, notificação recente, vigente sem empenho) e lista documentos para conferir em vez de recusar; aditivos relidos quando surge um mais recente, com a cláusula de prorrogação priorizada.
 - Busca restrita ao contrato citado quando a ficha não basta (F1 e decisão): documentos da pasta + 3 vagas do acervo inteiro, reranqueados juntos — validação: documento esperado 37/37, foco 18% → 27%, busca 1,8 → 1,0 s.

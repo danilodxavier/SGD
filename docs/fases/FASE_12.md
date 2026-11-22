@@ -332,3 +332,19 @@ antigos** (os sem data, ordenados no início, ocupavam as vagas).
 | Base legal (média de itens) | 4,5 | 3,5 (presente em 100%) |
 | p50 / p95 | 235 / 265 s | **150 / 185 s (−36% / −30%)** |
 
+## 16. Rodada 13 — decisão com um só especialista sem 2ª chamada ao modelo (2026-11-22)
+
+Quando o roteador aciona **um único especialista** (caso da decisão real R02: só o gestor público), não há consensos
+nem divergências a consolidar e o relator custava ≈ 35 s só para reorganizar o parecer. Agora a síntese é montada
+**sem LLM** a partir do parecer (`sintese_de_parecer_unico`): texto do parecer + afirmações com citação (já
+verificadas), recomendação, alternativas, riscos e lacunas do especialista. Passa pelas mesmas salvaguardas do
+relator (verificador de frases, RF-20 completado pelo sistema, aviso obrigatório) e registra a observação
+`relator_dispensado_parecer_unico`. Parecer inválido ou sem afirmação citada, ou dois ou mais pareceres → relator
+com o LLM, como antes.
+
+**Decisão real R02** (modelo descarregado antes): **103 → 71 s** (especialista 64 s; síntese 3 ms; sem frases
+removidas pelo verificador). Na rodada 11 eram 124 s e, com o estouro de contexto, 334 s.
+
+**Regressão acadêmica:** as 6 decisões da validação acionam 2–3 especialistas (`fase12_f2_orcamento`), portanto
+seguem pelo relator e o resultado da §15 vale sem alteração.
+
