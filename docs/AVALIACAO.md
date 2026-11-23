@@ -171,6 +171,7 @@ entrada. O benefício decisivo está no acervo real, onde os trechos longos esto
 | 2026-11-17 | fase10_cache | golden set | Limiar do cache semântico | maior par diferente 0,883 → limiar 0,93 |
 | 2026-11-17 | fase10_fidelidade | validação (calibração) + teste | LLM-juiz Llama 3.1 8B | κ 0,71; faithfulness 0,964 adjudicada; alucinação 5,4% |
 | 2026-11-17 | fase11 (F2 Gemini v1) | validação + teste (21) | Especialistas e relator no Gemini 3.5 Flash-Lite | schema relator 0,333 (`consensos` em objeto); p95 213 s |
+| 2026-11-23 | caminho real — versão de entrega (scratchpad) | validação (47 F1) | Torch na thread principal, laço Selector, correção do valor do aditivo | Exatidão 0,949 (47/47 adjudicada); classificação 0,979; recusa 1,00; 20/47 pela ficha. Ver `fases/FASE_12.md` §21 |
 | 2026-11-23 | caminho real (scratchpad, sem arquivo no Git) | validação (47 F1) | Pipeline do servidor: fichas + escopo + busca ao vivo + verificador | Exatidão 0,949 (47/47 adjudicada); classificação 0,979; recusa 1,00; 20/47 pela ficha; p50 1,8 s, p95 62 s. Ver `fases/FASE_12.md` §19 |
 | 2026-11-23 | fase12_f2_par2 | validação (6 F2) | `OLLAMA_NUM_PARALLEL=2` | p50 121 → 154 s; recall docs 0,639 → 0,583; **rejeitado**. Ver `fases/FASE_12.md` §18 |
 | 2026-11-22 | fase12_ab2 | validação (47 F1, com verificador) | 2 aberturas em vez de 3 | Tokens 3.009 → 3.008 (sem efeito); exatidão 0,923; sem ganho |
