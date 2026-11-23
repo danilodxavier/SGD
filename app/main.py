@@ -1,4 +1,5 @@
 """Aplicação FastAPI: API + painel web (HTML/CSS/JS servidos localmente)."""
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
@@ -36,6 +37,10 @@ async def lifespan(app):
             servico.iniciar(None)
         else:
             log.warning("Indexação automática não executada: %s", message)
+    if app.state.auto_index and os.environ.get("SADGD_PRECARREGAR", "1") != "0":
+        from app.infrastructure.modelos.aquecimento import aquecer_em_segundo_plano
+
+        aquecer_em_segundo_plano()  # 1ª pergunta sem os ≈ 20 s de carga dos modelos
     yield
     log.info("Aplicação encerrada")
 

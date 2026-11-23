@@ -416,3 +416,30 @@ fila do Ollama (os nós rodam em paralelo, o Ollama atende um por vez); na prát
 relator, quase tudo leitura e geração do LLM. O nó `contexto_f2` de 30–65 s em 2 itens é artefato da avaliação
 (`avaliar_f2.py` carrega bge-m3 e reranker dos precedentes na CPU; o servidor usa os modelos compartilhados, com o
 reranker na GPU).
+
+## 19. Rodada 16 — caminho real, aquecimento dos modelos e memória (2026-11-23)
+
+**Avaliação pelo caminho do servidor** (fichas + escopo do contrato + busca ao vivo + verificador; banco acadêmico,
+47 perguntas F1 da validação): exatidão **0,949** (as 2 "falhas" são de grafia na chave — "LTDA" sem ponto e "5 anos"
+× "5 (cinco) anos"; adjudicadas, 47/47), classificação 0,979, recusa correta 1,00, **20/47 respondidas pela ficha
+(≤ 50 ms)**, p50 1,8 s, p95 62 s. A regressão com recuperação em cache (`avaliar_respostas.py`) não passa pelas fichas
+e subestima o sistema: V046/V048 ("até quando vigora após o aditivo?") erravam porque a cláusula com a nova data não
+vinha entre os 10 trechos (cláusulas de prorrogação de outros contratos ocupavam o lugar); pelo caminho real a ficha
+responde certo em 15 ms.
+
+**Aquecimento dos modelos ao iniciar o servidor** (`app/infrastructure/modelos/aquecimento.py`): a 1ª busca após
+cada reinício levava 24 s (bge-m3 na CPU + reranker na GPU); as seguintes, 1–2 s. O servidor agora carrega em segundo
+plano o reranker (primeiro, para o Ollama dimensionar as camadas com ele já na GPU), o embedder e o LLM.
+`SADGD_PRECARREGAR=0` desliga; testes (`create_app(auto_index=False)`) não disparam.
+
+**Memória — causa do inchaço do `llama-server`:** o servidor interno do Ollama mantém um cache de prompts na RAM de
+até **8 GB** (`prompt cache is enabled, size limit: 8192 MiB`), por isso passava de 12 GB após horas de uso.
+`ollama.ps1` passa `LLAMA_ARG_CACHE_RAM=1024` (o Ollama não repassa a opção; o llama-server lê a variável). Teste
+sintético com contexto comum de 4.470 tokens e 4 papéis alternados: 1ª leitura 34 s, as 7 seguintes **0,2 s** (o
+reaproveitamento entre especialistas continua), processo estável em 5,6 GB.
+
+**Arquivo de paginação:** o disco C: tem 5,1 GB livres e a paginação gerenciada pelo Windows (47 GB, no C:) não
+consegue crescer — origem dos erros "arquivo de paginação muito pequeno" (1455) e CUDA OOM com a máquina carregada
+(navegadores 8 GB + servidor 7,7 GB + llama-server 5,5 GB). Com a autorização do responsável: paginação adicional
+**D:\pagefile.sys 16–32 GB** (C: continua gerenciado pelo sistema); vale após reiniciar o Windows. Reverter:
+`AutomaticManagedPagefile=True` e remover a entrada do D:.

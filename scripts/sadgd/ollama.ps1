@@ -30,6 +30,9 @@ if (-not $env:OLLAMA_KEEP_ALIVE) { $env:OLLAMA_KEEP_ALIVE = "12h" }
 if (-not $env:OLLAMA_FLASH_ATTENTION) { $env:OLLAMA_FLASH_ATTENTION = "1" }
 if (-not $env:OLLAMA_KV_CACHE_TYPE) { $env:OLLAMA_KV_CACHE_TYPE = "q8_0" }
 if (-not $env:OLLAMA_NUM_PARALLEL) { $env:OLLAMA_NUM_PARALLEL = "1" }
+# cache de prompts do llama-server na RAM: padrao 8 GB (era a causa do processo passar de 12 GB apos horas de uso);
+# 1 GB guarda > 4 contextos completos de 8 mil tokens (q8_0) e mantem o reaproveitamento entre especialistas
+if (-not $env:LLAMA_ARG_CACHE_RAM) { $env:LLAMA_ARG_CACHE_RAM = "1024" }
 
 function Testar-Servidor {
     try { Invoke-RestMethod "$Url/api/version" -TimeoutSec 2 | Out-Null; return $true } catch { return $false }
