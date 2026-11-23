@@ -4,6 +4,7 @@
     python -m app --sem-navegador inicia sem abrir o navegador
     python -m app parar           encerra o servidor em execução
 """
+import asyncio
 import json
 import os
 import secrets
@@ -23,7 +24,7 @@ from app.core.config import settings
 def _write_pid(token):
     settings.data_dir.mkdir(parents=True, exist_ok=True)
     settings.pid_file.write_text(json.dumps({"pid": os.getpid(), "token": token, "host": settings.app_host,
-                                             "port": settings.app_port, "https": settings.https}), encoding="utf-8")
+                                             "port": settings.app_port, "https": settings.https_principal}), encoding="utf-8")
 
 
 def _alive(pid):
@@ -42,22 +43,49 @@ def _alive(pid):
         kernel32.CloseHandle(handle)
 
 
+def criar_servidores(app):
+    """Servidor principal em APP_PORT e, com HTTPS_PORT + certificado, um 2º só de HTTPS (mesmo app, sem lifespan:
+    indexação e pré-carregamento rodam uma vez só)."""
+    ssl = {"ssl_certfile": settings.ssl_certfile, "ssl_keyfile": settings.ssl_keyfile}
+    principal = uvicorn.Config(app, host=settings.app_host, port=settings.app_port, log_level="warning",
+                               **(ssl if settings.https_principal else {}))
+    servidores = [uvicorn.Server(principal)]
+    if settings.https and settings.https_port and settings.https_port != settings.app_port:
+        extra = uvicorn.Config(app, host=settings.app_host, port=settings.https_port, log_level="warning",
+                               lifespan="off", **ssl)
+        servidores.append(uvicorn.Server(extra))
+    return servidores
+
+
+async def _servir(servidores):
+    """Roda todos; quando um termina (encerramento pedido ou falha), encerra os demais."""
+    tarefas = [asyncio.create_task(s.serve()) for s in servidores]
+    await asyncio.wait(tarefas, return_when=asyncio.FIRST_COMPLETED)
+    for s in servidores:
+        s.should_exit = True
+    resultados = await asyncio.gather(*tarefas, return_exceptions=True)
+    erro = next((r for r in resultados if isinstance(r, BaseException)), None)
+    if erro is not None:
+        raise erro
+
+
 def start(open_browser=True):
     from app.main import app
 
-    scheme = "https" if settings.https else "http"
+    scheme = "https" if settings.https_principal else "http"
     if settings.network_mode:
         from app.core.security import local_names
 
         print("[REDE] O painel aceitará acessos de outros computadores autorizados (ALLOWED_CLIENTS):")
         for name in sorted(n for n in local_names() if n not in ("127.0.0.1", "localhost", "::1") and ":" not in n):
             print(f"       {scheme}://{name}:{settings.app_port}")
+            if settings.https and settings.https_port:
+                print(f"       https://{name}" + ("" if settings.https_port == 443 else f":{settings.https_port}"))
         if not settings.https:
             print("[WARNING] Sem HTTPS: as senhas trafegam sem criptografia na rede interna (ver SSL_CERTFILE).")
     token = secrets.token_urlsafe(24)
-    ssl = {"ssl_certfile": settings.ssl_certfile, "ssl_keyfile": settings.ssl_keyfile} if settings.https else {}
-    config = uvicorn.Config(app, host=settings.app_host, port=settings.app_port, log_level="warning", **ssl)
-    server = uvicorn.Server(config)
+    servidores = criar_servidores(app)
+    server = servidores[0]
     app.state.server = server
     app.state.shutdown_token = token
     _write_pid(token)
@@ -67,7 +95,7 @@ def start(open_browser=True):
     if open_browser:
         threading.Timer(2.0, webbrowser.open, args=(url,)).start()
     try:
-        server.run()
+        asyncio.run(_servir(servidores))
     finally:
         try:
             if json.loads(settings.pid_file.read_text(encoding="utf-8")).get("pid") == os.getpid():

@@ -460,3 +460,11 @@ consegue crescer — origem dos erros "arquivo de paginação muito pequeno" (14
   `sistemasad.sema.mt.gov.br` incluído em `ALLOWED_HOSTS` (backup do `.env`). `http://sad.sema.mt.gov.br:8000` e
   `http://sistemasad.sema.mt.gov.br:8000` respondem 200. Reverter: remover o bloco "SAD-GD" do `hosts`. Se o IP da
   estação mudar (DHCP), atualizar o `hosts`. `https://` segue dependendo de certificado.
+- **HTTPS nesta estação (2026-11-23):** certificado autoassinado para os dois nomes
+  (`scripts\rede\gerar_certificado_local.py --confiar`, válido por 1 ano, instalado na raiz confiável do computador;
+  arquivos em `ferramentas\certificados\`, fora do Git). Com `HTTPS_PORT=443` o mesmo processo atende
+  `https://sad.sema.mt.gov.br/` (porta 443) e continua em `http://…:8000`; o 2º servidor roda sem *lifespan* (indexação e
+  pré-carregamento uma vez só). O cookie de sessão passa a ser `Secure` só em acessos HTTPS (antes seguia a existência
+  do certificado e quebraria o login pelo `:8000`). Outros computadores veriam aviso de certificado: para a rede, usar o
+  certificado da STI (`instalar_certificado.py`). Reverter: remover o certificado de `Cert:\LocalMachine\Root` e limpar
+  `SSL_CERTFILE`/`SSL_KEYFILE`/`HTTPS_PORT` no `.env`.

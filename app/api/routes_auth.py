@@ -48,7 +48,7 @@ class ResetIn(BaseModel):
 def _start_session(request, response, user):
     token = auth.create_session(user["id"], request.state.client_ip)
     response.set_cookie(auth.COOKIE_NAME, token, max_age=settings.session_hours * 3600, httponly=True,
-                        samesite="strict", secure=settings.https, path="/")
+                        samesite="strict", secure=request.url.scheme == "https", path="/")
     return user
 
 
@@ -64,7 +64,7 @@ def status(request: Request):
         "setup_required": auth.count_users() == 0,
         "is_local": request.state.is_local,
         "network_mode": settings.network_mode,
-        "https": settings.https,
+        "https": request.url.scheme == "https",
         "user": request.state.user,
     }
 

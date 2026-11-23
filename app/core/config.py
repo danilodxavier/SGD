@@ -59,6 +59,8 @@ class Settings:
         self.session_hours = int(os.getenv("SESSION_HOURS", "8"))
         self.ssl_certfile = os.getenv("SSL_CERTFILE", "").strip()
         self.ssl_keyfile = os.getenv("SSL_KEYFILE", "").strip()
+        # HTTPS_PORT (ex.: 443): HTTPS nessa porta e APP_PORT continua em http; vazio = APP_PORT usa o certificado
+        self.https_port = int(os.getenv("HTTPS_PORT", "").strip() or 0)
         self.documents_root = os.getenv("DOCUMENTS_ROOT", r"D:\Documentos").strip()
         self.database_path = _path(os.getenv("DATABASE_PATH"), r"data\database\sadgd.db")
         self.log_level = os.getenv("LOG_LEVEL", "INFO").strip().upper()
@@ -99,6 +101,11 @@ class Settings:
     @property
     def https(self):
         return bool(self.ssl_certfile and self.ssl_keyfile)
+
+    @property
+    def https_principal(self):
+        """APP_PORT atende em HTTPS (sem HTTPS_PORT separada)."""
+        return self.https and not self.https_port
 
     @property
     def network_mode(self):

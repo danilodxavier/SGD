@@ -8,6 +8,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 - Demo Day (23/11/2026): vídeo de 4 min 57 s com apresentador 3D no estilo de animação gerado no Gemini a partir da foto (prompts em `scripts/video/prompts_personagem.md`; animação em `gerar_video_demoday.py`, roteiro `cenas_demoday.json`), captura das telas reais com o corpus acadêmico (`scripts/video/capturar_telas.py`) e PDF de pitch + guia completo (`scripts/entrega/gerar_guia_pdf.py`). Saídas em `data/video/demoday/` e `data/entrega/` (fora do Git).
 
 ### Alterado
+- HTTPS em porta própria (`HTTPS_PORT`, ex.: 443) mantendo o http em `APP_PORT`; cookie `Secure` conforme o protocolo do acesso; certificado local autoassinado (`gerar_certificado_local.py`).
 - Início na rede (`iniciar_rede.bat`) reinicia o servidor automaticamente se ele cair com erro.
 - Servidor pré-carrega reranker, embedder e LLM ao iniciar (1ª pergunta sem ≈ 20 s de carga; `SADGD_PRECARREGAR=0` desliga).
 - Cache de prompts do llama-server limitado a 1 GB (`LLAMA_ARG_CACHE_RAM`): o padrão de 8 GB fazia o processo passar de 12 GB após horas de uso.
