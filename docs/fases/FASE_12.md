@@ -455,3 +455,8 @@ consegue crescer — origem dos erros "arquivo de paginação muito pequeno" (14
   um login; o "reiniciar se falhar" do Agendador não age quando o processo cai depois de iniciado. `iniciar_rede.bat`
   agora tem um vigia: saída com erro → reinicia em 15 s (até 20 vezes); saída normal encerra. Testado derrubando o
   processo: voltou sozinho.
+- **Acesso só nesta estação (decisão do responsável, 2026-11-23):** enquanto a STI não cria o registro DNS, os dois
+  nomes foram cadastrados no `hosts` do Windows apontando para o IP da LAN do servidor (backup em `BACKUP\hosts_*.bak`);
+  `sistemasad.sema.mt.gov.br` incluído em `ALLOWED_HOSTS` (backup do `.env`). `http://sad.sema.mt.gov.br:8000` e
+  `http://sistemasad.sema.mt.gov.br:8000` respondem 200. Reverter: remover o bloco "SAD-GD" do `hosts`. Se o IP da
+  estação mudar (DHCP), atualizar o `hosts`. `https://` segue dependendo de certificado.
