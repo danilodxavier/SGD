@@ -25,6 +25,11 @@ $env:OLLAMA_HOST = "127.0.0.1:11434"
 $env:OLLAMA_NOPRUNE = "1"
 # Mantem o LLM carregado entre perguntas (padrao do Ollama: 5 min; recarregar custa 10-15 s na 1a pergunta)
 if (-not $env:OLLAMA_KEEP_ALIVE) { $env:OLLAMA_KEEP_ALIVE = "12h" }
+# GTX 1660 (2026-11-22): flash attention + cache de contexto em 8 bits = geração +12% (23,8 -> 26,7 tok/s) com o
+# reranker na GPU; 1 fila (o servidor atende uma pergunta por vez no LLM)
+if (-not $env:OLLAMA_FLASH_ATTENTION) { $env:OLLAMA_FLASH_ATTENTION = "1" }
+if (-not $env:OLLAMA_KV_CACHE_TYPE) { $env:OLLAMA_KV_CACHE_TYPE = "q8_0" }
+if (-not $env:OLLAMA_NUM_PARALLEL) { $env:OLLAMA_NUM_PARALLEL = "1" }
 
 function Testar-Servidor {
     try { Invoke-RestMethod "$Url/api/version" -TimeoutSec 2 | Out-Null; return $true } catch { return $false }

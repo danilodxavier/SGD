@@ -375,3 +375,30 @@ seguem pelo relator e o resultado da §15 vale sem alteração.
 tokens/s) e o número de tokens já está no mínimo seguro medido; os ganhos restantes passam por responder mais
 perguntas sem o LLM (fichas) ou por hardware.
 
+## 18. Rodada 15 — configuração do Ollama: flash attention + cache de contexto em 8 bits (2026-11-22)
+
+Medição com o reranker carregado na GPU e o modelo descarregado antes (texto sintético, 4.835 tokens, 3 repetições):
+
+| Configuração | Leitura (tok/s) | Geração (tok/s) | VRAM do modelo | Decisão |
+|---|---|---|---|---|
+| Padrão (KV f16, 25/29 camadas) | 127 | 23,8 | 4.073 MB | — |
+| `OLLAMA_FLASH_ATTENTION=1` + `OLLAMA_KV_CACHE_TYPE=q8_0` + `OLLAMA_NUM_PARALLEL=1` | 128 | **26,7 (+12%)** | 4.013 MB | **Adotado** (`ollama.ps1`) |
+| Idem + 27 camadas na GPU (`num_gpu 27`) | 92 | 7,5 | 4.297 MB | Rejeitado: a VRAM transborda para a memória compartilhada |
+
+O cache de contexto em 8 bits cai de 448 MB para 238 MB, mas o Ollama continua escolhendo 25 camadas (o reranker
+ocupa o resto da placa); o ganho vem do flash attention com o cache menor.
+
+**Regressões acadêmicas (qualidade):**
+- F1 (`fase12_kv_q8`, 47 itens, com verificador): exatidão 0,923 → **0,949**; recusa correta 1,00 =; conflito 1,00 =;
+  citação correta 0,954 =; alucinação numérica 0 =; precisão das citações 0,716 → 0,684.
+- F2 (`fase12_f2_kv_q8`, 6 decisões): **p50 150 → 121 s (−19%)**, p95 185 → 187 s (1º item frio); RF-20 1,00 =;
+  recall de documentos 0,639 =; precisão 0,511 → 0,517; schema bruto 1,00 → 0,857 (1 parecer reparado, reparado 1,00).
+
+**Configuração do computador conferida:** plano de energia já em Alto desempenho; arquivo de paginação 47 GB
+(gerenciado); driver NVIDIA 595.95 com limite de potência no máximo (125 W). A RAM livre baixa (1–2 GB de 15,7 GB) vem
+de aplicativos do usuário (navegadores, Docker/WSL), não do SAD-GD — fechá-los é decisão do usuário.
+
+**Ajuste fino dos modelos (treino):** não é viável nesta máquina com ganho mensurável — QLoRA de um 7B com contexto de
+8 mil tokens não cabe em 6 GB na GTX 1660 (sem bf16), o golden set acadêmico tem 100 perguntas (superajuste e
+vazamento entre validação e teste) e o acervo real não pode ser rotulado pelo agente. A "calibração" segue pelo ciclo
+medir → ajustar → regressão (ADR do aprendizado: RAG + prompts + precedentes).

@@ -86,6 +86,7 @@ Variáveis de ambiente que forçam caches para dentro do projeto (definidas em `
 - Datas (2026-11-22): 81% do acervo real estava sem data; após `datar_documentos.py` (cascata `data_complementar`), 56%. Perguntas com ano dependem disso. Depois de mudar datas: `gerar_fichas.py` (inventário sem LLM; aditivos novos relidos) e `construir_grafo.py`.
 - Contexto do LLM (2026-11-22): o modelo local tem `num_ctx 8192` e o texto real rende ≈ 2,3 caracteres/token. Prompt + `max_tokens` acima disso corta o JSON (nova tentativa) e o deslocamento do contexto anula o cache de prefixo — manter o contexto comum da F2 no orçamento (`MAX_CHARS_CONTEXTO_F2`) e conferir `tokens_entrada` + tentativas ao medir.
 - Leitura do prompt (2026-11-22): ≈ 135 tokens/s com 25 ou 29 camadas na GPU (só a geração muda: 24,7 × 39,7 tokens/s). O servidor só carrega o reranker na 1ª pergunta: medir VRAM antes e depois. Mudanças no formato do contexto exigem a regressão da F1 com o verificador (recusa correta caiu com a ficha agrupada por documento).
+- Ollama (2026-11-22): `ollama.ps1` liga `OLLAMA_FLASH_ATTENTION=1`, `OLLAMA_KV_CACHE_TYPE=q8_0` e `OLLAMA_NUM_PARALLEL=1` (geração +12% com o reranker na GPU). Forçar mais camadas (`num_gpu 27`) com o reranker carregado transborda a VRAM: geração cai para 7,5 tok/s.
 - Testes E2E usam o Microsoft Edge do sistema via Playwright (`channel="msedge"`) — não baixar navegadores.
 - Ollama do projeto: `scripts\sadgd\ollama.ps1 -Acao iniciar|parar|status`; Tesseract: `scripts\sadgd\tesseract.ps1`.
 

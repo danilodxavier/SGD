@@ -7,6 +7,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 ### Adicionado
 - Demo Day (23/11/2026): vídeo de 4 min 57 s com apresentador 3D no estilo de animação gerado no Gemini a partir da foto (prompts em `scripts/video/prompts_personagem.md`; animação em `gerar_video_demoday.py`, roteiro `cenas_demoday.json`), captura das telas reais com o corpus acadêmico (`scripts/video/capturar_telas.py`) e PDF de pitch + guia completo (`scripts/entrega/gerar_guia_pdf.py`). Saídas em `data/video/demoday/` e `data/entrega/` (fora do Git).
 
+### Alterado
+- Ollama com flash attention, cache de contexto em 8 bits e 1 fila (`ollama.ps1`): geração +12% com o reranker na GPU; decisões p50 150 → 121 s; qualidade da F1 mantida (exatidão 0,949, recusa 1,00).
+
 ### Corrigido
 - Voz: números de atos falados viram a forma escrita ("contrato 12 barra 2023" / "contrato número 44 de 2023" → "contrato nº 12/2023"), e a pergunta ganha "?" — antes a busca não reconhecia o contrato e respondia sobre outros (6 testes).
 - CI: `faster-whisper` instalado com `--no-deps` (`requirements-voz.txt`), porque o `onnxruntime` não existe para o Python 3.15; o CI falhava na instalação desde a Fase 12.
