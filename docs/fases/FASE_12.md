@@ -443,3 +443,15 @@ consegue crescer — origem dos erros "arquivo de paginação muito pequeno" (14
 (navegadores 8 GB + servidor 7,7 GB + llama-server 5,5 GB). Com a autorização do responsável: paginação adicional
 **D:\pagefile.sys 16–32 GB** (C: continua gerenciado pelo sistema); vale após reiniciar o Windows. Reverter:
 `AutomaticManagedPagefile=True` e remover a entrada do D:.
+
+## 20. Acesso pela LAN — diagnóstico (2026-11-23)
+
+- **DNS:** `sad.sema.mt.gov.br` e `sistemasad.sema.mt.gov.br` **não existem** no DNS corporativo ("O nome DNS não
+  existe"). Sem o registro A criado pela STI, nenhum computador da rede chega ao sistema por esses nomes. O servidor,
+  o firewall (regra de entrada na porta 8000, perfis Domínio/Privado), o `ALLOWED_HOSTS` e as faixas de clientes
+  autorizadas estão corretos: o acesso pelo IP e pelo nome do computador no domínio responde 200.
+- **HTTPS (443):** sem certificado configurado (`SSL_CERTFILE` vazio); depende do certificado da STI.
+- **Queda do servidor:** às 11:30 o processo Python caiu com violação de acesso (0xC0000005, `python315.dll`) logo após
+  um login; o "reiniciar se falhar" do Agendador não age quando o processo cai depois de iniciado. `iniciar_rede.bat`
+  agora tem um vigia: saída com erro → reinicia em 15 s (até 20 vezes); saída normal encerra. Testado derrubando o
+  processo: voltou sozinho.
