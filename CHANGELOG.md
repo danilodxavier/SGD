@@ -8,6 +8,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 - Demo Day (23/11/2026): vídeo de 4 min 57 s com apresentador 3D no estilo de animação gerado no Gemini a partir da foto (prompts em `scripts/video/prompts_personagem.md`; animação em `gerar_video_demoday.py`, roteiro `cenas_demoday.json`), captura das telas reais com o corpus acadêmico (`scripts/video/capturar_telas.py`) e PDF de pitch + guia completo (`scripts/entrega/gerar_guia_pdf.py`). Saídas em `data/video/demoday/` e `data/entrega/` (fora do Git).
 
 ### Alterado
+- Servidor estável no Windows: laço Selector (RST do navegador fechava a porta 8000) e PyTorch só na thread principal (Python 3.15 + torch 2.14 caía com 0xC0000005 em threads).
+- Painel sem 404 (scripts da v1 removidos do `index.html`; ícone próprio).
+- Ficha não confunde o acréscimo do aditivo com o novo valor global (`corrigir_valor_atual.py` para fichas antigas).
 - HTTPS em porta própria (`HTTPS_PORT`, ex.: 443) mantendo o http em `APP_PORT`; cookie `Secure` conforme o protocolo do acesso; certificado local autoassinado (`gerar_certificado_local.py`).
 - Início na rede (`iniciar_rede.bat`) reinicia o servidor automaticamente se ele cair com erro.
 - Servidor pré-carrega reranker, embedder e LLM ao iniciar (1ª pergunta sem ≈ 20 s de carga; `SADGD_PRECARREGAR=0` desliga).

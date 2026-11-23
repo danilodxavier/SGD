@@ -202,12 +202,13 @@ def checks_sadgd(gpu=True, ollama=True):
 
     if gpu:
         try:
-            import torch
+            from app.infrastructure.modelos.thread_principal import executar
 
-            if torch.cuda.is_available():
-                checks.append(_check("GPU (torch)", OK, f"{torch.__version__} — {torch.cuda.get_device_name(0)}"))
+            versao, placa = executar(_gpu_torch)  # torch só na thread principal (ver thread_principal.py)
+            if placa:
+                checks.append(_check("GPU (torch)", OK, f"{versao} — {placa}"))
             else:
-                checks.append(_check("GPU (torch)", WARNING, f"{torch.__version__} — sem CUDA; embeddings na CPU"))
+                checks.append(_check("GPU (torch)", WARNING, f"{versao} — sem CUDA; embeddings na CPU"))
         except Exception as exc:
             checks.append(_check("GPU (torch)", ERRO, f"torch indisponível: {exc}"))
 
@@ -239,3 +240,9 @@ def checks_sadgd(gpu=True, ollama=True):
     checks.append(_check("GitHub CLI", OK if shutil.which("gh") else WARNING,
                          "instalado" if shutil.which("gh") else "não instalado (CI/Projects dependem dele)"))
     return checks
+
+
+def _gpu_torch():
+    import torch
+
+    return torch.__version__, (torch.cuda.get_device_name(0) if torch.cuda.is_available() else None)

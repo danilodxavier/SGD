@@ -27,7 +27,8 @@ def test_iniciar_e_parar_servidor(docs_dir, tmp_path):
     env = {**os.environ, "APP_PORT": str(port), "DATA_DIR": str(tmp_path / "data"),
            "DATABASE_PATH": str(tmp_path / "data" / "srv.db"), "DOCUMENTS_ROOT": str(docs_dir),
            "OCR_ENABLED": "false", "AI_PROVIDER": "local", "PYTHONIOENCODING": "utf-8",
-           "APP_HOST": "127.0.0.1", "ALLOWED_HOSTS": "", "SSL_CERTFILE": "", "SSL_KEYFILE": ""}  # independe do .env
+           "APP_HOST": "127.0.0.1", "ALLOWED_HOSTS": "", "SSL_CERTFILE": "", "SSL_KEYFILE": "",
+           "HTTPS_PORT": "", "SADGD_PRECARREGAR": "0"}  # independe do .env; sem carregar modelos
     server = subprocess.Popen([sys.executable, "-m", "app", "--sem-navegador"], cwd=BASE_DIR, env=env,
                               stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     try:

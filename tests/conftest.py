@@ -25,6 +25,7 @@ def db(tmp_path, monkeypatch):
     monkeypatch.setattr(settings, "allowed_hosts", [])
     monkeypatch.setattr(settings, "ssl_certfile", "")
     monkeypatch.setattr(settings, "ssl_keyfile", "")
+    monkeypatch.setattr(settings, "https_port", 0)
     monkeypatch.setattr(settings, "ai_provider", "local")  # testes de IA usam um servidor simulado
     monkeypatch.setattr(settings, "ai_allow_remote", False)
     database.init_db()

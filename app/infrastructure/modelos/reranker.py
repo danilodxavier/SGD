@@ -4,6 +4,8 @@ import os
 from pathlib import Path
 
 from app.core.config import settings  # HF_HOME e carga sequencial antes de importar torch
+from app.infrastructure.modelos.embeddings import _cuda_ou_cpu
+from app.infrastructure.modelos.thread_principal import na_thread_principal
 
 log = logging.getLogger("sadgd.reranker")
 MODELO_PADRAO = "BAAI/bge-reranker-v2-m3"
@@ -26,9 +28,7 @@ class BgeReranker:
     @property
     def dispositivo(self):
         if self._dispositivo is None:
-            import torch
-
-            self._dispositivo = "cuda" if torch.cuda.is_available() else "cpu"
+            self._dispositivo = _cuda_ou_cpu()
         return self._dispositivo
 
     def _carregar(self):
@@ -44,6 +44,7 @@ class BgeReranker:
                                         max_length=self._max, **extra)
         return self._modelo
 
+    @na_thread_principal  # torch só na thread principal (ver thread_principal.py)
     def pontuar(self, consulta, textos):
         if not textos:
             return []
@@ -61,6 +62,7 @@ class BgeReranker:
             return self.pontuar(consulta, textos)
         return [float(n) for n in notas]
 
+    @na_thread_principal
     def liberar(self):
         if self._modelo is not None and self.dispositivo == "cuda":
             import torch

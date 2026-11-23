@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <title>SAD-GD</title>
+  <path d="M7 3h12l6 6v20H7z" fill="#1f4e79"/>
+  <path d="M19 3v6h6" fill="#9cc3e6"/>
+  <path d="M11 18l3.5 3.5L21 15" fill="none" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -139,6 +139,26 @@ def _confere(campo: str, valor: str, texto: str) -> bool:
     return False
 
 
+# "o valor global é acrescido de R$ 73.150,00": o número citado é a VARIAÇÃO, não o novo valor (o LLM confundia)
+_VARIACAO = re.compile(r"(acrescid[oa]s?|acrescimo|acrescentad[oa]s?|suprimid[oa]s?|supressao|reduzid[oa]s?|"
+                       r"reducao|diminuid[oa]s?|decrescid[oa]s?|majorad[oa]s?|minorad[oa]s?)\b[^.;]{0,40}$")
+
+# "em decorrência do acréscimo, o valor mensal passa a ser de R$ X": X é o novo valor
+_NOVO_VALOR = re.compile(r"passa(?:ndo)? a (?:ser|ter)|passa para|fica(?:ndo)?\s|totaliza|novo valor|perfaz")
+
+
+def e_variacao(valor: str, texto: str) -> bool:
+    """O valor aparece no trecho logo depois de "acrescido de", "acréscimo de", "supressão de", "redução de"…?"""
+    v, t = normalizar(valor), normalizar(texto)
+    inicio = t.find(v) if v else -1
+    while inicio >= 0:
+        m = _VARIACAO.search(t[max(0, inicio - 60):inicio])
+        if m and not _NOVO_VALOR.search(m.group(0)):
+            return True
+        inicio = t.find(v, inicio + 1)
+    return False
+
+
 def validar(dados: dict, trechos: list, campos=None) -> dict:
     """Mantém só os campos cujo valor consta do trecho citado (que precisa estar entre os enviados)."""
     por_id = {f"T{tid}": texto for tid, texto in trechos}
@@ -151,5 +171,7 @@ def validar(dados: dict, trechos: list, campos=None) -> dict:
         rotulo = str(item.get("trecho") or "").strip().strip("[]")
         rotulo = f"T{rotulo}" if rotulo.isdigit() else rotulo
         if valor and rotulo in por_id and _confere(campo, valor, por_id[rotulo]):
+            if campo == "valor_atual" and e_variacao(valor, por_id[rotulo]):
+                continue  # é o acréscimo/supressão: sem valor atual, a pergunta vai ao caminho completo
             aceitos[campo] = {"valor": valor, "trecho_id": int(rotulo[1:])}
     return aceitos

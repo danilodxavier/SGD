@@ -87,6 +87,10 @@ def create_app(auto_index=True):
     def index():
         return FileResponse(FRONTEND_DIR / "index.html")
 
+    @app.get("/favicon.ico", include_in_schema=False)
+    def favicon():  # navegadores pedem /favicon.ico mesmo com o <link rel="icon">
+        return FileResponse(FRONTEND_DIR / "assets" / "favicon.svg", media_type="image/svg+xml")
+
     return app
 
 

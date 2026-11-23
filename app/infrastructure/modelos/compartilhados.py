@@ -34,9 +34,9 @@ def dispositivo_reranker():
     if escolha != "auto":
         return escolha
     try:
-        import torch
+        from app.infrastructure.modelos.embeddings import _cuda_ou_cpu
 
-        return "cuda" if torch.cuda.is_available() else "cpu"
+        return _cuda_ou_cpu()
     except ImportError:
         return "cpu"
 

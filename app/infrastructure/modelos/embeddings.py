@@ -8,6 +8,7 @@ import logging
 import urllib.request
 
 from app.core.config import settings  # garante HF_HOME/TORCH_HOME no projeto antes de importar torch
+from app.infrastructure.modelos.thread_principal import na_thread_principal
 
 log = logging.getLogger("sadgd.embeddings")
 MODELO_PADRAO = "BAAI/bge-m3"
@@ -40,6 +41,13 @@ def liberar_gpu_ollama(url=None, timeout=10):
         return []
 
 
+@na_thread_principal
+def _cuda_ou_cpu():
+    import torch
+
+    return "cuda" if torch.cuda.is_available() else "cpu"
+
+
 class BgeM3Embedder:
     dimensao = 1024
 
@@ -52,9 +60,7 @@ class BgeM3Embedder:
     @property
     def dispositivo(self):
         if self._dispositivo is None:
-            import torch
-
-            self._dispositivo = "cuda" if torch.cuda.is_available() else "cpu"
+            self._dispositivo = _cuda_ou_cpu()
         return self._dispositivo
 
     def _carregar(self):
@@ -71,6 +77,7 @@ class BgeM3Embedder:
             self._modelo.max_seq_length = self._max_tokens
         return self._modelo
 
+    @na_thread_principal  # torch só na thread principal (ver thread_principal.py)
     def embed(self, textos):
         modelo = self._carregar()
         try:
@@ -87,6 +94,7 @@ class BgeM3Embedder:
             return self.embed(textos)
         return vetores.astype("float32").tolist()
 
+    @na_thread_principal
     def liberar(self):
         """Libera a VRAM após a indexação (o LLM volta a ter a GPU inteira)."""
         if self._modelo is not None and self.dispositivo == "cuda":
