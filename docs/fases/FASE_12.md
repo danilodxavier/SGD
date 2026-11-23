@@ -402,3 +402,17 @@ de aplicativos do usuário (navegadores, Docker/WSL), não do SAD-GD — fechá-
 8 mil tokens não cabe em 6 GB na GTX 1660 (sem bf16), o golden set acadêmico tem 100 perguntas (superajuste e
 vazamento entre validação e teste) e o acervo real não pode ser rotulado pelo agente. A "calibração" segue pelo ciclo
 medir → ajustar → regressão (ADR do aprendizado: RAG + prompts + precedentes).
+
+**Experimentos seguintes (mesma rodada):**
+
+| Experimento | Resultado | Decisão |
+|---|---|---|
+| Repetição da F1 com a mesma configuração (`fase12_kv_q8b`) | Exatidão 0,923, recusa 1,00, citação 0,954, precisão das citações 0,700; **p50 9,7 s**. As 3 execuções idênticas deram p50 9,7 / 14,2 / 20,7 s com os mesmos tokens: a 1ª rodou com o modelo de teste de 28 camadas ainda residente | Latência da F1 depende da carga da máquina; qualidade estável (exatidão 0,92–0,95) |
+| 2 aberturas por pergunta em vez de 3 (`fase12_ab2`) | Tokens de entrada 3.009 → 3.008 (sem efeito: o limite de 12 trechos já corta), exatidão 0,923 | Sem ganho |
+| `OLLAMA_NUM_PARALLEL=2` (especialistas atendidos ao mesmo tempo) (`fase12_f2_par2`) | 24 camadas na GPU (KV dobrado); geração isolada 26,7 → 24,9 tok/s; **F2 p50 121 → 154 s**, recall de documentos 0,639 → 0,583 | Rejeitado (1 fila mantida) |
+
+**Onde está o tempo da decisão** (`fase12_f2_kv_q8`, tempos por nó): o tempo de cada especialista inclui a espera na
+fila do Ollama (os nós rodam em paralelo, o Ollama atende um por vez); na prática ≈ 32 s por especialista e ≈ 36 s no
+relator, quase tudo leitura e geração do LLM. O nó `contexto_f2` de 30–65 s em 2 itens é artefato da avaliação
+(`avaliar_f2.py` carrega bge-m3 e reranker dos precedentes na CPU; o servidor usa os modelos compartilhados, com o
+reranker na GPU).

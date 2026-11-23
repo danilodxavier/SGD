@@ -1,0 +1,40 @@
+{
+  "f2_sadgd-qwen2.5-7b__ctx800": {
+    "n": 6,
+    "erros": 0,
+    "rota_f2": 1.0,
+    "agentes_precisao": 0.8571,
+    "agentes_recall": 0.6667,
+    "pareceres_por_consulta": 2.3333,
+    "schema_pareceres_bruto": 1.0,
+    "schema_pareceres_reparado": 1.0,
+    "schema_relator": 1.0,
+    "afirmacoes_removidas_por_consulta": 0.0,
+    "recall_documentos": 0.5833,
+    "precisao_documentos": 0.4722,
+    "com_alternativas": 1.0,
+    "com_riscos": 1.0,
+    "com_aviso": 1.0,
+    "confianca_media": 0.7333,
+    "rf20_completo": 1.0,
+    "rf20_todos_preenchidos": 0.8333,
+    "rf20_por_elemento": {
+      "alternativas": 1.0,
+      "riscos": 1.0,
+      "base_legal": 1.0,
+      "precedentes": 0.8333,
+      "confianca": 1.0,
+      "aviso": 1.0
+    },
+    "com_precedentes": 0.8333,
+    "base_legal_media": 3.5,
+    "latencia_ms": {
+      "p50": 153831,
+      "p95": 184582
+    },
+    "tokens_medios": {
+      "entrada": 15984.0,
+      "saida": 1912.8333
+    }
+  }
+}

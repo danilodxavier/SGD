@@ -171,6 +171,9 @@ entrada. O benefício decisivo está no acervo real, onde os trechos longos esto
 | 2026-11-17 | fase10_cache | golden set | Limiar do cache semântico | maior par diferente 0,883 → limiar 0,93 |
 | 2026-11-17 | fase10_fidelidade | validação (calibração) + teste | LLM-juiz Llama 3.1 8B | κ 0,71; faithfulness 0,964 adjudicada; alucinação 5,4% |
 | 2026-11-17 | fase11 (F2 Gemini v1) | validação + teste (21) | Especialistas e relator no Gemini 3.5 Flash-Lite | schema relator 0,333 (`consensos` em objeto); p95 213 s |
+| 2026-11-23 | fase12_f2_par2 | validação (6 F2) | `OLLAMA_NUM_PARALLEL=2` | p50 121 → 154 s; recall docs 0,639 → 0,583; **rejeitado**. Ver `fases/FASE_12.md` §18 |
+| 2026-11-22 | fase12_ab2 | validação (47 F1, com verificador) | 2 aberturas em vez de 3 | Tokens 3.009 → 3.008 (sem efeito); exatidão 0,923; sem ganho |
+| 2026-11-22 | fase12_kv_q8b | validação (47 F1, com verificador) | Repetição de `fase12_kv_q8` | Exatidão 0,923; recusa 1,00; citação 0,954; precisão das citações 0,700; p50 9,7 s (variação 9,7–20,7 s entre execuções idênticas) |
 | 2026-11-22 | fase12_f2_kv_q8 | validação (6 F2) | Ollama com flash attention + cache de contexto q8_0 | p50 150 → 121 s (−19%); RF-20 1,00 =; recall docs 0,639 =; precisão 0,511 → 0,517; schema bruto 0,857 (reparado 1,00). Ver `fases/FASE_12.md` §18 |
 | 2026-11-22 | fase12_kv_q8 | validação (47 F1, com verificador) | Ollama com flash attention + cache de contexto q8_0 (geração 23,8 → 26,7 tok/s) | Exatidão 0,923 → 0,949; recusa 1,00 =; conflito 1,00 =; citação 0,954 =; alucinação 0 =; precisão das citações 0,716 → 0,684; **adotado**. Ver `fases/FASE_12.md` §18 |
 | 2026-11-22 | fase12_contexto_doc | validação (47 F1, com verificador) | Ficha do documento uma vez por documento (bloco DOCUMENTO) | Exatidão 0,923 =; tokens −3%; **recusa 1,00 → 0,75** (V036, confirmado isolado com o mesmo modelo); **rejeitado e revertido**. Ver `fases/FASE_12.md` §17 |
