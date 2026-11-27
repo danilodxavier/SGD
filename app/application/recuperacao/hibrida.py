@@ -10,6 +10,7 @@ from app.application.portas import EmbeddingPort, RerankerPort, ResultadoBusca, 
 from app.application.recuperacao.aberturas import com_aberturas
 from app.application.recuperacao.regras import (
     TrechoRecuperado,
+    _sem_acento,
     consulta_fts,
     filtrar_vigencia,
     fundir_rrf,
@@ -108,6 +109,43 @@ class RecuperadorHibrido:
         if self.aberturas and selecionados and hasattr(self.repo, "iniciais"):
             selecionados = com_aberturas(selecionados, self.repo, self.aberturas)
         return ResultadoRecuperacao(pergunta, selecionados, historico[:k], termos, tempos)
+
+
+PRE_RERANK_DENTRO = 16
+MAX_TRECHOS_DENTRO = 600  # documentos-chave de um contrato: 3–170 trechos no acervo real
+
+
+def recuperar_dentro(repositorio, reranker, pergunta: str, documentos: set, k: int = 4) -> list:
+    """Busca DENTRO de poucos documentos (os documentos-chave de um contrato): lê todos os trechos deles, pré-ordena
+    pelos termos da pergunta (empate: início do documento, onde ficam partes, número e objeto) e reclassifica os
+    PRE_RERANK_DENTRO melhores com o reranker. A busca com escopo filtra os 400 melhores do acervo inteiro e perdia
+    esses documentos para cópias do contrato em processos de pagamento (rodada 18: documento certo em 41%)."""
+    if not documentos or not hasattr(repositorio, "iniciais"):
+        return []
+    por_doc = repositorio.iniciais(sorted(documentos), ate_ordem=MAX_TRECHOS_DENTRO)
+    todos = [t for lista in por_doc.values() for t in lista]
+    if not todos:
+        return []
+    termos = {_sem_acento(t) for t in termos_da_pergunta(pergunta)}
+
+    def nota(par):
+        ordem, t = par
+        texto = _sem_acento(t.texto.lower())
+        return (-sum(1 for x in termos if x in texto), ordem)
+
+    posicao = {t.id: i for lista in por_doc.values() for i, t in enumerate(lista)}
+    pre = [t for _, t in sorted(((posicao[t.id], t) for t in todos), key=nota)[:PRE_RERANK_DENTRO]]
+    if reranker:
+        for t, n in zip(pre, reranker.pontuar(pergunta, [_texto_rerank(t) for t in pre]), strict=True):
+            t.pontuacao = float(n)
+        pre.sort(key=lambda t: -t.pontuacao)
+    # a abertura de cada documento-chave (preâmbulo do contrato, extrato: partes, nº, objeto, valor) vem sempre;
+    # validação real: valor no contexto 80% (só reranker, 6 trechos) → 86% (aberturas + reranker, 6) → 92% (8)
+    aberturas = [lista[0] for lista in por_doc.values() if lista]
+    for a in aberturas:
+        a.pontuacao = max(a.pontuacao, next((t.pontuacao for t in pre if t.id == a.id), 0.0))
+    ids = {a.id for a in aberturas}
+    return (aberturas + [t for t in pre if t.id not in ids])[:k]
 
 
 def diversificar(trechos, k, max_por_documento):

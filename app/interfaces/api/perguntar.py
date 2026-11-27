@@ -20,6 +20,7 @@ router = APIRouter(prefix="/api/sadgd", dependencies=[Depends(require_login)], t
 
 _lock = threading.Lock()
 _componentes = {}
+VERSAO_RESPOSTA = "r3-precisao-ficha"  # formato do payload guardado no cache semântico
 
 
 class Pergunta(BaseModel):
@@ -67,7 +68,7 @@ def construir_orquestrador(tracer=None):
     """Monta o pipeline real (recuperação híbrida + rerank, ResponderF1 verificado, especialistas no Ollama)."""
     from app.application.agentes.orquestrador import Orquestrador
     from app.application.agentes.verificador import verificar
-    from app.application.recuperacao.hibrida import RecuperadorHibrido
+    from app.application.recuperacao.hibrida import RecuperadorHibrido, recuperar_dentro
     from app.application.respostas.f1 import ResponderF1
     from app.infrastructure.llm.openai_compativel import OpenAICompativelAdapter
     from app.infrastructure.llm.provedores import llm_f2_remoto
@@ -85,12 +86,17 @@ def construir_orquestrador(tracer=None):
     llm = OpenAICompativelAdapter("ollama", settings.ollama_url + "/v1", settings.llm_modelo_padrao, timeout=300)
     grafo = RepositorioGrafoSqlite(_fabrica_sem_vetores)
     contexto = int(os.environ.get("SADGD_CONTEXTO_MAX_CHARS", "1200"))  # compressão na F1 e na F2 (A3)
-    f1 = ResponderF1(llm, conflitos=grafo, verificador=verificar, contexto_max_chars=contexto)
+    # recusa sem LLM quando nenhum trecho é relevante (nota do reranker; calibração em FASE_12.md §22)
+    limiar = float(os.environ.get("SADGD_LIMIAR_RELEVANCIA", "0.02"))
+    f1 = ResponderF1(llm, conflitos=grafo, verificador=verificar, contexto_max_chars=contexto,
+                     limiar_relevancia=limiar)
     return Orquestrador(lambda p, k, **kw: rec.recuperar(p, k=k, **kw).trechos, f1, llm, linha_do_tempo=grafo.resumo,
                         precedentes=lambda p, docs: memoria.precedentes(p, documento_ids=docs), tracer=tracer,
                         llm_f2_remoto=llm_f2_remoto(), envio_externo_permitido=settings.ai_allow_remote,
                         contexto_max_chars=contexto, fichas=fichas().responder, escopo_contrato=fichas().escopo,
-                        ficha_decisao=fichas().contexto_decisao)
+                        ficha_decisao=fichas().contexto_decisao, documentos_chave=fichas().documentos_chave,
+                        ficha_f1=fichas().contexto_f1,
+                        recuperar_dentro=lambda p, docs, k: recuperar_dentro(rec.repo, rec.reranker, p, docs, k))
 
 
 def fichas():
@@ -123,12 +129,15 @@ def serializar(estado):
     if decisao.rota == "F2":
         from app.application.decisoes.recomendacao import elementos_rf20
 
-        base.update(confianca=r.dados.get("confianca"), recomendacao=r.dados, valido=r.valido,
-                    elementos_rf20=elementos_rf20(r.dados),
-                    pareceres=[{"agente": p.agente, "valido": p.valido_reparado, "parecer": p.dados}
-                               for p in r.pareceres])
+        dados = {k: v for k, v in r.dados.items() if k != "confianca_modelo"}  # autoavaliação: só na auditoria
+        base.update(confianca=dados.get("confianca"), criterio_confianca=dados.get("criterio_confianca", []),
+                    recomendacao=dados, valido=r.valido, elementos_rf20=elementos_rf20(dados),
+                    pareceres=[{"agente": p.agente, "valido": p.valido_reparado, "parecer": p.dados,
+                                "criterio_confianca": getattr(p, "criterio_confianca", [])} for p in r.pareceres])
     else:
-        base.update(classificacao=r.classificacao, confianca=r.confianca, lacunas=r.lacunas)
+        base.update(classificacao=r.classificacao, confianca=r.confianca, lacunas=r.lacunas,
+                    criterio_confianca=list(getattr(r, "criterio_confianca", []) or []),
+                    trechos_examinados=getattr(r, "trechos_examinados", 0))
     return base
 
 
@@ -149,7 +158,8 @@ def processar(pergunta, usuario_id, ip=None, usar_cache=True, ao_mudar_etapa=Non
     consulta_id = auditoria.iniciar(usuario_id, pergunta, ip)
     fabrica = _componentes.get("fabrica_orquestrador", construir_orquestrador)
     inicio = time.perf_counter()
-    versao = RepositorioCacheSqlite(_fabrica_sem_vetores).versao_do_acervo()
+    # acervo + formato da resposta: mudar o formato (ex.: confiança do sistema) invalida o que estava em cache
+    versao = f"{RepositorioCacheSqlite(_fabrica_sem_vetores).versao_do_acervo()}|{VERSAO_RESPOSTA}"
     cache = cache_semantico() if usar_cache else None
     if cache is not None:
         reaproveitada = cache.buscar(pergunta, versao)

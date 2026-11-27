@@ -259,7 +259,8 @@ def test_ficha_do_documento_vai_no_cabecalho_do_trecho():
     t.numero, t.processo = "012/2023", "PROC-77"
     cabecalho = montar_contexto([t]).split("\n", 1)[0]
     assert "tipo: contrato" in cabecalho and "nº 012/2023" in cabecalho and "processo: PROC-77" in cabecalho
-    assert "pasta: contratos/CT 012-2023 EMPRESA X/aditivos" in cabecalho
+    assert "pasta: contratos/CT 012-2023 EMPRESA X |" in cabecalho  # 2 níveis: o contrato (rodada 18: tokens)
+    assert "aditivos" not in cabecalho
     assert "a.pdf" not in cabecalho.split("pasta:")[1]
 
 
@@ -302,3 +303,34 @@ def test_detalhe_reprovado_sai_sem_nova_chamada_e_resposta_direta_reprovada_ganh
     llm2 = LLMLeituras(direta_ruim, saida())
     r2 = ResponderF1(llm2, verificador=verificar).responder("Qual o valor global?", TRECHOS)
     assert len(llm2.todas) == 2 and "verificador_nova_tentativa" in r2.observacoes and "1.200.000,00" in r2.resposta
+
+
+def test_numero_de_outro_trecho_do_contexto_tem_a_citacao_reparada_em_vez_de_remover_a_frase():
+    """Rodada 18: "original R$ 1.200.000,00; atualizado R$ 1.500.000,00 [T11]" citava só um trecho e a frase (com o
+    dado pedido) era removida; o número está literalmente em T13, que a resposta já cita em outra frase."""
+    from app.application.agentes.verificador import verificar
+
+    t13 = tr(13, "Fica acrescido o valor, passando o valor global a R$ 1.500.000,00.", dispositivo="aditivo")
+    llm = LLMFalso(saida(resposta="O valor global atualizado é R$ 1.500.000,00 [T13].", fontes=["T11", "T13"],
+                         detalhes=["O valor original era R$ 1.200.000,00; depois, R$ 1.500.000,00 [T11]."]))
+    r = ResponderF1(llm, verificador=verificar).responder("Qual o valor global?", TRECHOS + [t13])
+    assert "R$ 1.200.000,00" in r.resposta and "citacao_reparada" in r.observacoes
+    assert {t.id for t in r.fontes} == {11, 13}
+
+
+def test_reparo_nao_traz_trecho_que_a_resposta_nao_cita():
+    """Golden set V036: a citação nova "sustentava" uma dedução (data de assinatura como data de publicação)."""
+    from app.application.agentes.verificador import verificar
+
+    t13 = tr(13, "Publicado em 05/04/2023.", dispositivo="extrato")
+    llm = LLMFalso(saida(resposta="O valor global é R$ 1.200.000,00, publicado em 05/04/2023 [T11].", fontes=["T11"]))
+    r = ResponderF1(llm, verificador=verificar).responder("Qual o valor global?", TRECHOS + [t13])
+    assert "citacao_reparada" not in r.observacoes and 13 not in {t.id for t in r.fontes}
+
+
+def test_detalhe_com_numero_diferente_nao_e_repeticao_da_resposta():
+    from app.application.respostas.f1 import _com_detalhes
+
+    texto = _com_detalhes("O valor global atualizado é R$ 1.500.000,00 [T13].",
+                          ["O valor global original é R$ 1.200.000,00 [T11]."], {"T11", "T13"})
+    assert "1.200.000,00" in texto

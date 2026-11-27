@@ -8,12 +8,14 @@ Salvaguardas determinísticas (independentes do modelo):
 """
 import json
 import re
+import unicodedata
 from dataclasses import dataclass, field, replace
 from functools import cache
 from pathlib import Path
 from typing import Protocol
 
 from app.application.portas import LLMPort
+from app.domain import confianca as conf
 from app.domain.politicas import MENSAGEM_AUSENCIA, MENSAGEM_CONFLITO, Classificacao
 
 
@@ -44,7 +46,15 @@ RE_CITACAO = re.compile(r"\bT(\d+)\b")
 CAMPOS_F1 = ("resposta", "classificacao", "confianca", "fontes", "lacunas")
 # v4 (acervo real, 2026-11-21): "1 a 4 frases" produzia respostas secas, "recortes"; a equipe pediu respostas que
 # expliquem o que os documentos dizem. Agora: resposta direta primeiro e, em seguida, os detalhes que a sustentam.
-INSTRUCAO_F1 = ("Modo F1: comece pela resposta direta à pergunta e, em seguida, apresente os detalhes dos documentos "
+# v6 (rodada 18, gabarito real das fichas): respostas "sustentadas" mas com o dado errado (ex.: o órgão contratante no
+# lugar da contratada) e longas demais — a geração de 150–330 tokens custava metade do tempo. Agora: o dado pedido,
+# literal, no início da resposta; papéis explícitos; no máximo 3 detalhes.
+INSTRUCAO_F1 = ("Modo F1: responda EXATAMENTE ao que foi perguntado: a \"resposta\" começa pelo dado pedido (nome, "
+                "número, data, valor, CNPJ, objeto) copiado literalmente do trecho, sem rodeios. Atenção aos papéis: "
+                "CONTRATANTE é o órgão público; CONTRATADA é a empresa ou pessoa contratada; fiscal e gestor são "
+                "servidores designados. Datas de assinatura, publicação, início e término são fatos diferentes. "
+                "Se houver valor original e valor atualizado por aditivo, informe os dois. "
+                "Em seguida, apresente os detalhes dos documentos "
                 "que a sustentam e que interessam à gestão (documento e nº, partes, objeto, datas, prazos, valores, "
                 "situação) no campo \"detalhes\", citando os trechos no texto como [T<id>] "
                 "e listando os mesmos ids em \"fontes\". Se a informação não estiver nos trechos, use "
@@ -68,7 +78,7 @@ INSTRUCAO_HISTORICO = ("A pergunta é sobre situação ou histórico: use a LINH
 # para os detalhes (lista) rende respostas completas. O texto final = resposta + detalhes (montado em `_validar`).
 # Detalhe sem citação válida é descartado no código e cada número precisa constar do trecho citado na mesma frase
 # (validação: sem essa disciplina a alucinação numérica foi de 0,023 para 0,231).
-DETALHES = ("\"detalhes\" (lista de até 5 frases curtas que ajudam a responder à pergunta — documento e nº, partes, "
+DETALHES = ("\"detalhes\" (lista de até 3 frases curtas, só as que sustentam a resposta — documento e nº, partes, "
             "objeto, datas, prazos, valores, situação —, cada uma terminando com a citação [T<id>] do trecho que "
             "contém literalmente aquele fato; não repita a resposta; lista vazia se for ausência)")
 ORDEM_SAIDA = ("Responda SOMENTE com um objeto JSON com as chaves nesta ordem: \"resposta\" (a resposta direta, "
@@ -84,7 +94,7 @@ ORDEM_EVIDENCIAS = ("Responda SOMENTE com um objeto JSON com as chaves nesta ord
                     "ids), \"classificacao\" "
                     "(fato|inferencia|conflito|ausencia — ausencia só se \"evidencias\" estiver vazia), "
                     "\"confianca\" (0 a 1), \"lacunas\" (lista).")
-VERSAO_INSTRUCAO = 5
+VERSAO_INSTRUCAO = 6
 
 
 def _corpo_prompt(arquivo: str) -> str:
@@ -120,36 +130,78 @@ def _frases(texto: str) -> list[str]:
 PALAVRAS_VAZIAS = {"qual", "quais", "quando", "como", "onde", "para", "pela", "pelo", "pelos", "pelas", "sobre",
                    "entre", "este", "esta", "esse", "essa", "isso", "aquele", "ainda", "também", "após", "ate", "até",
                    "devo", "deve", "pode", "seria", "foram", "está", "estão", "contrato", "documento", "documentos"}
+PALAVRAS_VAZIAS_SEM_ACENTO = {unicodedata.normalize("NFKD", p).encode("ascii", "ignore").decode()
+                              for p in PALAVRAS_VAZIAS}
 
 
 def _termos(texto: str) -> set:
-    return {p for p in re.findall(r"[\wÀ-ÿ/.-]{4,}", texto.lower()) if p not in PALAVRAS_VAZIAS}
+    """Palavras de 4+ letras, sem acento. Por radical (5 letras) foi pior: "contr" de "contratada" casa com
+    "contrato", presente em quase toda frase, e o objeto saía do contexto (rodada 18: 14 → 8 de 18)."""
+    sem = unicodedata.normalize("NFKD", texto.lower()).encode("ascii", "ignore").decode()
+    return {p for p in re.findall(r"[a-z0-9/.-]{4,}", sem) if p not in PALAVRAS_VAZIAS_SEM_ACENTO}
+
+
+# intenção da pergunta → padrão do dado procurado no trecho (rodada 18: a frase com a resposta muitas vezes não
+# repete as palavras da pergunta — o CNPJ não traz a palavra "CNPJ" ao lado, a data de assinatura vem como
+# "Cuiabá, 10 de maio de 2022" — e a compressão por termos descartava o valor: de 92% para 55–76% no contexto)
+RE_DATA = r"\b\d{1,2}\s*[/.-]\s*\d{1,2}\s*[/.-]\s*\d{2,4}\b|\b\d{1,2}[ºo°]?\s+de\s+[a-zç]+\s+de\s+\d{4}"
+INTENCOES = [
+    (re.compile(r"\bvalor|quanto custa|pre[cç]o|montante|quanto (?:foi|é|e) pago", re.I), re.compile(r"R\$\s*\d")),
+    (re.compile(r"\bquando\b|\bdata\b|assinad|assinatura|vig[eê]n|vigor|prazo|t[ée]rmin|at[ée] quando|venc", re.I),
+     re.compile(RE_DATA + r"|\b\d+\s*\(?[a-z ]*\)?\s*(?:meses|dias|anos)\b", re.I)),
+    (re.compile(r"cnpj", re.I), re.compile(r"\d{2}\.?\d{3}\.?\d{3}\s*/\s*\d{4}\s*-?\s*\d{2}")),
+    (re.compile(r"empresa|contratad|fornecedor|raz[aã]o social", re.I),
+     re.compile(r"\b(?:LTDA|EIRELI|EPP|S\.?/A|S\.A\.)\b|CONTRATADA|[Cc]ontratada|CNPJ")),
+    (re.compile(r"\bn[uú]mero\b|\bn[ºo°]\b", re.I), re.compile(r"\bn[ºo°.]*\s*\d{1,4}\s*/\s*\d{4}", re.I)),
+]  # só dados com FORMATO próprio: palavras como "objeto"/"fiscal" estão em dezenas de frases e empatariam todas
+
+
+def _padroes(pergunta: str) -> list:
+    return [padrao for intencao, padrao in INTENCOES if intencao.search(pergunta or "")]
+
+
+def _janela(unidade: str, padroes, alvo, limite: int) -> str:
+    """Recorte literal de uma frase longa demais em torno do 1º dado procurado (ou do 1º termo da pergunta)."""
+    pos = min((m.start() for p in padroes for m in [p.search(unidade)] if m), default=None)
+    if pos is None:
+        sem = unicodedata.normalize("NFKD", unidade.lower()).encode("ascii", "ignore").decode()
+        pos = min((sem.find(a) for a in alvo if sem.find(a) >= 0), default=0)
+    ini = max(0, pos - limite // 3)
+    trecho = unidade[ini:ini + limite]
+    return ("[…] " if ini else "") + trecho.strip() + (" […]" if ini + limite < len(unidade) else "")
 
 
 def comprimir(texto: str, pergunta: str | None, max_chars: int) -> str:
     """Compressão do contexto orientada pela pergunta (A3; prompt mestre §5): trechos reais sem estrutura chegam a
-    2.400 caracteres e o LLM local lê o prompt a ≈ 130 tokens/s. Mantém, na ordem original, as frases que mais
-    compartilham termos com a pergunta, até `max_chars`; cortes viram "[…]". O texto mantido é literal."""
+    2.400 caracteres e o LLM local lê o prompt a ≈ 135 tokens/s. Mantém, na ordem original, as frases que mais
+    interessam à pergunta — termos em comum (por radical) e, com peso maior, o TIPO de dado pedido (valor, data,
+    CNPJ, razão social, nº…) — até `max_chars`; frase longa demais entra recortada em torno do dado. Cortes viram
+    "[…]". O texto mantido é literal."""
     texto = texto.strip()
     if not max_chars or len(texto) <= max_chars:
         return texto
     unidades = [u for linha in texto.splitlines() for u in _frases(linha)]
-    alvo = _termos(pergunta or "")
-    notas = [(len(alvo & _termos(u)), -i) for i, u in enumerate(unidades)]
-    if not alvo or max(notas)[0] == 0:
+    alvo, padroes = _termos(pergunta or ""), _padroes(pergunta or "")
+    notas = [(len(alvo & _termos(u)) + 3 * sum(1 for p in padroes if p.search(u)), -i) for i, u in enumerate(unidades)]
+    if max(notas)[0] == 0:
         return texto[:max_chars].rsplit(" ", 1)[0] + " […]"
-    escolhidas, total = set(), 0
-    for _, menos_i in sorted(notas, reverse=True):
-        i = -menos_i
-        if notas[i][0] == 0 or total + len(unidades[i]) + 4 > max_chars:
-            continue
-        escolhidas.add(i)
-        total += len(unidades[i]) + 4
+    escolhidas, total = {}, 0
+    for nota, menos_i in sorted(notas, reverse=True):
+        i, resta = -menos_i, max_chars - total
+        if nota == 0 or resta < 40:
+            break
+        u = unidades[i]
+        if len(u) + 4 > resta:
+            if escolhidas or not any(p.search(u) for p in padroes):
+                continue  # frase longa sem o dado procurado: fica de fora (como antes)
+            u = _janela(u, padroes, alvo, resta - 10)  # frase longa COM o dado: entra recortada em torno dele
+        escolhidas[i] = u
+        total += len(u) + 4
     partes, anterior = [], -1
     for i in sorted(escolhidas):
         if i != anterior + 1:
             partes.append("[…]")
-        partes.append(unidades[i])
+        partes.append(escolhidas[i])
         anterior = i
     if anterior != len(unidades) - 1:
         partes.append("[…]")
@@ -166,7 +218,10 @@ def montar_contexto(trechos, pergunta: str | None = None, max_chars: int | None 
             t.titulo, f"tipo: {t.tipo_documental}" if t.tipo_documental else None,
             f"nº {numero}" if numero else None, f"processo: {processo}" if processo else None,
             t.dispositivo, f"pág. {t.pagina}" if t.pagina else None, t.data_documento,
-            f"pasta: {pasta}" if pasta else None, f"origem: {t.corpus_origem}") if x)
+            # pasta: só os 2 primeiros níveis (identificam o contrato e o fornecedor); os internos e "origem: real"
+            # somavam ≈ 1.000 tokens por pergunta no acervo real (≈ 7 s de leitura) sem ajudar a responder
+            f"pasta: {'/'.join(pasta.split('/')[:2])}" if pasta else None,
+            f"origem: {t.corpus_origem}" if t.corpus_origem != "real" else None) if x)
         blocos.append(f"[{t.rotulo}] ({meta})\n{comprimir(t.texto, pergunta, max_chars or 0)}")
     return "\n\n".join(blocos)
 
@@ -213,12 +268,47 @@ def _sem_detalhes_reprovados(resposta, reprovadas):
     texto = corpo + ("\n" + "\n".join(itens) if itens else "")
     citados = {f"T{n}" for n in RE_CITACAO.findall(texto)}
     fontes = [t for t in resposta.fontes if t.rotulo in citados] or resposta.fontes
-    return replace(resposta, resposta=texto, fontes=fontes, confianca=min(resposta.confianca, 0.8),
+    return replace(resposta, resposta=texto, fontes=fontes,
                    observacoes=resposta.observacoes + ["verificador_detalhes_removidos"])
 
 
+def _reparar_citacoes(resposta, verificacao, trechos):
+    """Frase reprovada só porque um número dela está em OUTRO trecho do contexto (não no que ela cita): acrescenta a
+    citação desse trecho e o inclui nas fontes. Rodada 18: "valor original R$ X; atualizado R$ Y [T1]" citava só o
+    trecho do original e a frase inteira era removida — com ela, o dado pedido. Nada sem fonte literal passa: o
+    verificador confere de novo. None se não houver o que reparar."""
+    from app.application.agentes.verificador import suporte
+    from app.application.avaliacao.metricas_resposta import numeros_nao_suportados
+
+    texto, fontes, mudou = resposta.resposta, list(resposta.fontes), False
+    # só trechos que a resposta JÁ cita em outra frase: reparar com um trecho novo deixava passar dedução (golden set
+    # V036: a data de assinatura apresentada como de publicação ganhava a citação do trecho da assinatura)
+    citados_fora = {f"T{n}" for f in _frases(texto) for n in RE_CITACAO.findall(f)}
+    for p in verificacao.problemas:
+        m = re.search(r"'(.+?)'", p.detalhe)
+        if p.tipo != "numero_sem_suporte" or not m or p.frase not in texto:
+            continue
+        da_frase = {f"T{n}" for n in RE_CITACAO.findall(p.frase)}
+        candidatos = [t for t in trechos if t.rotulo in citados_fora - da_frase]
+        origem = next((t for t in candidatos if not numeros_nao_suportados(m.group(1), [suporte(t)])), None)
+        if origem is None or f"[{origem.rotulo}]" in p.frase:
+            continue
+        nova = re.sub(r"(\.?)\s*$", rf" [{origem.rotulo}]\1", p.frase, count=1)
+        texto = texto.replace(p.frase, nova, 1)
+        if origem not in fontes:
+            fontes.append(origem)
+        mudou = True
+    if not mudou:
+        return None
+    return replace(resposta, resposta=texto, fontes=fontes, observacoes=resposta.observacoes + ["citacao_reparada"])
+
+
 def _parecidas(a: str, b: str, limiar: float = 0.6) -> bool:
-    """Mesmo fato com outras palavras (validação: o detalhe repetia a resposta direta reescrita)."""
+    """Mesmo fato com outras palavras (validação: o detalhe repetia a resposta direta reescrita). Frases com números
+    diferentes nunca são o mesmo fato (rodada 18: "valor original R$ X" era descartado como repetição de "valor
+    atualizado R$ Y")."""
+    if set(re.findall(r"\d+", a)) - set(re.findall(r"\d+", b)):
+        return False
     if a in b or b in a:
         return True
     pa, pb = set(a.split()), set(b.split())
@@ -233,9 +323,11 @@ def _rotulo(f) -> str:
 
 @dataclass
 class RespostaF1:
+    """`confianca`: calculada pelo sistema ao final (app/domain/confianca.py), None em ausência/conflito;
+    `confianca_modelo`: autoavaliação declarada pelo LLM — só para a auditoria, não entra no cálculo."""
     resposta: str
     classificacao: str
-    confianca: float
+    confianca: float | None
     fontes: list
     lacunas: list = field(default_factory=list)
     modelo: str | None = None
@@ -244,26 +336,52 @@ class RespostaF1:
     latencia_ms: int = 0
     observacoes: list = field(default_factory=list)
     bruto: dict | None = None
+    confianca_modelo: float | None = None
+    criterio_confianca: list = field(default_factory=list)
+    trechos_examinados: int = 0
 
 
 class ResponderF1:
     def __init__(self, llm: LLMPort, *, max_tokens: int = 700, versao_prompt: int = 3,
-                 conflitos: ConflitosPort | None = None, verificador=None, contexto_max_chars: int = 0):
+                 conflitos: ConflitosPort | None = None, verificador=None, contexto_max_chars: int = 0,
+                 limiar_relevancia: float = 0.0):
+        """`limiar_relevancia`: nota mínima do reranker (0–1) para chamar o LLM; abaixo dela em TODOS os trechos, a
+        pergunta não trata de nada do acervo e é recusada sem LLM. 0 = desligado (só vale com notas do reranker)."""
         self.llm, self.max_tokens, self.versao = llm, max_tokens, versao_prompt
         self.contexto_max_chars = contexto_max_chars  # 0 = trechos inteiros (compressão desligada)
         self.conflitos = conflitos
         self.verificador = verificador  # callable(resposta, citados, pergunta) -> Verificacao
+        self.limiar_relevancia = limiar_relevancia
 
-    def responder(self, pergunta: str, trechos, *, linha_do_tempo: str = "", lista: bool = False) -> RespostaF1:
+    def responder(self, pergunta: str, trechos, *, linha_do_tempo: str = "", lista: bool = False,
+                  ficha: str = "", max_chars: int | None = None) -> RespostaF1:
         """`linha_do_tempo`: resumo do grafo para perguntas de situação/histórico; `lista`: pergunta que pede uma
-        relação de documentos (resposta em tópicos, trechos mais curtos para caber mais documentos)."""
+        relação de documentos (resposta em tópicos, trechos mais curtos para caber mais documentos); `ficha`: ficha
+        conferida do contrato citado (vai antes dos trechos); `max_chars`: limite por trecho (padrão: o do construtor).
+        A confiança é calculada pelo sistema no fim, a partir dos sinais registrados (verificador, leituras, fontes)."""
+        resposta = self._responder(pergunta, trechos, linha_do_tempo=linha_do_tempo, lista=lista, ficha=ficha,
+                                   max_chars=max_chars)
+        extras = (["sem_verificador"] if self.verificador is None else []) + ([] if ficha else ["leitura_sem_ficha"])
+        return conf.aplicar(resposta, "llm", trechos_examinados=len(trechos or []), sinais_extras=extras)
+
+    def _responder(self, pergunta, trechos, *, linha_do_tempo="", lista=False, ficha="", max_chars=None) -> RespostaF1:
         if not trechos:
-            return RespostaF1(MENSAGEM_AUSENCIA, Classificacao.AUSENCIA.value, 0.0, [],
+            return RespostaF1(MENSAGEM_AUSENCIA, Classificacao.AUSENCIA.value, None, [],
                               observacoes=["sem_trechos_recuperados"])
+        # com a ficha, o contrato foi identificado (e os trechos de origem não têm nota do reranker): sem o limiar
+        relevancia = max(getattr(t, "pontuacao", 1.0) for t in trechos)
+        if self.limiar_relevancia and not ficha and relevancia < self.limiar_relevancia:
+            # rodada 17 (2026-11-25): "Qual o nome do cachorro do prefeito?" levou 81 s (3 leituras do LLM) para
+            # recusar. Calibração: fora do domínio ≤ 0,011; F1 respondível ≥ 0,66 (acadêmico) e real ≥ 0,08
+            return RespostaF1(MENSAGEM_AUSENCIA, Classificacao.AUSENCIA.value, None, [],
+                              ["Nenhum dos trechos mais próximos da pergunta trata do assunto perguntado."],
+                              observacoes=["sem_trecho_relevante"])
         if self.conflitos is not None and (resposta := self._conflito(pergunta, trechos)):
             return resposta
-        max_chars = min(self.contexto_max_chars or 700, 700) if lista else self.contexto_max_chars
-        conteudo = f"PERGUNTA: {pergunta}\n\nTRECHOS:\n{montar_contexto(trechos, pergunta, max_chars)}"
+        if max_chars is None:
+            max_chars = min(self.contexto_max_chars or 700, 700) if lista else self.contexto_max_chars
+        conteudo = (f"PERGUNTA: {pergunta}\n\n" + (f"{ficha}\n\n" if ficha else "")
+                    + f"TRECHOS:\n{montar_contexto(trechos, pergunta, max_chars)}")
         if linha_do_tempo:
             conteudo += f"\n\nLINHA DO TEMPO (grafo documental):\n{linha_do_tempo}"
         usuario = {"role": "user", "content": conteudo}
@@ -312,6 +430,12 @@ class ResponderF1:
         v = self.verificador(resposta.resposta, resposta.fontes, pergunta)
         if v.aprovada:
             return resposta
+        reparada = _reparar_citacoes(resposta, v, trechos)
+        if reparada is not None:  # número literal de outro trecho do contexto: a citação certa é acrescentada
+            v = self.verificador(reparada.resposta, reparada.fontes, pergunta)
+            if v.aprovada:
+                return reparada
+            resposta = reparada
         enxuta = _sem_detalhes_reprovados(resposta, v.frases_reprovadas)
         if enxuta is not None:  # só detalhes reprovados: remove-os sem nova chamada ao LLM (≈ 26 s a menos)
             return enxuta
@@ -334,12 +458,13 @@ class ResponderF1:
         citados = {f"T{n}" for f in restantes for n in RE_CITACAO.findall(f)}
         fontes = [t for t in nova.fontes if t.rotulo in citados] or ([t for t in nova.fontes] if restantes else [])
         if not restantes or not fontes:
-            return RespostaF1(MENSAGEM_AUSENCIA, Classificacao.AUSENCIA.value, 0.0, [], modelo=nova.modelo,
+            return RespostaF1(MENSAGEM_AUSENCIA, Classificacao.AUSENCIA.value, None, [], modelo=nova.modelo,
+                              confianca_modelo=nova.confianca_modelo,
                               tokens_entrada=nova.tokens_entrada, tokens_saida=nova.tokens_saida,
                               latencia_ms=nova.latencia_ms,
                               observacoes=nova.observacoes + ["verificador_sem_afirmacao_sustentada"])
         nova.resposta = " ".join(restantes)
-        nova.fontes, nova.confianca = fontes, min(nova.confianca, 0.6)
+        nova.fontes = fontes
         nova.observacoes.append("verificador_frases_removidas")
         return nova
 
@@ -364,7 +489,7 @@ class ResponderF1:
                               f"({papel}) [{trecho.rotulo}]")
         linhas.append("É necessária conferência documental.")
         unicos = list({t.id: t for t in fontes}.values())
-        return RespostaF1("\n".join(linhas), Classificacao.CONFLITO.value, 0.9, unicos, modelo="regra-conflito",
+        return RespostaF1("\n".join(linhas), Classificacao.CONFLITO.value, None, unicos, modelo="regra-conflito",
                           observacoes=["conflito_detectado_no_grafo"])
 
     def _validar(self, dados, trechos, r) -> RespostaF1:
@@ -380,15 +505,15 @@ class ResponderF1:
         validos = [c for c in citados if c in por_rotulo]
         if len(validos) < len(citados):
             observacoes.append("citacoes_invalidas_descartadas")
-        try:
-            confianca = max(0.0, min(1.0, float(dados.get("confianca", 0.0))))
-        except (TypeError, ValueError):
-            confianca = 0.0
+        try:  # autoavaliação do modelo: só registrada na auditoria (o 7B local às vezes omite o campo)
+            declarada = max(0.0, min(1.0, float(dados["confianca"])))
+        except (KeyError, TypeError, ValueError):
+            declarada = None
         if classificacao != Classificacao.AUSENCIA.value and not validos:
             observacoes.append("resposta_factual_sem_citacao_valida")
             classificacao = Classificacao.AUSENCIA.value
         if classificacao == Classificacao.AUSENCIA.value:
-            texto, validos, confianca = MENSAGEM_AUSENCIA, [], min(confianca, 0.3)
-        return RespostaF1(texto, classificacao, confianca, [por_rotulo[c] for c in validos],
+            texto, validos = MENSAGEM_AUSENCIA, []
+        return RespostaF1(texto, classificacao, None, [por_rotulo[c] for c in validos],
                           list(dados.get("lacunas") or []), r.modelo, r.tokens_entrada, r.tokens_saida,
-                          r.latencia_ms, observacoes, dados)
+                          r.latencia_ms, observacoes, dados, confianca_modelo=declarada)

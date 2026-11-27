@@ -36,20 +36,28 @@ class AuditoriaSqlite:
         tokens_out = getattr(resposta, "tokens_saida", 0) + sum(p.tokens_saida for p in pareceres)
         classificacao = getattr(resposta, "classificacao", None) or (getattr(resposta, "dados", {}) or {}).get(
             "classificacao")
-        confianca = getattr(resposta, "confianca", None)
-        if confianca is None:
-            confianca = (getattr(resposta, "dados", {}) or {}).get("confianca")
+        # confiança calculada pelo sistema (NULL em ausência/conflito) + autoavaliação do LLM e critério do cálculo
+        dados = getattr(resposta, "dados", None) or {}
+        origem = resposta if hasattr(resposta, "criterio_confianca") else None
+        confianca = origem.confianca if origem is not None else dados.get("confianca")
+        confianca_modelo = origem.confianca_modelo if origem is not None else dados.get("confianca_modelo")
+        criterio = origem.criterio_confianca if origem is not None else dados.get("criterio_confianca")
         conn = self._conexao()
         try:
             conn.execute("UPDATE consultas SET rota = ?, agentes = ?, classificacao = ?, confianca = ?, "
+                         "confianca_modelo = ?, criterio_confianca = ?, "
                          "tokens_entrada = ?, tokens_saida = ?, latencia_ms = ? WHERE id = ?",
                          (decisao.rota if decisao else None, json.dumps(decisao.agentes if decisao else []),
-                          classificacao, confianca, tokens_in, tokens_out, latencia_ms, consulta_id))
+                          classificacao, confianca, confianca_modelo,
+                          json.dumps(criterio, ensure_ascii=False) if criterio else None,
+                          tokens_in, tokens_out, latencia_ms, consulta_id))
             conn.executemany("INSERT INTO consulta_fontes (consulta_id, trecho_id, aprovada_verificador) "
                              "VALUES (?, ?, 1)", [(consulta_id, t.id) for t in getattr(resposta, "fontes", [])])
             conn.executemany("INSERT INTO pareceres (consulta_id, agente, versao_prompt, saida_json, valido) "
                              "VALUES (?, ?, 'v1', ?, ?)",
-                             [(consulta_id, p.agente, json.dumps(p.dados, ensure_ascii=False), int(p.valido_reparado))
+                             [(consulta_id, p.agente,
+                               json.dumps({**p.dados, "confianca_modelo": getattr(p, "confianca_modelo", None)},
+                                          ensure_ascii=False), int(p.valido_reparado))
                               for p in pareceres])
             conn.commit()
         finally:
@@ -60,11 +68,13 @@ def concluir_por_cache(fabrica, consulta_id, payload, latencia_ms):
     """Consulta respondida pelo cache semântico: sem tokens de LLM; rota e fontes vêm da resposta reaproveitada."""
     conn = fabrica()
     try:
-        conn.execute("UPDATE consultas SET rota = ?, agentes = ?, classificacao = ?, confianca = ?, latencia_ms = ?, "
-                     "cache_hit = 1 WHERE id = ?",
+        criterio = payload.get("criterio_confianca")
+        conn.execute("UPDATE consultas SET rota = ?, agentes = ?, classificacao = ?, confianca = ?, "
+                     "criterio_confianca = ?, latencia_ms = ?, cache_hit = 1 WHERE id = ?",
                      (payload.get("rota"), json.dumps(payload.get("agentes") or []),
                       payload.get("classificacao") or (payload.get("recomendacao") or {}).get("classificacao"),
-                      payload.get("confianca"), latencia_ms, consulta_id))
+                      payload.get("confianca"), json.dumps(criterio, ensure_ascii=False) if criterio else None,
+                      latencia_ms, consulta_id))
         conn.executemany("INSERT INTO consulta_fontes (consulta_id, trecho_id, aprovada_verificador) VALUES (?, ?, 1)",
                          [(consulta_id, f["trecho_id"]) for f in payload.get("fontes", [])])
         conn.commit()

@@ -11,6 +11,7 @@ from app.application.avaliacao.metricas_resposta import numeros_nao_suportados
 from app.application.decisoes.recomendacao import completar
 from app.application.portas import RespostaLLM
 from app.application.respostas.f1 import montar_contexto, partes_prompt
+from app.domain import confianca as conf
 from app.domain.politicas import AVISO_DECISAO
 
 AGENTES = Path(__file__).resolve().parent
@@ -90,10 +91,7 @@ def _reparar_parecer(d, agente, rotulos):
     d["parecer"] = str(d.get("parecer") or "")[:1200]
     for chave in ("afirmacoes", "fundamentacao_legal", "riscos", "alternativas", "lacunas", "conflitos"):
         d[chave] = d.get(chave) if isinstance(d.get(chave), list) else []
-    try:
-        d["confianca"] = max(0.0, min(1.0, float(d.get("confianca", 0))))
-    except (TypeError, ValueError):
-        d["confianca"] = 0.0
+    d["confianca"] = 0.0  # calculada pelo sistema no Parecer (a declarada pelo modelo vai para confianca_modelo)
     afirmacoes = []
     for i, a in enumerate(d["afirmacoes"], start=1):
         if not isinstance(a, dict):
@@ -140,6 +138,17 @@ class Parecer:
     tokens_saida: int = 0
     latencia_ms: int = 0
     tentativas: int = 1
+    confianca_modelo: float | None = None  # autoavaliação do LLM (auditoria); dados["confianca"] é do sistema
+    criterio_confianca: list = field(default_factory=list)
+
+    def __post_init__(self):
+        """Confiança do parecer calculada pelo sistema a partir das afirmações que sobreviveram à verificação."""
+        afirmacoes = self.dados.get("afirmacoes") or []
+        c = conf.calcular_parecer(valido=self.valido_reparado, afirmacoes=len(afirmacoes),
+                                  citacoes_distintas=len({x for a in afirmacoes for x in a.get("citacoes", [])}),
+                                  afirmacoes_removidas=self.afirmacoes_removidas, tentativas=self.tentativas)
+        self.dados["confianca"] = c.valor if c.valor is not None else 0.0  # o schema exige número
+        self.criterio_confianca = list(c.criterio)
 
 
 AVISO_CORTE = ("Sua resposta anterior foi cortada e não formou um JSON válido. Responda de novo, de forma bem "
@@ -232,7 +241,16 @@ def executar_especialista(llm, agente, pergunta, trechos, contexto_extra="", con
         if not numeros_nao_suportados(a["texto"], [suporte(por_rotulo[c]) for c in a["citacoes"]], pergunta)]
     return Parecer(agente, reparado, not erros, not erros_rep, erros or erros_rep,
                    (len([a for a in (bruto.get("afirmacoes") or []) if isinstance(a, dict)]) - antes)
-                   + (antes - len(reparado["afirmacoes"])), r.tokens_entrada, r.tokens_saida, r.latencia_ms, tentativas)
+                   + (antes - len(reparado["afirmacoes"])), r.tokens_entrada, r.tokens_saida, r.latencia_ms, tentativas,
+                   confianca_modelo=_declarada(bruto))
+
+
+def _declarada(dados):
+    """Autoavaliação do modelo (só auditoria); None se omitida ou inválida."""
+    try:
+        return max(0.0, min(1.0, float(dados["confianca"])))
+    except (KeyError, TypeError, ValueError):
+        return None
 
 
 # níveis de compactação dos pareceres para o relator: (parecer, recomendação, afirmações, texto da afirmação,
@@ -296,7 +314,7 @@ def sintese_de_parecer_unico(p: Parecer) -> dict:
     return {"resposta": "\n".join(x for x in linhas if x), "recomendacao": d.get("recomendacao") or "",
             "consensos": [], "divergencias": [], "alternativas": list(d.get("alternativas", [])),
             "riscos": list(d.get("riscos", [])), "lacunas": list(d.get("lacunas", [])), "fontes": fontes,
-            "classificacao": "inferencia", "confianca": d.get("confianca", 0.0)}
+            "classificacao": "inferencia", "confianca": p.confianca_modelo}
 
 
 def relatar_f2(llm, pergunta, trechos, pareceres, contexto_extra="", precedentes=(),
@@ -315,7 +333,7 @@ def relatar_f2(llm, pergunta, trechos, pareceres, contexto_extra="", precedentes
         r, tentativas = _chat_json(llm, mensagens, 1200, 0.1)
     d = r.json if r is not None and isinstance(r.json, dict) else {}
     if r is None:
-        d = {"resposta": FALHA_RELATOR, "classificacao": "inferencia", "confianca": 0.0}
+        d = {"resposta": FALHA_RELATOR, "classificacao": "inferencia"}
     por_rotulo = {t.rotulo: t for t in trechos}
     citados = [c for c in dict.fromkeys(list(map(_rotulo, d.get("fontes") or [])) +
                                         [f"T{n}" for n in re.findall(r"\bT(\d+)\b", str(d.get("resposta", "")))])
@@ -325,10 +343,6 @@ def relatar_f2(llm, pergunta, trechos, pareceres, contexto_extra="", precedentes
     d["fontes"] = citados
     if d.get("classificacao") not in ("fato", "inferencia", "conflito", "ausencia"):
         d["classificacao"] = "inferencia"
-    try:
-        d["confianca"] = max(0.0, min(1.0, float(d.get("confianca", 0))))
-    except (TypeError, ValueError):
-        d["confianca"] = 0.0
     for chave in ("consensos", "divergencias", "alternativas", "riscos", "lacunas"):
         d[chave] = d.get(chave) if isinstance(d.get(chave), list) else []
     # reparo de forma: consenso no formato das divergências ({"tema", "posicoes"}) → frase (Gemini, Fase 11)
@@ -359,10 +373,11 @@ def relatar_f2(llm, pergunta, trechos, pareceres, contexto_extra="", precedentes
         restantes = [f for f in re.split(r"(?<=[.!?])\s+", d["resposta"]) if f.strip() and f.strip() not in
                      v.frases_reprovadas]
         d["resposta"] = " ".join(restantes)
-        d["confianca"] = min(d["confianca"], 0.6)
         obs.append("verificador_frases_removidas_no_relator")
-    origem = completar(d, trechos, pareceres, precedentes, frases_removidas=not v.aprovada)
-    obs += [f"rf20_{campo}_{o}" for campo, o in origem.items() if o != "modelo" and campo != "aviso"]
+    # confiança calculada pelo sistema em `completar` (a declarada pelo modelo vai para confianca_modelo)
+    origem = completar(d, trechos, pareceres, precedentes, frases_removidas=not v.aprovada,
+                       relator_nova_tentativa=r is not None and tentativas > 1, relator_falhou=r is None)
+    obs += [f"rf20_{campo}_{o}" for campo, o in origem.items() if o != "modelo" and campo not in ("aviso", "confianca")]
     erros = _validar_schema({k: d[k] for k in _schema("relator.v2.json")["properties"] if k in d},
                             _schema("relator.v2.json"))
     return RespostaF2(d["resposta"] + f"\n\n{AVISO_DECISAO}", d, fontes, pareceres, not erros and r is not None, v,

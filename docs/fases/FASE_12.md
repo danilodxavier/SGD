@@ -482,3 +482,89 @@ consegue crescer — origem dos erros "arquivo de paginação muito pequeno" (14
 de entrega — exatidão 0,949 (as mesmas 2 diferenças de grafia da §19; 47/47 adjudicada), classificação 0,979, recusa
 correta 1,00, 20/47 pela ficha (p50 5,5 s com o servidor de produção disputando a GPU). Produção: https/http nos dois
 nomes, 600 RST sem perder as portas, painel sem erros no Edge (com e sem login).
+
+## 22. Rodada 17 — confiança calculada pelo sistema e recusa rápida fora do acervo (2026-11-25)
+
+**Relato da equipe (consultas 6–8 da auditoria):** duas respostas corretas classificadas como "fato documental" saíram
+com confiança de **90%** (objeto do 033/2022, pela ficha) e **0%** (número do contrato da Oracle, pelo LLM); a recusa
+correta a uma pergunta fora do acervo ("nome do cachorro do prefeito") saiu com **30%** e levou **81 s**.
+
+| Sintoma | Causa (comprovada no código e na auditoria) | Correção |
+|---|---|---|
+| Resposta certa e citada com 0% | Pelo LLM, a confiança era a **autoavaliação do modelo**; o Qwen 7B omitiu o campo e o código assumiu 0,0 | `app/domain/confianca.py`: confiança **calculada pelo sistema** = base (classificação × caminho) − descontos por sinais verificáveis (verificador, 2ª/3ª leitura, citações descartadas, nº de fontes). A autoavaliação vai só para a auditoria (`consultas.confianca_modelo`, migração 008) |
+| Mesma qualidade com 90% (ficha) × 0% (LLM) | A ficha usava valores fixos por resposta (0,5–0,9) | Ficha e LLM na **mesma escala** (ficha 0,90 / LLM 0,85 para fato; inferência 0,75 / 0,70; candidatos 0,50); ressalvas da ficha viram sinais (classificação automática, vários contratos, regras de pendência) |
+| Recusa correta com 30% (pela ficha, 70%) | Teto fixo aplicado às recusas | Ausência e conflito **não têm percentual**: a tela mostra o alcance da busca ("Busca em N trechos" / "Conferido no inventário") ou "Conferência documental necessária" |
+| Percentual sem explicação | — | Cada resposta traz `criterio_confianca` (lista dos fatores), exibido em "Como a confiança foi calculada" e gravado na auditoria. F2 e pareceres seguem a mesma lógica (`calcular_f2`, `calcular_parecer`: pareceres válidos, divergências, precedentes, base legal, afirmações removidas) |
+| Recusa em 81 s (3 leituras do LLM, 10,5 mil tokens) | Pergunta sem nenhum trecho relevante passava pela 1ª leitura, pela 2ª leitura das recusas e pela 3ª ("evidências contradizem a recusa") | **Recusa sem LLM** quando a nota máxima do reranker em todos os trechos é < `SADGD_LIMIAR_RELEVANCIA` (0,02). Só no servidor; desligado nos scripts de avaliação |
+| "Número do contrato com a Oracle" em 31,5 s, citando 1 contrato | A ficha não tinha o assunto "número"; o nome casa com **2 contratos** (a resposta do LLM omitiu um) | Assunto `numero` ("número do contrato") na ficha; com vários contratos, a lista cita o trecho do número de cada um |
+
+**Calibração do limiar** (nota máxima do bge-reranker-v2-m3, 0–1, mesma busca do servidor; scratchpad, sem texto real):
+
+| Grupo | n | mínimo | máximo |
+|---|---|---|---|
+| F1 respondível — golden set acadêmico (simples, complexa, linha do tempo, conflito) | 144 | **0,66** | 1,00 |
+| Perguntas reais da equipe (R01–R12) | 12 | 0,08 | 1,00 |
+| Ausência dentro do domínio (acadêmico) | 12 | 0,024 | 0,98 |
+| F2 (decisão; não passa pela regra) | 21 | 0,035 | 0,99 |
+| Fora do domínio (10 no acervo real + 10 no acadêmico) | 20 | 0,000 | **0,011** |
+
+**Verificação:** 490 testes (19 novos em `tests/sadgd/test_confianca.py`) + E2E no Edge; ruff limpo. Pipeline real, sem
+cache: Oracle 31,5 s → **2,4 s** (ficha, 2 contratos, 85%); cachorro 81,2 s → **4,1 s** (sem LLM, sem percentual);
+033/2022 90% com critério. Regressão no acervo real (R01–R12): 0 erros, recusa indevida 0, F2 válida com RF-20
+completo, p95 4,1 s (resultados anteriores preservados em `avaliacao/real/resultados_antes_rodada17.jsonl`). A geração
+da F1 (prompt e contexto) não mudou: a regressão acadêmica da F1 não é afetada; o limiar fica abaixo de toda F1
+respondível do golden set.
+
+## 23. Rodada 18 — precisão e tempo da F1 medidos com gabarito real (2026-11-26)
+
+**Pedido do responsável:** precisão/acurácia ≥ 96% nas respostas e tempo 50% menor. Decisões (2026-11-25): gabarito =
+fichas + equipe; a meta de "confiança ≥ 96%" vira **confiança calibrada** (respostas com confiança alta acertam na mesma
+proporção); tempo = pergunta respondida pelo LLM (28 → 14 s). Não há ajuste fino: a GPU de 6 GB não comporta treinar o
+7B; o "treino" é o ajuste da busca, do contexto e das regras contra o gabarito.
+
+**Gabarito automático** (`scripts/sadgd/avaliar_gabarito_fichas.py`, resultados em `avaliacao/real/`, fora do Git):
+cada dado conferido das 19 fichas (contratada, CNPJ, objeto, fiscal, gestor, assinatura, valor, término, nº) vira
+pergunta com resposta e documento esperados — 151 perguntas, divididas **por contrato** em validação (69, ajustes) e
+teste (82, só medição). Modos: `llm` (produção quando a ficha não responde sozinha), `completo` (servidor) e `leitura`
+(estresse: só trechos, sem a ficha). Pontuação conferida: o valor de cada pergunta acerta contra si e não contra o de
+outro contrato (1º nome obrigatório para pessoas/empresas). Na tela, só ids e números.
+
+**Linha de base (validação, caminho pelo LLM):** acurácia **24,6%**, precisão 28,8%, fonte correta 23,2%, documento
+certo recuperado em 41%, p50 34,1 s / p95 69,9 s, e respostas com confiança ≥ 80% acertando 20%.
+
+| Causa (comprovada) | Correção |
+|---|---|
+| Busca com escopo = 400 melhores do acervo filtrados pela pasta; pastas com até 800 documentos e 190 cópias tipadas como "contrato" — o instrumento ficava de fora | **Documentos-chave** (origem dos dados da ficha) buscados por dentro: todos os trechos, pré-ordenados pelos termos e reclassificados; abertura de cada um sempre incluída (`recuperar_dentro`). Valor esperado no contexto: 52% → 92% (8 trechos) |
+| Compressão por termos descartava a frase com a resposta (o CNPJ não traz a palavra "CNPJ"; o preâmbulo é uma frase de 900 caracteres) | Compressão pelo **tipo de dado pedido** (R$, data, CNPJ, razão social, nº) + recorte literal da frase longa em torno do dado; casamento por palavra inteira (por radical piorou: "contr" casa com "contrato") — 8 × 1.200 car.: 75,8% → 84,8% |
+| Com 10 trechos o 7B trocava papéis/datas (contratante × contratada; assinatura × publicação) | **Ficha conferida no contexto** da F1 quando o contrato é identificado (como a F2) + instrução v6 (dado pedido literal no início; papéis; no máximo 3 detalhes) |
+| ≈ 4.300 tokens de entrada (≈ 25 s de leitura nesta GPU) | Pergunta que **pede um dado da ficha** (interrogativo + dado presente): só a ficha + **janelas literais de ±100 caracteres** em torno de cada valor, sem a busca na pasta (≈ 1.800 tokens); cabeçalho dos trechos sem pastas internas nem "origem: real" (≈ 1.000 tokens a menos) |
+| "Valor global": respondia só o atualizado por aditivo | Uma linha com os dois valores; detalhe com números diferentes não é mais descartado como "repetição"; **reparo de citação**: número de outra frase citada da resposta ganha a citação certa (nunca um trecho novo — golden V036) |
+| Campo "número" de 5/17 fichas era de processo ou de outro contrato (virava "Contrato nº …" nas respostas) | Número que não contém a chave do contrato é descartado na carga das fichas |
+| Confiança alta em leitura livre (estresse: ≥ 80% acertando 46%) | Desconto "leitura sem a ficha como âncora" (−15%) |
+
+**Salvaguardas verificadas no golden set acadêmico** (caminho do servidor, 47 F1,
+`scripts/sadgd/avaliar_caminho_servidor.py`): o atalho da ficha transformava 4 perguntas de **conflito** em "fato" →
+contrato com contradição registrada no grafo segue o caminho anterior; "Após a interrupção…, quando foram retomadas?"
+recusava (V045) → só a pergunta que comprovadamente pede dado da ficha dispensa a busca na pasta. Resultado: exatidão
+**0,974** (rodada 16: 0,949), classificação 0,979, recusa correta 1,00, falsa recusa 0.
+
+**Resultado final no TESTE (82 perguntas de contratos nunca usados em ajuste):**
+
+| | Linha de base* | LLM (produção sem resposta direta da ficha) | Servidor completo |
+|---|---|---|---|
+| Acurácia | 24,6% | **95,1%** | **97,6%** |
+| Precisão (acertos/respondidas) | 28,8% | **96,3%** | **97,6%** |
+| Fonte correta | 23,2% | 95,1% | 97,6% |
+| Confiança ≥ 80% → acurácia | 20% | **100%** (77) | **100%** (80) |
+| Tempo p50 / p95 | 34,1 / 69,9 s | **8,1 / 11,6 s** (−76% / −83%) | 0,0 / 7,6 s (68 pela ficha) |
+| Tokens de entrada (média) | 4.792 | 1.774 | — |
+
+\*linha de base na validação (mesmo pipeline, antes das mudanças). Erros restantes do LLM: 2 "número do contrato com a
+(fornecedor)" (o nome não identifica um único contrato; no servidor, 1), 1 recusa, 1 valor.
+
+**Limites (registrados com transparência):** (1) a medição real usa perguntas sobre os dados que a ficha guarda — a
+leitura sem a âncora da ficha (estresse, amostra de 27) acertou 48%: perguntas abertas sobre o conteúdo dos documentos
+ainda não têm gabarito real e dependem das perguntas e do julgamento da equipe (`perguntas.csv`/`revisao.csv`);
+(2) perguntas sem contrato identificado (normas, leis — golden acadêmico) seguem em ≈ 33–37 s pelo LLM (p50); a meta de
+tempo foi atingida no caminho dos contratos. Regressão das 12 perguntas reais: sem mudança (0 erros, recusa indevida 0,
+F2 válida). 507 testes (novos: `test_rodada18_precisao.py`, reparo de citação, confiança ancorada).

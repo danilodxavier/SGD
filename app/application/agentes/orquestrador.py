@@ -23,11 +23,18 @@ from app.application.agentes.especialistas import (
 )
 from app.application.agentes.politica_llm import LLMComReserva, LLMProtegido
 from app.application.agentes.roteador import rotear
+from app.application.fichas.agrupamento import normalizar
+from app.application.fichas.consulta import RE_DOCUMENTOS_DA_PASTA
 from app.domain.politicas import avaliar_envio_externo
 
 MAX_TRECHOS_F1 = 12  # trechos + aberturas que chegam à F1 (compressão de 1.200 caracteres mantém o prompt < contexto)
 K_LISTA = 16  # perguntas de lista: documentos distintos (2 trechos/documento, 700 caracteres por trecho)
 K_A_MENOS_COM_FICHA = 4  # decisão sobre contrato com ficha: 4 trechos da busca + até 4 de origem da ficha
+K_CHAVE = 8  # F1 sobre contrato com ficha: trechos dos documentos-chave (instrumento, aditivos, portaria) primeiro
+K_PASTA_COM_CHAVE = 2  # ... seguidos de poucos trechos do restante da pasta (tempo: cada 1.000 tokens ≈ 7 s)
+K_CHAVE_COM_FICHA = 2  # com a ficha no contexto (origem dos dados já citável), menos trechos dos documentos-chave
+K_PASTA_COM_FICHA = 4  # pergunta sobre o contrato que não é dado da ficha: ficha + 2 chave + 4 da pasta
+MAX_CHARS_COM_FICHA = 500  # ... e trechos mais curtos: a ficha traz os dados; os trechos servem à citação
 
 
 class Estado(TypedDict, total=False):
@@ -45,13 +52,15 @@ class Estado(TypedDict, total=False):
     via_ficha: bool
     escopo: Any  # documentos do contrato citado (busca restrita quando a ficha não basta)
     ficha_f2: Any  # (texto da ficha, trechos de origem) para os especialistas da decisão
+    chave: Any  # documentos-chave do contrato citado (F1): buscados primeiro
+    ficha_f1: Any  # (texto da ficha, trechos de origem) quando a ficha não responde sozinha (F1)
 
 
 class Orquestrador:
     def __init__(self, recuperar, responder_f1, llm_especialistas, *, linha_do_tempo=None, precedentes=None,
                  tracer=None, checkpointer=None, k=8, llm_relator=None, llm_f2_remoto=None,
                  envio_externo_permitido=False, contexto_max_chars=0, fichas=None, escopo_contrato=None,
-                 ficha_decisao=None):
+                 ficha_decisao=None, documentos_chave=None, recuperar_dentro=None, ficha_f1=None):
         """recuperar(pergunta, k) -> list[TrechoRecuperado]; responder_f1: ResponderF1;
         linha_do_tempo(documento_ids) -> str (resumo para F2);
         precedentes(pergunta, documento_ids) -> list[Precedente] (memória de decisões, RF-19);
@@ -67,6 +76,9 @@ class Orquestrador:
         self._fichas = fichas
         self._escopo = escopo_contrato  # escopo_contrato(pergunta) -> set[documento_id] | None
         self._ficha_decisao = ficha_decisao  # ficha_decisao(pergunta) -> (texto, trechos) | None — F2
+        self._chave = documentos_chave  # documentos_chave(pergunta) -> set[documento_id] | None — F1
+        self._dentro = recuperar_dentro  # recuperar_dentro(pergunta, documentos, k) -> trechos dos documentos-chave
+        self._ficha_f1 = ficha_f1  # ficha_f1(pergunta) -> (texto da ficha, janelas dos trechos de origem) | None
         g = StateGraph(Estado)
         g.add_node("rotear", self._no(self._rotear))
         if fichas is not None:
@@ -118,8 +130,13 @@ class Orquestrador:
         if r is None:  # a ficha não basta: a busca fica no contrato citado (também na decisão)
             ficha_f2 = (self._ficha_decisao(s["pergunta"]) if self._ficha_decisao and s["decisao"].rota == "F2"
                         else None)
+            f1 = s["decisao"].rota != "F2"
+            chave = self._chave(s["pergunta"]) if self._chave and f1 else None
+            # rodada 18: com o contrato identificado, a F1 também recebe a ficha conferida (como a F2) — o LLM lia
+            # 10 trechos e trocava papéis/datas (gabarito real: 25% de acerto)
+            ficha_f1 = self._ficha_f1(s["pergunta"]) if self._ficha_f1 and f1 and chave else None
             return {"via_ficha": False, "escopo": self._escopo(s["pergunta"]) if self._escopo else None,
-                    "ficha_f2": ficha_f2}
+                    "ficha_f2": ficha_f2, "chave": chave, "ficha_f1": ficha_f1}
         return {"via_ficha": True, "resposta": r, "trechos": list(r.fontes)}
 
     def _recuperar_no(self, s):
@@ -128,6 +145,13 @@ class Orquestrador:
                 return {"trechos": self._recuperar(s["pergunta"], K_LISTA, max_por_documento=2)}
             except TypeError:  # recuperador sem diversificação (avaliações antigas)
                 pass
+        ficha_f1 = s.get("ficha_f1")
+        if (ficha_f1 and s.get("chave") and len(ficha_f1) > 2 and ficha_f1[2]
+                and not RE_DOCUMENTOS_DA_PASTA.search(normalizar(s["pergunta"]))):
+            # a pergunta PEDE um dado que a ficha guarda: ficha + janelas literais da origem bastam (≈ 1.100 tokens),
+            # sem a busca na pasta inteira (rodada 18: 4.300 → 1.800 tokens; p50 34 → 8 s). Qualquer outra pergunta
+            # sobre o contrato (ex.: "quando foram retomadas as atividades?") segue com a busca na pasta (golden V045)
+            return {"trechos": list(ficha_f1[1])}
         ficha_f2 = s.get("ficha_f2")
         k = max(4, self._k - K_A_MENOS_COM_FICHA) if ficha_f2 else self._k  # a ficha cobre os dados básicos
         trechos = None
@@ -138,6 +162,15 @@ class Orquestrador:
                 trechos = None
         if trechos is None:
             trechos = self._recuperar(s["pergunta"], k)
+        if s.get("chave"):  # F1 sobre contrato com ficha: documentos-chave primeiro, depois o restante da pasta
+            ficha = list(s["ficha_f1"][1]) if s.get("ficha_f1") else []
+            k_chave = K_CHAVE_COM_FICHA if ficha else K_CHAVE
+            chave = self._dentro(s["pergunta"], s["chave"], k_chave + len(ficha)) if self._dentro else []
+            primeiros = ficha + [t for t in chave if t.id not in {f.id for f in ficha}][:k_chave]
+            vistos = {t.id for t in primeiros}
+            if primeiros:  # com a ficha, a pergunta não é sobre dado dela: mais espaço para o restante da pasta
+                k_pasta = K_PASTA_COM_FICHA if ficha else K_PASTA_COM_CHAVE
+                trechos = primeiros + [t for t in trechos if t.id not in vistos][:k_pasta]
         if ficha_f2:  # trechos de origem da ficha primeiro (citáveis), sem repetir
             vistos = {t.id for t in ficha_f2[1]}
             trechos = list(ficha_f2[1]) + [t for t in trechos if t.id not in vistos]
@@ -152,6 +185,10 @@ class Orquestrador:
         if self._tl and (decisao.rota == "F1_complexa" or lista):
             resumo = self._tl({t.documento_id for t in trechos}) or ""
         limite = K_LISTA if lista else MAX_TRECHOS_F1
+        ficha = s["ficha_f1"][0] if s.get("ficha_f1") else ""
+        if ficha:
+            return {"resposta": self._f1.responder(s["pergunta"], trechos[:limite], linha_do_tempo=resumo, lista=lista,
+                                                   ficha=ficha, max_chars=MAX_CHARS_COM_FICHA)}
         return {"resposta": self._f1.responder(s["pergunta"], trechos[:limite], linha_do_tempo=resumo, lista=lista)}
 
     def _contexto_f2(self, s):

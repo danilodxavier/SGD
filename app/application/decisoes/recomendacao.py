@@ -7,8 +7,10 @@ Regras determinísticas (nunca inventam conteúdo):
     normativos recuperados; norma revogada não fundamenta — vai para o histórico (RF-14); ordem pela hierarquia;
   - alternativas e riscos ausentes na síntese são completados com os dos pareceres;
   - elemento sem conteúdo possível é declarado como lacuna (ausência explícita, nunca preenchimento inventado);
-  - a confiança declarada é limitada por evidência (sem base legal, sem pareceres válidos, frases removidas).
+  - a confiança é calculada pelo sistema (app/domain/confianca.py: pareceres válidos, divergências, precedentes,
+    base legal, verificador); a autoavaliação do modelo fica só em `confianca_modelo` (auditoria).
 """
+from app.domain import confianca as conf
 from app.domain.normas import EspecieNormativa
 
 NIVEL = {e.codigo: e.nivel for e in EspecieNormativa} | {"decreto_lei": 2}
@@ -19,7 +21,8 @@ LACUNAS = {
     "base_legal": "Não localizei base legal vigente nos trechos recuperados.",
     "precedentes": "Não há decisões anteriores semelhantes registradas na memória de decisões.",
 }
-TETO_SEM_BASE_LEGAL, TETO_SEM_PARECER, TETO_FRASES_REMOVIDAS = 0.5, 0.4, 0.6
+TETO_SEM_BASE_LEGAL, TETO_SEM_PARECER, TETO_FRASES_REMOVIDAS = (conf.TETO_SEM_BASE_LEGAL, conf.TETO_SEM_PARECER,
+                                                                conf.TETO_FRASES_REMOVIDAS)
 
 
 def _vigente(t):
@@ -65,7 +68,8 @@ def _dos_pareceres(pareceres, campo, chave_unica, limite=3):
     return saida[:limite]
 
 
-def completar(d, trechos, pareceres, precedentes, frases_removidas=False):
+def completar(d, trechos, pareceres, precedentes, frases_removidas=False, relator_nova_tentativa=False,
+              relator_falhou=False):
     """Completa a saída do relator in place. Retorna {elemento: 'modelo'|'sistema'|'lacuna'}."""
     origem = {}
     lacunas = list(d.get("lacunas") or [])
@@ -84,15 +88,17 @@ def completar(d, trechos, pareceres, precedentes, frases_removidas=False):
         if origem[campo] == "lacuna" and LACUNAS[campo] not in lacunas:
             lacunas.append(LACUNAS[campo])
     d["lacunas"] = lacunas
-    teto = 1.0
-    if not vigentes:
-        teto = min(teto, TETO_SEM_BASE_LEGAL)
-    if not any(p.valido_reparado and p.dados.get("parecer") for p in pareceres):
-        teto = min(teto, TETO_SEM_PARECER)
-    if frases_removidas:
-        teto = min(teto, TETO_FRASES_REMOVIDAS)
-    d["confianca"] = round(min(float(d.get("confianca") or 0.0), teto), 3)
-    origem["confianca"] = "modelo" if teto == 1.0 else "sistema"
+    try:
+        d["confianca_modelo"] = max(0.0, min(1.0, float(d["confianca"])))
+    except (KeyError, TypeError, ValueError):
+        d["confianca_modelo"] = None
+    c = conf.calcular_f2(
+        pareceres_validos=sum(1 for p in pareceres if p.valido_reparado and p.dados.get("parecer")),
+        divergencias=len(d.get("divergencias") or []), base_legal_vigente=bool(vigentes),
+        precedentes=len(precedentes), frases_removidas=frases_removidas,
+        relator_nova_tentativa=relator_nova_tentativa, relator_falhou=relator_falhou)
+    d["confianca"], d["criterio_confianca"] = c.valor, list(c.criterio)
+    origem["confianca"] = "sistema"
     origem["aviso"] = "sistema"
     if precedentes and any(p.decisao.avaliacao_resultado.value == "negativo" for p in precedentes):
         alerta = "Há precedente com resultado negativo: avaliar o que deu errado antes de repetir a solução."

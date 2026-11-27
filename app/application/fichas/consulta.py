@@ -10,7 +10,14 @@ import re
 import time
 from dataclasses import dataclass, field
 
-from app.application.fichas.agrupamento import RE_CONTRATO_NO_TEXTO, RE_NUMERO, chave, normalizar
+from app.application.fichas.agrupamento import (
+    RE_CONTRATO_NO_TEXTO,
+    RE_NUMERO,
+    chave,
+    chaves_no_texto,
+    normalizar,
+)
+from app.domain import confianca as conf
 
 ROTULO_TIPO = {
     "nota_empenho": ("nota de empenho", "notas de empenho"), "termo_recebimento": ("termo de recebimento",
@@ -54,7 +61,38 @@ ASSUNTOS = [
     ("objeto", r"sobre o que|do que trata|\bobjeto\b|qual (e )?o contrato|finalidade|trata o contrato|"
                r"o que e o contrato",
      ["objeto", "contratada", "numero"], []),
+    # por último: "número da nota de empenho/do processo…" casa antes com o assunto do documento ou vai ao caminho
+    # completo; aqui só "número do contrato" (rodada 17: "Qual o número do contrato com a Oracle?" levava 31 s no LLM)
+    ("numero", r"\bnumero d[oe]s? contratos?\b", ["numero", "contratada"], []),
 ]
+# perguntas sobre OUTROS documentos da pasta (não sobre os dados do contrato): a F1 com ficha também busca na pasta
+DADOS_DO_CONTRATO = ("vigencia", "aditivo", "fiscal", "gestor")  # assuntos com documento, mas dados da ficha
+RE_DOCUMENTOS_DA_PASTA = re.compile("|".join(a[1] for a in ASSUNTOS if a[3] and a[0] not in DADOS_DO_CONTRATO)
+                                    + r"|oficio|processo|relatorio|parecer|medic|fatura|boleto|recibo|ateste|atesto")
+# pergunta que PEDE um dado que a ficha guarda (com outras palavras que as dos assuntos): a ficha + janelas bastam.
+# Só com pronome interrogativo no início e o dado presente na ficha do contrato ("prazo de garantia", "valor da
+# multa" e "a contratada cumpriu...?" não são dados da ficha: seguem com os trechos dos documentos-chave)
+RE_PEDE_DADO = re.compile(r"^(?:e\s+)?(?:qual|quais|quem|quando|ate quando|em que data|de quanto|quanto|que|o que|"
+                          r"do que|sobre o que)\b")
+DADOS_DA_FICHA = [
+    (re.compile(r"empresa|contratad[ao]\b|fornecedor|razao social"), ("contratada",)),
+    (re.compile(r"cnpj"), ("cnpj_contratada",)),
+    (re.compile(r"\bobjeto\b|do que trata|finalidade"), ("objeto",)),
+    (re.compile(r"valor (?:global|total|do contrato|contratual|contratado|atual|atualizado|anual|estimado)|"
+                r"quanto custa"), ("valor_atual", "valor_global")),
+    (re.compile(r"vigen|vigor|vence|termin|ate quando|prazo (?:de vigencia|do contrato|contratual)"),
+     ("vigencia_atual_fim", "vigencia_fim", "vigencia")),
+    (re.compile(r"assinad|assinatura|celebrad|firmad"), ("data_assinatura",)),
+    (re.compile(r"\bfiscal"), ("fiscal",)),
+    (re.compile(r"\bgestor"), ("gestor",)),
+    (re.compile(r"\bnumero\b"), ("numero",)),
+]
+
+
+def pede_dado_da_ficha(pergunta: str, campos: dict) -> bool:
+    texto = normalizar(pergunta)
+    return bool(RE_PEDE_DADO.search(texto)) and any(
+        padrao.search(texto) and any(c in campos for c in nomes) for padrao, nomes in DADOS_DA_FICHA)
 PALAVRAS_VAZIAS = set("""qual quais como quando onde quem sobre trata contrato contratos para pela pelo com sem que
 existe existem tem foi esta sera houve possui algum alguma ainda numero ano anos meses dias valor prazo vigencia
 fiscal gestor empresa objeto empenho empenhos termo termos recebimento definitivo provisorio aditivo aditivos nota
@@ -94,6 +132,25 @@ RE_TRANSVERSAL = re.compile(r"\b(quais|quantos|algum|alguns|em que|que)\s+contra
 RE_NOME = re.compile(r"contrat\w*\s+(?:d[aoe]s?|com(?:\s+[ao])?|junto\s+[aà])\s+([a-z0-9][a-z0-9 .&-]{2,50})")
 
 
+def _sem_numero_inconsistente(ficha: dict) -> dict:
+    """Descarta o "número" extraído que não contém a chave do contrato (nº da pasta/inventário). Rodada 18: em 5 das
+    17 fichas com número ele era de processo ou de outro contrato — e virava o cabeçalho "Contrato nº ..." das
+    respostas e um falso documento-chave. Sem ele, todos os usos caem na chave (conferida pelo agrupamento)."""
+    numero = (ficha.get("campos") or {}).get("numero")
+    if not isinstance(numero, dict) or ficha.get("chave") in chaves_no_texto(str(numero.get("valor", "")),
+                                                                             so_contrato=False):
+        return ficha
+    return {**ficha, "campos": {k: v for k, v in ficha["campos"].items() if k != "numero"}}
+
+
+def _sem_acento_posicional(texto: str) -> str:
+    """Minúsculas sem acento com o MESMO comprimento do original (posições valem nos dois)."""
+    import unicodedata
+
+    return "".join((unicodedata.normalize("NFKD", ch).encode("ascii", "ignore").decode() or " ")[:1].lower()
+                   for ch in texto)
+
+
 def _data(iso: str | None) -> str:
     m = re.match(r"(\d{4})-(\d{2})-(\d{2})", str(iso or ""))
     return f"{m.group(3)}/{m.group(2)}/{m.group(1)}" if m else "data não identificada"
@@ -101,10 +158,12 @@ def _data(iso: str | None) -> str:
 
 @dataclass
 class RespostaFicha:
-    """Mesmo formato da RespostaF1 (o orquestrador e a API tratam igual)."""
+    """Mesmo formato da RespostaF1 (o orquestrador e a API tratam igual). A confiança é calculada pelo sistema em
+    `responder` (app/domain/confianca.py) com os mesmos critérios do caminho pelo LLM; ressalvas da ficha entram
+    como sinais em `observacoes`."""
     resposta: str
     classificacao: str
-    confianca: float
+    confianca: float | None
     fontes: list
     lacunas: list = field(default_factory=list)
     modelo: str = "ficha-do-contrato"
@@ -113,6 +172,9 @@ class RespostaFicha:
     latencia_ms: int = 0
     observacoes: list = field(default_factory=list)
     bruto: dict | None = None
+    confianca_modelo: float | None = None
+    criterio_confianca: list = field(default_factory=list)
+    trechos_examinados: int = 0
 
 
 class ResponderPorFicha:
@@ -125,7 +187,7 @@ class ResponderPorFicha:
 
     def _todas(self) -> list[dict]:
         if time.time() - self._lido > self.validade:
-            self._cache, self._lido = self.fichas.todas(), time.time()
+            self._cache, self._lido = [_sem_numero_inconsistente(f) for f in self.fichas.todas()], time.time()
         return self._cache
 
     def localizar(self, pergunta: str) -> tuple[str | None, object]:
@@ -166,6 +228,83 @@ class ResponderPorFicha:
         da_pasta = getattr(self.fichas, "documentos_da_pasta", None)
         ids = da_pasta(achado["pasta"]) if achado.get("pasta") and da_pasta else set()
         return ids or {d["documento_id"] for d in achado["documentos"]} or None
+
+    def documentos_chave(self, pergunta: str) -> set[int] | None:
+        """Documentos de onde vieram os dados da ficha do contrato citado (instrumento, extrato, aditivos, portaria
+        de designação). Rodada 18: a pasta de um contrato chega a 800 documentos (até 190 cópias tipadas como
+        "contrato" em processos de pagamento) e a busca geral trazia o documento certo em só 41% das perguntas;
+        estes documentos entram primeiro na busca do caminho completo. None se a pergunta não identifica um contrato."""
+        tipo, ficha = self.localizar(pergunta)
+        if tipo != "ficha" or self._com_contradicao(ficha):
+            return None
+        ids = [v["trecho_id"] for k, v in ficha["campos"].items()
+               if not k.startswith("_") and isinstance(v, dict) and v.get("trecho_id")]
+        return {t.documento_id for t in self.trechos.obter(list(dict.fromkeys(ids)))} or None
+
+    def contexto_f1(self, pergunta: str, janela: int = 100):
+        """Para a F1 sobre um contrato com ficha, quando a ficha não respondeu sozinha (pergunta com outras palavras ou
+        sobre outro dado): (texto da ficha com TODOS os dados conferidos e citações [T<id>], trechos de origem
+        reduzidos a janelas LITERAIS de ±`janela` caracteres em torno de cada valor). Rodada 18: os trechos inteiros
+        custavam ≈ 2.300 tokens (≈ 17 s de leitura nesta GPU); as janelas mantêm o valor citável e conferível pelo
+        verificador (ele confere contra o texto que o modelo viu). None se a pergunta não identifica um contrato."""
+        tipo, ficha = self.localizar(pergunta)
+        if tipo != "ficha" or self._com_contradicao(ficha):
+            return None
+        c = ficha["campos"]
+        pede = pede_dado_da_ficha(pergunta, c)
+        # pergunta que pede um dado da ficha: só esse dado (e o nº do contrato) com a janela de origem — com todos os
+        # dados, contratos com aditivos e portarias chegavam a 11 janelas (25–49 s)
+        texto_n = normalizar(pergunta)
+        pedidos = {n for padrao, nomes in DADOS_DA_FICHA if padrao.search(texto_n) for n in nomes} | {"numero"}
+        linhas, valores = [], {}
+        for nome in ("numero", "contratada", "cnpj_contratada", "objeto", "data_assinatura", "valor_global",
+                     "valor_atual", "vigencia", "vigencia_inicio", "vigencia_fim", "vigencia_atual_fim",
+                     "prazo_prorrogacao", "fiscal", "gestor"):
+            item = c.get(nome)
+            if not (isinstance(item, dict) and item.get("trecho_id")) or (pede and nome not in pedidos):
+                continue
+            valores.setdefault(item["trecho_id"], []).append(str(item["valor"]))
+            atual = c.get("valor_atual")
+            if nome == "valor_global" and isinstance(atual, dict) and atual.get("trecho_id"):
+                # uma linha com os dois valores: com linhas separadas o modelo respondia só o atualizado (2/6)
+                linhas.append(f"- Valor global: original R$ {str(item['valor']).removeprefix('R$').strip()} "
+                              f"[T{item['trecho_id']}]; atualizado por aditivo: "
+                              f"R$ {str(atual['valor']).removeprefix('R$').strip()} [T{atual['trecho_id']}]")
+                continue
+            if nome == "valor_atual" and isinstance(c.get("valor_global"), dict) and c["valor_global"].get("trecho_id"):
+                continue  # já está na linha do valor global
+            valor = _data(item["valor"]) if nome.startswith("aditivo_") else item["valor"]
+            linhas.append(f"- {ROTULO_CAMPO.get(nome, nome)}: {valor} [T{item['trecho_id']}]")
+        if not linhas:
+            return None
+        trechos = []
+        for t in self.trechos.obter(list(valores)):
+            texto, partes = t.texto, []
+            base = _sem_acento_posicional(texto)
+            for v in valores[t.id]:
+                palavras = re.findall(r"\w+", _sem_acento_posicional(v))[:8]
+                m = re.search(r"\W+".join(map(re.escape, palavras)), base) if palavras else None
+                if m is None:
+                    continue
+                ini, fim = max(0, m.start() - janela), min(len(texto), m.end() + janela)
+                partes.append((ini, fim))
+            if not partes:  # valor não localizado literalmente: o trecho vai como está (a compressão o reduz)
+                trechos.append(t)
+                continue
+            partes.sort()
+            unidas = [list(partes[0])]
+            for ini, fim in partes[1:]:
+                if ini <= unidas[-1][1]:
+                    unidas[-1][1] = max(unidas[-1][1], fim)
+                else:
+                    unidas.append([ini, fim])
+            recorte = " […] ".join(texto[i:f].strip() for i, f in unidas)
+            t.texto = ("[…] " if unidas[0][0] > 0 else "") + recorte + (" […]" if unidas[-1][1] < len(texto) else "")
+            trechos.append(t)
+        numero = (c.get("numero") or {}).get("valor") or ficha["chave"]
+        texto = (f"FICHA DO CONTRATO Nº {numero} (dados conferidos contra os trechos citados; use-os e cite os mesmos "
+                 f"[T<id>]):\n" + "\n".join(linhas))
+        return texto, trechos, pede
 
     def contexto_decisao(self, pergunta: str, max_trechos: int = 4):
         """Para a decisão (F2) sobre um contrato com ficha: (texto da ficha com citações [T<id>], trechos de origem).
@@ -219,17 +358,21 @@ class ResponderPorFicha:
         linhas, citados = [], []
         for f in fichas:
             c = f["campos"]
-            partes = [f"Contrato nº {(c.get('numero') or {}).get('valor') or f['chave']}"]
+            numero = c.get("numero") or {}
+            partes = [f"Contrato nº {numero.get('valor') or f['chave']}"
+                      + (f" [T{numero['trecho_id']}]" if numero.get("trecho_id") else "")]
+            if numero.get("trecho_id"):
+                citados.append(numero["trecho_id"])
             for campo in ("contratada", "objeto"):
                 if campo in c:
                     partes.append(f"{c[campo]['valor']} [T{c[campo]['trecho_id']}]")
                     citados.append(c[campo]["trecho_id"])
             linhas.append("- " + " — ".join(partes))
         resposta = f"Encontrei {len(fichas)} contratos que correspondem ao nome citado:\n" + "\n".join(linhas)
-        return RespostaFicha(resposta, "fato", 0.85, self.trechos.obter(list(dict.fromkeys(citados))),
+        return RespostaFicha(resposta, "fato", None, self.trechos.obter(list(dict.fromkeys(citados))),
                              ["Mais de um contrato corresponde ao nome: indique o número para detalhes."],
                              latencia_ms=int((time.perf_counter() - inicio) * 1000),
-                             observacoes=["ficha_do_contrato", "assunto:varios_contratos"])
+                             observacoes=["ficha_do_contrato", "assunto:varios_contratos", "varios_contratos"])
 
     def _transversal(self, texto, inicio):
         """"Quais contratos tiveram notificação em 2025?": junta os inventários das fichas (só assuntos de tipo de
@@ -260,7 +403,7 @@ class ResponderPorFicha:
             resposta = (f"Não localizei {plural}{periodo} no acervo: nenhuma das {len(self._todas())} pastas de "
                         f"contrato tem documento desse tipo{periodo}, e nenhum trecho dos documentos cita o assunto "
                         f"junto com o ano {ano}.")
-            return RespostaFicha(resposta, "ausencia", 0.7, [], ["Conferido no inventário e no texto dos documentos."],
+            return RespostaFicha(resposta, "ausencia", None, [], ["Conferido no inventário e no texto dos documentos."],
                                  latencia_ms=int((time.perf_counter() - inicio) * 1000),
                                  observacoes=["ficha_do_contrato", f"assunto:{nome}", "transversal"])
         ultimos = [docs[-1]["trecho_id"] for _, docs in achados if docs[-1].get("trecho_id")]
@@ -275,10 +418,11 @@ class ResponderPorFicha:
                 f" [T{docs[-1]['trecho_id']}]" if docs[-1].get("trecho_id") else ""
             linhas.append(f"- {ident}: {len(docs)} {singular if len(docs) == 1 else plural}{ultimo}")
         resposta = (f"{len(achados)} contrato(s) com {plural}{periodo} nas pastas do acervo:\n" + "\n".join(linhas))
-        return RespostaFicha(resposta, "fato", 0.8, list(trechos.values()),
+        return RespostaFicha(resposta, "fato", None, list(trechos.values()),
                              ["Relação baseada na classificação automática dos documentos de cada pasta."],
                              latencia_ms=int((time.perf_counter() - inicio) * 1000),
-                             observacoes=["ficha_do_contrato", f"assunto:{nome}", "transversal"])
+                             observacoes=["ficha_do_contrato", f"assunto:{nome}", "transversal",
+                                          "classificacao_automatica"])
 
     def _transversal_candidatos(self, nome, tipos, ano, singular, inicio):
         """Nenhum documento classificado no tipo e no ano, mas há documentos DATADOS do ano que começam citando o
@@ -311,9 +455,17 @@ class ResponderPorFicha:
                    "não os reconheceu como tal."]
         if sem_data:
             lacunas.append(f"Outros {sem_data} documento(s) sem data identificada também citam o assunto.")
-        return RespostaFicha(resposta, "candidatos", 0.5, list(trechos.values()), lacunas,
+        return RespostaFicha(resposta, "candidatos", None, list(trechos.values()), lacunas,
                              latencia_ms=int((time.perf_counter() - inicio) * 1000),
                              observacoes=["ficha_do_contrato", f"assunto:{nome}", "transversal", "candidatos"])
+
+    def _com_contradicao(self, ficha) -> bool:
+        """Há contradição registrada no grafo entre documentos do contrato (qualquer campo)? Então a F1 segue o caminho
+        anterior (busca na pasta + regra de conflito do grafo, RF-09): a ficha e os documentos-chave mostrariam um só
+        valor (rodada 18: 4 perguntas de conflito do golden set viraram "fato" com o atalho)."""
+        if self.conflitos is None:
+            return False
+        return bool(self.conflitos.entre([d["documento_id"] for d in ficha["documentos"]]))
 
     def _em_conflito(self, ficha, assunto) -> bool:
         campo = {"valor": "valor_global", "vigencia": "vigencia_fim"}.get(assunto)
@@ -403,7 +555,7 @@ class ResponderPorFicha:
                     + "\n".join(partes))
         lacunas = ["Datas \"calculadas\" = início ou assinatura + prazo de vigência do instrumento.",
                    "Situação pela data; termos de rescisão ou aditivos posteriores podem alterá-la."]
-        return RespostaFicha(resposta, "inferencia", 0.75, self.trechos.obter(list(dict.fromkeys(citados))),
+        return RespostaFicha(resposta, "inferencia", None, self.trechos.obter(list(dict.fromkeys(citados))),
                              lacunas, latencia_ms=int((time.perf_counter() - inicio) * 1000),
                              observacoes=["ficha_do_contrato", "assunto:panorama_vigencia", "transversal"])
 
@@ -481,9 +633,9 @@ class ResponderPorFicha:
             resposta = (f"Não identifiquei pontos de atenção nas fichas ({alvo}) em {hoje:%d/%m/%Y}: nenhum "
                         f"vencimento em até {JANELA_RENOVACAO_DIAS} dias, execução após o término, notificação ou "
                         "apuração recente, nem contrato vigente sem empenho no exercício.")
-        return RespostaFicha(resposta, "inferencia", 0.6, self.trechos.obter(list(dict.fromkeys(citados))),
+        return RespostaFicha(resposta, "inferencia", None, self.trechos.obter(list(dict.fromkeys(citados))),
                              lacunas, latencia_ms=int((time.perf_counter() - inicio) * 1000),
-                             observacoes=["ficha_do_contrato", "assunto:pendencias"]
+                             observacoes=["ficha_do_contrato", "assunto:pendencias", "pendencias_por_regra"]
                              + (["transversal"] if len(fichas) > 1 else []))
 
     @staticmethod
@@ -522,7 +674,7 @@ class ResponderPorFicha:
         resposta = (f"Não localizei contrato com o nº {numero}: o número não aparece como número de contrato em nenhum "
                     f"documento do acervo, nem nas {len(self._todas())} pastas de contrato. Ele aparece em "
                     f"{info['trechos']} trecho(s) de outros documentos — por exemplo:\n" + "\n".join(linhas))
-        return RespostaFicha(resposta, "ausencia", 0.7, list(trechos.values()),
+        return RespostaFicha(resposta, "ausencia", None, list(trechos.values()),
                              ["Confira se o número se refere a outro documento (apostilamento, empenho, extrato…)."],
                              latencia_ms=int((time.perf_counter() - inicio) * 1000),
                              observacoes=["ficha_do_contrato", "assunto:numero_de_outro_documento"])
@@ -542,11 +694,16 @@ class ResponderPorFicha:
             return None
         resposta = (f"Não localizei o Contrato nº {numero} no acervo indexado: o número não aparece em nenhum "
                     f"documento, e nenhum dos {len(self._todas())} contratos com pasta própria tem esse número.")
-        return RespostaFicha(resposta, "ausencia", 0.7, [], ["Confira o número do contrato informado."],
+        return RespostaFicha(resposta, "ausencia", None, [], ["Confira o número do contrato informado."],
                              latencia_ms=int((time.perf_counter() - inicio) * 1000),
                              observacoes=["ficha_do_contrato", "assunto:contrato_inexistente"])
 
     def responder(self, pergunta: str):
+        """Resposta pela ficha (ou None: o caminho completo responde), com a confiança calculada pelo sistema."""
+        r = self._responder(pergunta)
+        return conf.aplicar(r, "ficha") if r is not None else None
+
+    def _responder(self, pergunta: str):
         inicio = time.perf_counter()
         texto = normalizar(pergunta)
         tipo_local, achado = self.localizar(pergunta)
@@ -554,7 +711,9 @@ class ResponderPorFicha:
             return self._desconhecido(achado, inicio)
         if tipo_local == "varias":
             assunto = next((a for a in ASSUNTOS if re.search(a[1], texto)), None)
-            return self._varias(achado, inicio) if assunto and assunto[0] in ("objeto", "contratada") else None
+            if assunto and assunto[0] in ("objeto", "contratada", "numero"):
+                return self._varias(achado, inicio)
+            return None
         if RE_NORMATIVA.search(texto):
             return None  # regra ou procedimento: o caminho completo lê as cláusulas e normas
         # "pendência de pagamento/empenho…" tem assunto próprio: segue o fluxo do assunto
@@ -584,6 +743,8 @@ class ResponderPorFicha:
             return None  # contradição registrada no grafo sobre este campo: o caminho completo mostra as fontes
         if tipos and not campos and not FORMA_EXISTENCIA.search(texto):
             return None  # pergunta sobre o CONTEÚDO de um documento: o caminho completo lê o documento
+        if nome == "numero" and "numero" not in ficha["campos"]:
+            return None  # sem o número conferido num trecho: o caminho completo procura nos documentos
         if nome == "valor" and not self._valor_confiavel(ficha):
             return None  # houve aditivo/apostilamento sem valor atualizado extraído: o caminho completo lê
         if nome == "vigencia" and "vigencia_atual_fim" in ficha["campos"]:
@@ -667,12 +828,12 @@ class ResponderPorFicha:
         if nome == "vigencia":
             linhas, lacunas = self._situacao_vigencia(ficha, linhas, lacunas)
         cabecalho = f"{rotulo_contrato}" + (f" — {ficha['campos']['contratada']['valor']}"
-                                            if "contratada" in ficha["campos"] and nome != "contratada" else "")
+                                            if "contratada" in ficha["campos"] and nome not in ("contratada", "numero")
+                                            else "")
         corpo = [linha if linha.startswith("- ") or linha.endswith(":") else f"- {linha}" for linha in linhas]
         resposta = cabecalho + ":\n" + "\n".join(corpo)
         fontes = self.trechos.obter(list(dict.fromkeys(citados))) if citados else []
-        confianca = {"fato": 0.9, "candidatos": 0.5}.get(classificacao, 0.6)
-        return RespostaFicha(resposta, classificacao, confianca, fontes, lacunas,
+        return RespostaFicha(resposta, classificacao, None, fontes, lacunas,
                              latencia_ms=int((time.perf_counter() - inicio) * 1000),
                              observacoes=["ficha_do_contrato", f"assunto:{nome}"])
 
@@ -741,7 +902,7 @@ def aditivo_posterior(ficha, fonte) -> bool:
 ROTULO_CAMPO = {"numero": "Número", "contratada": "Contratada", "cnpj_contratada": "CNPJ da contratada",
                 "objeto": "Objeto", "data_assinatura": "Assinatura", "vigencia": "Vigência",
                 "vigencia_inicio": "Início da vigência", "vigencia_fim": "Término da vigência",
-                "valor_global": "Valor global", "fiscal": "Fiscal", "gestor": "Gestor",
+                "valor_global": "Valor global (original, na assinatura)", "fiscal": "Fiscal", "gestor": "Gestor",
                 "vigencia_atual_fim": "Vigência atual — prorrogada até", "prazo_prorrogacao": "Prorrogação",
                 "aditivo_vigencia": "Termo aditivo da prorrogação (data)",
                 "valor_atual": "Valor atual (após aditivo)", "aditivo_valor": "Termo aditivo do valor (data)"}

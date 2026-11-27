@@ -118,7 +118,8 @@ function sgParecer(p) {
   const d = p.parecer || {};
   return `<details class="ai-details sg-parecer"><summary><b>${esc(SG.AGENTE[p.agente] || p.agente)}</b>
       ${p.valido ? sgBadge("ok", "estrutura válida") : sgBadge("err", "parecer inválido — ignorado pelo relator")}
-      ${typeof d.confianca === "number" ? sgBadge("", `confiança ${sgPct(d.confianca)}`) : ""}</summary>
+      ${p.valido && typeof d.confianca === "number" ? sgBadge("", `confiança ${sgPct(d.confianca)}`) : ""}</summary>
+    ${p.valido ? sgCriterio(p.criterio_confianca) : ""}
     ${d.parecer ? `<p>${sgCitacoes(d.parecer)}</p>` : ""}
     ${d.recomendacao ? `<p><b>Recomendação do agente:</b> ${sgCitacoes(d.recomendacao)}</p>` : ""}
     ${sgLista("Afirmações verificadas", d.afirmacoes, (a) => `${sgBadge(a.tipo === "fato" ? "ok" : "info", a.tipo)} ${sgCitacoes(a.texto)}
@@ -152,20 +153,37 @@ function sgRenderF2(r) {
     ${(r.pareceres || []).map(sgParecer).join("") || `<p class="empty">Nenhum parecer.</p>`}`;
 }
 
+/* Confiança calculada pelo sistema (mesmos critérios na ficha, no LLM e na decisão): percentual só quando a resposta
+   afirma algo; recusa e conflito mostram o alcance da busca / a necessidade de conferência, nunca um percentual. */
+function sgConfianca(r, classe) {
+  if (typeof r.confianca === "number") return sgBadge("", `Confiança: ${sgPct(r.confianca)}`);
+  if (classe === "ausencia") {
+    return sgBadge("", r.trechos_examinados ? `Busca em ${r.trechos_examinados} trechos` : "Conferido no inventário");
+  }
+  if (classe === "conflito") return sgBadge("warn", "Conferência documental necessária");
+  return "";
+}
+
+function sgCriterio(criterio, comPercentual = true) {
+  if (!criterio || !criterio.length) return "";
+  if (!comPercentual) return `<div class="note">${criterio.map(esc).join(" ")}</div>`;
+  return `<details class="small sg-criterio"><summary>Como a confiança foi calculada</summary>
+    <ul>${criterio.map((c) => `<li>${esc(c)}</li>`).join("")}</ul></details>`;
+}
+
 function sgRender(pergunta, r) {
   const classe = r.rota === "F2" ? (r.recomendacao || {}).classificacao : r.classificacao;
   const [cls, rotulo] = SG.CLASSE[classe] || ["", classe || "—"];
-  const obs = (r.observacoes || []).filter((o) => /verificador|conflito/.test(o));
   return `
     <div class="panel answer sg-${esc(classe || "")}">
       <div class="answer-head">
-        ${sgBadge(cls, rotulo)} ${sgBadge("", `Confiança: ${sgPct(r.confianca)}`)}
+        ${sgBadge(cls, rotulo)} ${sgConfianca(r, classe)}
         ${sgBadge("info", SG.ROTA[r.rota] || r.rota)}
         ${r.agentes && r.agentes.length && r.rota === "F2" ? sgBadge("", `${r.agentes.length} agente(s)`) : ""}
         <span class="question">${esc(pergunta)} · ${(r.latencia_ms / 1000).toFixed(1)} s</span>
       </div>
       <p class="answer-text">${sgCitacoes((r.resposta || "").replace(r.aviso, "").trim())}</p>
-      ${obs.length ? `<div class="note">Verificador de fontes: ${obs.map((o) => esc(o.replace(/_/g, " "))).join("; ")}.</div>` : ""}
+      ${sgCriterio(r.criterio_confianca, typeof r.confianca === "number")}
       ${r.rota === "F2" ? sgRenderF2(r) : sgLista("Lacunas", r.lacunas, (l) => esc(l))}
       ${sgFontes(r.fontes)}
       <div class="note">${esc(r.aviso)} Consulta nº ${r.consulta_id} registrada na auditoria.</div>

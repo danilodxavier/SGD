@@ -8,6 +8,10 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/); 
 - Demo Day (23/11/2026): vídeo de 4 min 57 s com apresentador 3D no estilo de animação gerado no Gemini a partir da foto (prompts em `scripts/video/prompts_personagem.md`; animação em `gerar_video_demoday.py`, roteiro `cenas_demoday.json`), captura das telas reais com o corpus acadêmico (`scripts/video/capturar_telas.py`) e PDF de pitch + guia completo (`scripts/entrega/gerar_guia_pdf.py`). Saídas em `data/video/demoday/` e `data/entrega/` (fora do Git).
 
 ### Alterado
+- Precisão e tempo da F1 sobre contratos medidos com gabarito real das fichas (151 perguntas; teste com contratos nunca usados em ajuste): acurácia 24,6% → 95,1% pelo LLM e 97,6% no servidor; confiança ≥ 80% acertando 100%; p50 34 → 8 s. Documentos-chave do contrato, ficha conferida com janelas literais no contexto, compressão pelo tipo de dado, reparo de citação, número inconsistente da ficha descartado (`avaliar_gabarito_fichas.py`, `avaliar_caminho_servidor.py`; FASE_12 §23).
+- Confiança calculada pelo sistema (`app/domain/confianca.py`), com os mesmos critérios na ficha, no LLM, na decisão e nos pareceres; critério exibido na tela e gravado na auditoria (migração 008: `confianca_modelo`, `criterio_confianca`). Ausência e conflito sem percentual. Corrige resposta correta exibida com 0% (modelo omitia o campo) e recusa correta com 30%.
+- Recusa sem LLM quando nenhum trecho é relevante (nota do reranker < `SADGD_LIMIAR_RELEVANCIA`, 0,02, calibrada): pergunta fora do acervo 81 s → 4 s.
+- Ficha responde "número do contrato" (também com vários contratos do mesmo fornecedor, cada número citado): 31 s → 2 s.
 - Servidor estável no Windows: laço Selector (RST do navegador fechava a porta 8000) e PyTorch só na thread principal (Python 3.15 + torch 2.14 caía com 0xC0000005 em threads).
 - Painel sem 404 (scripts da v1 removidos do `index.html`; ícone próprio).
 - Ficha não confunde o acréscimo do aditivo com o novo valor global (`corrigir_valor_atual.py` para fichas antigas).
